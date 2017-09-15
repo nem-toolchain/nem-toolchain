@@ -6,6 +6,6 @@
 
 ### Library version
 
-### JVM version (e.g. `java -version`)
+### Go version (e.g. `go version`)
 
 ### OS version (e.g. `uname -a`)
