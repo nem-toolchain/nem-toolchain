@@ -9,7 +9,7 @@ By contributing your code, you agree to license your contribution under the term
 If you are adding a new file it should have a header like this:
 
 ```
-    Copyright (c) 2017 Constantine
+    Copyright (c) 2017 Group of nem-toolchain project contributors
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the "Software"),
