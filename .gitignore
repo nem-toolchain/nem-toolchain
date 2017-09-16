@@ -1,3 +1,15 @@
+~*
+*~
+_*
+*#
+.#*
+
+*.bk*
+*.swp
+.DS_Store
+*.i*
+out
+
 # Binaries for programs and plugins
 *.exe
 *.dll
