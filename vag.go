@@ -9,27 +9,67 @@ import (
 	"encoding/base32"
 )
 
-func main() {
+const (
+	KeySize uint = 32
+	MainnetId = byte(0x68)
+	TestnetId = byte(0x98)
+)
+
+type KeyPair struct {
+	public []byte
+	private []byte
+}
+
+func NewKeyPair() (KeyPair, error) {
 	pub, priv, err := ed25519.GenerateKey(nil)
-	fmt.Printf("Public: %x, Private: %x\n", pub, priv)
-	if err != nil {
-		os.Exit(-1)
-	}
-	h := sha3.Sum256(pub)
-	fmt.Println("SHA3", h)
+
+	return KeyPair {
+		pub, priv[:KeySize],
+	}, err
+}
+
+func toAccount(pub []byte, chainId byte) string {
+	h := sha3.Sum256(pub[:])
+	fmt.Printf("SHA3 %x\n", h)
 
 	md := ripemd160.New()
 	md.Write(h[:])
 
 	s := md.Sum(nil)
-	fmt.Println("Ripemd", s)
+	fmt.Printf("Ripemd %x\n", s)
 
-	s = append([]byte {0x68}, s...)
+	s = append([]byte {chainId}, s...)
 	h = sha3.Sum256(s)
-
 	address := append(s, h[:4]...)
-	fmt.Printf("Address %v\n", address)
-	account := base32.StdEncoding.EncodeToString(address)
+	//fmt.Printf("Address %x\n", address)
 
-	fmt.Printf("Account %v", account)
+	return base32.StdEncoding.EncodeToString(address)
+}
+
+func GenerateAccount(chainId byte) string {
+	keyPair, err := NewKeyPair()
+	if err != nil {
+		os.Exit(-1)
+	}
+	//fmt.Printf("Public: %x, Private: %x\n", keyPair.public, keyPair.private)
+	return toAccount(keyPair.public, chainId)
+}
+
+const SearchWorkersNum uint = 100
+func main() {
+	channels := make([]chan string, SearchWorkersNum)
+	for i := uint(0); i < SearchWorkersNum; i++ {
+		ch := make(chan string)
+		go func() {
+			ch <-GenerateAccount(TestnetId)
+		}()
+		channels[i] = ch
+	}
+
+	for i := uint(0); i < SearchWorkersNum; i++ {
+		msg, ok := <-channels[i]
+		if ok {
+			fmt.Printf("Account %v\n", msg)
+		}
+	}
 }
