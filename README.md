@@ -1,6 +1,6 @@
 # nem-toolchain
 
-[![Join the chat at https://gitter.im/nem-toolchain/Lobby](hhttps://img.shields.io/gitter/room/nem-toolchain/Lobby.svg?style=flat-square)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/nem-toolchain/Lobby](https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Release](https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square)](https://github.com/r8d8/nem-toolchain/releases/latest)
 [![Travis](https://img.shields.io/travis/r8d8/nem-toolchain.svg?style=flat-square)](https://travis-ci.org/r8d8/nem-toolchain)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r8d8/nem-toolchain/master.svg?style=flat-square)](https://codecov.io/gh/r8d8/nem-toolchain)
