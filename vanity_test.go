@@ -1,9 +1,9 @@
 package main
 
 import (
-	"testing"
 	"encoding/hex"
 	"fmt"
+	"testing"
 )
 
 func TestAccountGenerator(t *testing.T) {
