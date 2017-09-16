@@ -27,7 +27,8 @@ Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [GitHub Issues](https://github.com/r8d8/nem-toolchain/issues).
+For bugs please use the [GitHub Issues](https://github.com/r8d8/nem-toolchain/issues),
+for questions and discussions you are welcome to the [Gitter Chat](https://gitter.im/nem-toolchain/Lobby).
 
 ## Licence
 
