@@ -4,7 +4,7 @@ If you would like to contribute code you can do so through GitHub by forking the
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of [MIT License](LICENSE).
+By contributing your code, you agree to license your contribution under the terms of the [MIT License](LICENSE).
 
 If you are adding a new file it should have a header like this:
 
