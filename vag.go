@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"golang.org/x/crypto/ed25519"
-	"golang.org/x/crypto/sha3"
 	"golang.org/x/crypto/ripemd160"
 	"os"
 	"encoding/base32"
+	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -29,17 +29,17 @@ func NewKeyPair() (KeyPair, error) {
 }
 
 func toAccount(pub []byte, chainId byte) string {
-	h := sha3.Sum256(pub[:])
-	fmt.Printf("SHA3 %x\n", h)
+	h := sha3.SumKeccak256(pub)
+	//fmt.Printf("SHA3 %x\n", h)
 
 	md := ripemd160.New()
 	md.Write(h[:])
 
 	s := md.Sum(nil)
-	fmt.Printf("Ripemd %x\n", s)
+	//fmt.Printf("Ripemd %x\n", s)
 
 	s = append([]byte {chainId}, s...)
-	h = sha3.Sum256(s)
+	h = sha3.SumKeccak256(s)
 	address := append(s, h[:4]...)
 	//fmt.Printf("Address %x\n", address)
 
