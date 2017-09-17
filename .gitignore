@@ -8,10 +8,6 @@ _*
 *.swp
 .DS_Store
 
-vendor
-coverage.txt
-dist
-
 # Binaries for programs and plugins
 *.exe
 *.dll
@@ -24,12 +20,17 @@ dist
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Makefile
+vendor
+coverage.txt
+dist
+
 # IntelliJ
 *.iml
 .idea
 
-# MS VSCode
+# VSCode
 .vscode
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
-.glide/
+.glide
