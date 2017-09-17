@@ -1,13 +1,18 @@
 # nem-toolchain
 
-[![Join the chat at https://gitter.im/nem-toolchain/Lobby](https://badges.gitter.im/nem-toolchain/Lobby.svg)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![license](https://img.shields.io/github/license/r8d8/nem-toolchain.svg?maxAge=2592000)](https://github.com/r8d8/nem-toolchain/blob/master/LICENSE)
+[![Join the chat at https://gitter.im/nem-toolchain/Lobby](https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Release](https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square)](https://github.com/r8d8/nem-toolchain/releases/latest)
+[![Travis](https://img.shields.io/travis/r8d8/nem-toolchain.svg?style=flat-square)](https://travis-ci.org/r8d8/nem-toolchain)
+[![Coverage Status](https://img.shields.io/codecov/c/github/r8d8/nem-toolchain/master.svg?style=flat-square)](https://codecov.io/gh/r8d8/nem-toolchain)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/r8d8/nem-toolchain)
+[![Go Report Card](https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square)](https://goreportcard.com/report/github.com/r8d8/nem-toolchain)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
 Command line toolchain for [NEM blockchain](https://nem.io/).
 
 ## Prerequisites
 
-* Go 1.8+
+* [Go 1.8+](http://golang.org/doc/install)
 
 ## How to install
 

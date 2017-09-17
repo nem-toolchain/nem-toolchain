@@ -1,0 +1,9 @@
+build:
+  main: ./cmd/nem/main.go
+  goarch:
+    - amd64
+brew:
+  github:
+    owner: r8d8
+    name: homebrew-tap
+  folder: Formula

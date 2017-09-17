@@ -1,31 +1,44 @@
 # How to contribute
 
-If you would like to contribute code you can do so through GitHub by forking the repository and sending pull requests.
+If you would like to contribute code you can do so through GitHub by forking the repository and
+open a pull request against the master branch.
+
+## How to build
+
+Prerequisites are:
+
+* `make`
+* [Go 1.8+](http://golang.org/doc/install)
+
+Install the build and lint dependencies:
+
+``` sh
+$ make setup
+```
+
+A good way of making sure everything is all right is running the test suite:
+
+``` sh
+$ make test
+```
+
+## Test your change
+
+You can create a branch for your changes and try to build from the source as you go:
+
+``` sh
+$ go build
+```
+
+When you are satisfied with the changes, we suggest you run:
+
+``` sh
+$ make ci
+```
+
+Which runs all the linters and tests.
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the [MIT License](LICENSE).
-
-If you are adding a new file it should have a header like this:
-
-```
-    Copyright (c) 2017 Group of nem-toolchain project contributors
-
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files (the "Software"),
-    to deal in the Software without restriction, including without limitation
-    the rights to use, copy, modify, merge, publish, distribute, sublicense,
-    and/or sell copies of the Software, and to permit persons to whom the Software
-    is furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ```
+By contributing your code, you agree to license your contribution under the terms of the
+[MIT License](LICENSE).

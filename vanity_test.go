@@ -1,8 +1,7 @@
-package main
+package example
 
 import (
 	"testing"
-	//"encoding/hex"
 	"fmt"
 	"encoding/hex"
 )
