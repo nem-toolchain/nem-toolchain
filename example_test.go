@@ -8,5 +8,5 @@ import (
 
 func TestFoo(t *testing.T) {
 	var assert = assert.New(t)
-	assert.NoError(Foo())
+	assert.NoError(search())
 }

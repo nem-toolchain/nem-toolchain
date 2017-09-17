@@ -2,8 +2,8 @@ package example
 
 import (
 	"encoding/base32"
-	"fmt"
 	"os"
+
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
@@ -30,49 +30,32 @@ func NewKeyPair() (KeyPair, error) {
 	}, err
 }
 
-func toAccount(pub []byte, chainId byte) string {
+func toAccount(pub []byte, chainId byte) (string, error) {
 	h := sha3.SumKeccak256(pub)
 	//fmt.Printf("SHA3 %x\n", h)
 
 	md := ripemd160.New()
-	md.Write(h[:])
+	_, err := md.Write(h[:])
+	if err != nil {
+		return "", err
+	}
 
 	s := md.Sum(nil)
 	//fmt.Printf("Ripemd %x\n", s)
 
-	s = append([]byte {chainId}, s...)
+	s = append([]byte{chainId}, s...)
 	h = sha3.SumKeccak256(s)
 	address := append(s, h[:4]...)
 	//fmt.Printf("Address %x\n", address)
 
-	return base32.StdEncoding.EncodeToString(address)
+	return base32.StdEncoding.EncodeToString(address), nil
 }
 
-func GenerateAccount(chainId byte) string {
+func GenerateAccount(chainId byte) (string, error) {
 	keyPair, err := NewKeyPair()
 	if err != nil {
 		os.Exit(-1)
 	}
 	//fmt.Printf("Public: %x, Private: %x\n", keyPair.public, keyPair.private)
 	return toAccount(keyPair.public, chainId)
-}
-
-const SearchWorkersNum uint = 100
-
-func main() {
-	channels := make([]chan string, SearchWorkersNum)
-	for i := uint(0); i < SearchWorkersNum; i++ {
-		ch := make(chan string)
-		go func() {
-			ch <- GenerateAccount(TestnetId)
-		}()
-		channels[i] = ch
-	}
-
-	for i := uint(0); i < SearchWorkersNum; i++ {
-		msg, ok := <-channels[i]
-		if ok {
-			fmt.Printf("Account %v\n", msg)
-		}
-	}
 }
