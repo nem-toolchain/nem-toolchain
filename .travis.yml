@@ -1,5 +1,12 @@
 language: go
-go: 1.9
+sudo: false
+os:
+  - linux
+  - osx
+go:
+  - 1.8
+  - 1.9
+  - release
 install: make setup
 script: make ci
 after_success:
