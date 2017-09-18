@@ -15,7 +15,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "example"
 	app.Version = version
-	app.Author = "Carlos Alexandro Becker (root@carlosbecker.com)"
+	app.Author = "dubunda"
 	app.Usage = "This is an example app written in Go"
 	app.Action = func(c *cli.Context) error {
 		spin := spin.New("\033[36m %s Working...\033[m")
