@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"strings"
 )
 
 func TestToAccount(t *testing.T) {
