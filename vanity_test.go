@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"strings"
 )
 
 func TestToAccount(t *testing.T) {
@@ -63,5 +64,25 @@ func TestToChainId(t *testing.T) {
 	_, err = ToChainId("miiijni")
 	assert.Error(err)
 	_, err = ToChainId("101010")
+	assert.Error(err)
+}
+
+func TestGenerateAccount(t *testing.T) {
+	var assert = assert.New(t)
+	_, err := GenerateAccount(TestnetId)
+	assert.NoError(err)
+	//strings.HasPrefix(acc, "TC")
+
+	_, err = GenerateAccount(MainnetId)
+	assert.NoError(err)
+	//strings.HasPrefix(acc, "NA")
+
+	_, err = GenerateAccount(MijinId)
+	assert.NoError(err)
+	//strings.HasPrefix(acc, "TA")
+
+	_, err = GenerateAccount(0x00)
+	assert.Error(err)
+	_, err = GenerateAccount(0xFF)
 	assert.Error(err)
 }
