@@ -4,28 +4,47 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/caarlos0/example"
 	"github.com/caarlos0/spin"
+	"github.com/r8d8/nem-toolchain"
 	"github.com/urfave/cli"
 )
 
 var version = "master"
 
 func main() {
+	var chainStr string
 	app := cli.NewApp()
-	app.Name = "example"
+	app.Name = "nem-cli"
 	app.Version = version
 	app.Author = "dubunda"
-	app.Usage = "This is an example app written in Go"
+	app.Usage = "Vanity account generator for NEM"
+
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "chain",
+			Value:       "0x68",
+			Usage:       "chain id",
+			Destination: &chainStr,
+		},
+	}
+
 	app.Action = func(c *cli.Context) error {
 		spin := spin.New("\033[36m %s Working...\033[m")
 		spin.Start()
-		err := example.Foo()
-		spin.Stop()
+
+		chainId, err := vanity.ToChainId(chainStr)
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
-		fmt.Println("Done!")
+		acc, err := vanity.GenerateAccount(chainId)
+		spin.Stop()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		fmt.Println("Account: ", acc)
+
 		return nil
 	}
 	_ = app.Run(os.Args)
