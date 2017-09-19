@@ -7,7 +7,6 @@ import (
 	"github.com/caarlos0/spin"
 	"github.com/r8d8/nem-toolchain"
 	"github.com/urfave/cli"
-	"time"
 )
 
 var version = "master"
