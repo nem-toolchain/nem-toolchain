@@ -85,3 +85,12 @@ func TestGenerateAccount(t *testing.T) {
 	_, err = GenerateAccount(0xFF)
 	assert.Error(err)
 }
+
+func TestIsValidChainId(t *testing.T) {
+	var assert = assert.New(t)
+	assert.True(IsValidChainId(TestnetId))
+	assert.True(IsValidChainId(MainnetId))
+	assert.True(IsValidChainId(MijinId))
+	assert.False(IsValidChainId(0x10))
+	assert.False(IsValidChainId(0x00))
+}

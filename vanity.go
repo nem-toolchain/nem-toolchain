@@ -24,6 +24,15 @@ type KeyPair struct {
 	private []byte
 }
 
+func IsValidChainId(id byte) bool {
+	for _, i := range []byte{MainnetId, TestnetId, MijinId} {
+		if i == id {
+			return true
+		}
+	}
+	return false
+}
+
 func ToChainId(ch string) (byte, error) {
 	switch ch {
 	case "mainnet", "main", "0x68", "68":
@@ -46,6 +55,10 @@ func NewKeyPair() (KeyPair, error) {
 }
 
 func ToAccount(pub []byte, chainId byte) (string, error) {
+	if !IsValidChainId(chainId) {
+		return "", errors.New("invalid chain id")
+	}
+
 	h := sha3.SumKeccak256(pub)
 	//fmt.Printf("SHA3 %x\n", h)
 
