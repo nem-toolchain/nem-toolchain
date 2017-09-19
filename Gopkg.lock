@@ -2,18 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/caarlos0/example"
-  packages = ["."]
-  revision = "6ddf16309d0fc4647c48044700e8a141b5d7985a"
-  version = "v0.1.0"
-
-[[projects]]
-  name = "github.com/caarlos0/spin"
-  packages = ["."]
-  revision = "ac25467273ecdf236d2d83a25c5329d5863d375f"
-  version = "v1.1.0"
-
-[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -24,6 +12,12 @@
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/r8d8/nem-toolchain"
+  packages = ["."]
+  revision = "52d1bdfc4845872e360e93ace51f8e130a04f6ea"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -47,6 +41,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5011b18642364bb3559a727d02cb86431656cbe1b7f13ca115225ccd4e8406a1"
+  inputs-digest = "35ef87f65038dde77e2885675277ae0828341dec5e473424ca78c8a4bbeef8e1"
   solver-name = "gps-cdcl"
   solver-version = 1
