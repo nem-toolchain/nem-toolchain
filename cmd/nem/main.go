@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
 )
