@@ -14,12 +14,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/r8d8/nem-toolchain"
-  packages = ["."]
-  revision = "52d1bdfc4845872e360e93ace51f8e130a04f6ea"
-
-[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
@@ -41,6 +35,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "35ef87f65038dde77e2885675277ae0828341dec5e473424ca78c8a4bbeef8e1"
+  inputs-digest = "72fb1a15d0968493e2fabaa1c313eea55356a7febe5f2cba43a423aa75a37738"
   solver-name = "gps-cdcl"
   solver-version = 1
