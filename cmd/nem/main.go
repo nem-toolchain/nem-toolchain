@@ -1,10 +1,12 @@
+// Command nem ...
 package main
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/r8d8/nem-toolchain/pkg/vanity"
+	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/urfave/cli"
 )
 
@@ -32,16 +34,16 @@ func main() {
 
 		switch chainStr {
 		case "mijin", "0x60", "60":
-			chainId = vanity.MijinId
+			chainId = core.MijinId
 		case "mainnet", "main", "0x68", "68":
-			chainId = vanity.MainnetId
+			chainId = core.MainnetId
 		case "testnet", "test", "0x98", "98":
-			chainId = vanity.TestnetId
+			chainId = core.TestnetId
 		default:
 			panic("Unknown chain")
 		}
 
-		acc, err := vanity.GenAddress(chainId)
+		acc, err := keypair.GenAddress(chainId)
 		if err != nil {
 			fmt.Println(err)
 			return err
