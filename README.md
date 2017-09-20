@@ -35,6 +35,10 @@ Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002
 For bugs please use the [GitHub Issues](https://github.com/r8d8/nem-toolchain/issues),
 for questions and discussions you are welcome to the [Gitter Chat](https://gitter.im/nem-toolchain/Lobby).
 
+## Thanks to
+
+* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/) free open-source license.
+
 ## Licence
 
 [MIT](LICENSE)
