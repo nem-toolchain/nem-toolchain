@@ -26,7 +26,7 @@ type KeyPair struct {
 }
 
 // ErrInvalidChain indicates invalid chain id.
-var ErrInvalidChain = errors.New("Invalid chain id")
+var ErrInvalidChain = errors.New("invalid chain id")
 
 // GenAddress generates a new address for required chain on crypto random basis.
 // It’s a run-time error for unknown chain.
