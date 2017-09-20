@@ -1,3 +1,4 @@
+// Package vanity implements a bundle of vanity address generators
 package vanity
 
 import (
@@ -11,17 +12,21 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// Supported chains
 const (
 	MijinId   = byte(0x60)
 	MainnetId = byte(0x68)
 	TestnetId = byte(0x98)
 )
 
+// Account keypair
 type KeyPair struct {
 	public  []byte
 	private []byte
 }
 
+// GenAddress generates a new address for required chain on crypto random basis.
+// It’s a run-time error for unknown chain.
 func GenAddress(chainId byte) (string, error) {
 	pair, err := NewKeyPair()
 	if err != nil {
@@ -30,6 +35,8 @@ func GenAddress(chainId byte) (string, error) {
 	return ToAddress(pair.public, chainId)
 }
 
+// ToAddress converts public key to public account address.
+// It’s a run-time error for unknown chain.
 func ToAddress(pubKey []byte, chainId byte) (string, error) {
 	if !IsValidChainId(chainId) {
 		return "", errors.New("Invalid chain id")
@@ -46,6 +53,7 @@ func ToAddress(pubKey []byte, chainId byte) (string, error) {
 	return base32.StdEncoding.EncodeToString(a), nil
 }
 
+// NewKeyPair generates a public/private key pair using entropy from crypto rand.
 func NewKeyPair() (KeyPair, error) {
 	pub, priv, err := ed25519.GenerateKey(nil)
 	return KeyPair{
@@ -53,6 +61,7 @@ func NewKeyPair() (KeyPair, error) {
 	}, err
 }
 
+// IsValidChainId checks chain id for existence
 func IsValidChainId(id byte) bool {
 	for _, i := range []byte{MijinId, MainnetId, TestnetId} {
 		if i == id {
