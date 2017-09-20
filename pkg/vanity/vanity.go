@@ -25,6 +25,9 @@ type KeyPair struct {
 	private []byte
 }
 
+// ErrInvalidChain indicates invalid chain id.
+var ErrInvalidChain = errors.New("Invalid chain id")
+
 // GenAddress generates a new address for required chain on crypto random basis.
 // It’s a run-time error for unknown chain.
 func GenAddress(chainId byte) (string, error) {
@@ -35,11 +38,19 @@ func GenAddress(chainId byte) (string, error) {
 	return ToAddress(pair.public, chainId)
 }
 
+// NewKeyPair generates a public/private key pair using entropy from crypto rand.
+func NewKeyPair() (KeyPair, error) {
+	pub, priv, err := ed25519.GenerateKey(nil)
+	return KeyPair{
+		pub, priv[:32],
+	}, err
+}
+
 // ToAddress converts public key to public account address.
 // It’s a run-time error for unknown chain.
 func ToAddress(pubKey []byte, chainId byte) (string, error) {
 	if !IsValidChainId(chainId) {
-		return "", errors.New("Invalid chain id")
+		return "", ErrInvalidChain
 	}
 	h := sha3.SumKeccak256(pubKey)
 	r := ripemd160.New()
@@ -51,14 +62,6 @@ func ToAddress(pubKey []byte, chainId byte) (string, error) {
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
 	return base32.StdEncoding.EncodeToString(a), nil
-}
-
-// NewKeyPair generates a public/private key pair using entropy from crypto rand.
-func NewKeyPair() (KeyPair, error) {
-	pub, priv, err := ed25519.GenerateKey(nil)
-	return KeyPair{
-		pub, priv[:32],
-	}, err
 }
 
 // IsValidChainId checks chain id for existence
