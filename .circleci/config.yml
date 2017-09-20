@@ -20,5 +20,5 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
-      - run: go test -v ./... && curl -sL http://git.io/goreleaser | bash
       - run: bash <(curl -s https://codecov.io/bash)
+      - run: go test -v ./... && curl -sL http://git.io/goreleaser | bash
