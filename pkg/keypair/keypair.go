@@ -5,8 +5,6 @@ import (
 	"encoding/base32"
 	"os"
 
-	"errors"
-
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
@@ -18,9 +16,6 @@ type KeyPair struct {
 	public  []byte
 	private []byte
 }
-
-// ErrInvalidChain indicates invalid chain id.
-var ErrInvalidChain = errors.New("invalid chain id")
 
 // GenAddress generates a new address for required chain on crypto random basis.
 // It’s a run-time error for unknown chain.
@@ -44,7 +39,7 @@ func NewKeyPair() (KeyPair, error) {
 // It’s a run-time error for unknown chain.
 func ToAddress(pubKey []byte, chainId byte) (string, error) {
 	if !IsValidChainId(chainId) {
-		return "", ErrInvalidChain
+		return "", core.ErrInvalidChain
 	}
 	h := sha3.SumKeccak256(pubKey)
 	r := ripemd160.New()

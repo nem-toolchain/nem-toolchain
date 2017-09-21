@@ -8,11 +8,14 @@ import (
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/urfave/cli"
+	"runtime"
 )
 
 var version = "snapshot"
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	var chainStr string
 	app := cli.NewApp()
 	app.Name = "nem"

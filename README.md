@@ -8,6 +8,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square)](https://goreportcard.com/report/github.com/r8d8/nem-toolchain)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
+![Logo](assets/logo_128.png)
+
 Command line toolchain for [NEM blockchain](https://nem.io/).
 
 ## Prerequisites
