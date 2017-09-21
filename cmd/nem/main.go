@@ -34,20 +34,20 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		var chainId byte
+		var chain core.Chain
 
 		switch chainStr {
 		case "mijin", "0x60", "60":
-			chainId = core.MijinId
+			chain = core.Mijin
 		case "mainnet", "main", "0x68", "68":
-			chainId = core.MainnetId
+			chain = core.Mainnet
 		case "testnet", "test", "0x98", "98":
-			chainId = core.TestnetId
+			chain = core.Testnet
 		default:
 			panic("Unknown chain")
 		}
 
-		acc, err := keypair.GenAddress(chainId)
+		acc, err := keypair.GenAddress(chain)
 		if err != nil {
 			fmt.Println(err)
 			return err

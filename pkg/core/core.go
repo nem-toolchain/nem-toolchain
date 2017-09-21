@@ -6,7 +6,7 @@ package core
 
 // Chain is the type of Nem chain
 type Chain struct {
-	id byte
+	Id byte
 }
 
 // Supported predefined chains

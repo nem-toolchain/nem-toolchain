@@ -6,7 +6,6 @@ package keypair
 
 import (
 	"encoding/base32"
-	"os"
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
@@ -29,39 +28,24 @@ func NewKeyPair() (KeyPair, error) {
 }
 
 // GenAddress generates a new address for required chain on crypto random basis.
-// It’s a run-time error for unknown chain.
-func GenAddress(chainId byte) (string, error) {
+func GenAddress(chain core.Chain) (string, error) {
 	pair, err := NewKeyPair()
 	if err != nil {
-		os.Exit(-1)
+		return "", err
 	}
-	return ToAddress(pair.public, chainId)
+	return ToAddress(pair.public, chain)
 }
 
-// ToAddress converts public key to public account address.
-// It’s a run-time error for unknown chain.
-func ToAddress(pubKey []byte, chainId byte) (string, error) {
-	if !IsValidChainId(chainId) {
-		return "", core.ErrInvalidChain
-	}
+// ToAddress converts public key to public account address string representation.
+func ToAddress(pubKey []byte, chain core.Chain) (string, error) {
 	h := sha3.SumKeccak256(pubKey)
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
 	if err != nil {
 		return "", err
 	}
-	b := append([]byte{chainId}, r.Sum(nil)...)
+	b := append([]byte{chain.Id}, r.Sum(nil)...)
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
 	return base32.StdEncoding.EncodeToString(a), nil
-}
-
-// IsValidChainId checks chain id for existence
-func IsValidChainId(id byte) bool {
-	for _, i := range []byte{core.MijinId, core.MainnetId, core.TestnetId} {
-		if i == id {
-			return true
-		}
-	}
-	return false
 }
