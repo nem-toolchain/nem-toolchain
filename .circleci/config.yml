@@ -4,9 +4,9 @@ jobs:
     docker:
       - image: circleci/golang:1.8
     working_directory: /go/src/github.com/r8d8/nem-toolchain
-    #branches:
-    #  only:
-    #    - master
+    branches:
+      only:
+        - master
     steps:
       - checkout
       # specify any bash command here prefixed with `run: `
