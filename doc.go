@@ -1,6 +1,6 @@
 // Package nem is a set of packages that provide many tools for Nem blockchain.
 //
-// testify contains the following packages:
+// nem-toolchain library contains the following packages:
 //
 // The core package contains core domain model.
 //
