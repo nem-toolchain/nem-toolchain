@@ -1,7 +1,7 @@
 // Copyright 2017 The nem-toolchain project authors. All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
-// Package keypair responses for private, public and address account subjects
+// Package keypair responses for private, public and address account subjects.
 package keypair
 
 import (
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Keypair is a bundle of a private/public key pair
+// Keypair is a bundle of a private/public key pair.
 type KeyPair struct {
 	private []byte
 	public  []byte
