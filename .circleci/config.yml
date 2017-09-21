@@ -15,13 +15,14 @@ jobs:
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/r8d8/nem-toolchain
-    branches:
-      only:
-        - master
+    #branches:
+    #  only:
+    #    - master
     steps:
       - checkout
       # specify any bash command here prefixed with `run: `
       - run: make setup && make ci
       - run: go get -v -t -d ./...
       - run: bash <(curl -s https://codecov.io/bash)
-      - run: go test -n && goreleaser --snapshot
+      - run: go test -n 
+        #- run: goreleaser --snapshot
