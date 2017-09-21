@@ -1,7 +1,7 @@
 // Copyright 2017 The nem-toolchain project authors. All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
-// Package keypair responses for private, public and address account logic
+// Package keypair responses for private, public and address account subjects
 package keypair
 
 import (
@@ -14,10 +14,18 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Account keypair
+// Keypair is a bundle of a private/public key pair
 type KeyPair struct {
-	public  []byte
 	private []byte
+	public  []byte
+}
+
+// NewKeyPair generates a private/public key pair using entropy from crypto rand.
+func NewKeyPair() (KeyPair, error) {
+	pub, priv, err := ed25519.GenerateKey(nil)
+	return KeyPair{
+		priv[:32], pub,
+	}, err
 }
 
 // GenAddress generates a new address for required chain on crypto random basis.
@@ -28,14 +36,6 @@ func GenAddress(chainId byte) (string, error) {
 		os.Exit(-1)
 	}
 	return ToAddress(pair.public, chainId)
-}
-
-// NewKeyPair generates a public/private key pair using entropy from crypto rand.
-func NewKeyPair() (KeyPair, error) {
-	pub, priv, err := ed25519.GenerateKey(nil)
-	return KeyPair{
-		pub, priv[:32],
-	}, err
 }
 
 // ToAddress converts public key to public account address.
