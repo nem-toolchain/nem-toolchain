@@ -2,8 +2,26 @@ build:
   main: ./cmd/nem/main.go
   goarch:
     - amd64
+  goos:
+    - windows
+    - darwin
+    - linux
 brew:
   github:
     owner: r8d8
     name: homebrew-tap
-  folder: Formula
+# Archive customization
+archive:
+  format: tar.gz
+  replacements:
+    amd64: 64-bit
+    darwin: macOS
+    linux: linux
+snapshot:
+  # Allows you to change the name of the generated snapshot
+  # releases. The following variables are available:
+  # - Commit
+  # - Tag
+  # - Timestamp
+  # Default: SNAPSHOT-{{.Commit}}
+  name_template: SNAPSHOT-{{.Commit}}

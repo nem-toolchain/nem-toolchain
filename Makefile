@@ -8,6 +8,7 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/pierrre/gotestcover
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/urfave/cli
+	go get -u github.com/goreleaser/goreleaser
 	dep ensure
 	gometalinter --install --update
 
