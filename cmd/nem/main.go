@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"os"
 
+	"runtime"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/urfave/cli"
-	"runtime"
 )
 
 var version = "snapshot"
