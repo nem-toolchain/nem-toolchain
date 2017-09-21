@@ -42,3 +42,10 @@ Which runs all the linters and tests.
 
 By contributing your code, you agree to license your contribution under the terms of the
 [MIT License](LICENSE).
+
+If you are adding a new file it should have a header like this:
+
+```
+// Copyright 2017 The nem-toolchain project authors. All rights reserved.
+// Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ ```
