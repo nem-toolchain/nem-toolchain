@@ -9,6 +9,7 @@ _*
 .DS_Store
 
 # Binaries for programs and plugins
+bin
 *.exe
 *.dll
 *.so

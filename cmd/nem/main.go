@@ -1,23 +1,27 @@
+// Command nem ...
 package main
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/caarlos0/spin"
-	"github.com/r8d8/nem-toolchain"
+	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/urfave/cli"
+	"runtime"
 )
 
-var version = "master"
+var version = "snapshot"
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	var chainStr string
 	app := cli.NewApp()
-	app.Name = "nem-cli"
+	app.Name = "nem"
 	app.Version = version
 	app.Author = "dubunda"
-	app.Usage = "Vanity account generator for NEM"
+	app.Usage = "Vanity account address generator for Nem blockchain"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -29,23 +33,28 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		spin := spin.New("\033[36m %s Working...\033[m")
-		spin.Start()
+		var chainId byte
 
-		chainId, err := vanity.ToChainId(chainStr)
+		switch chainStr {
+		case "mijin", "0x60", "60":
+			chainId = core.MijinId
+		case "mainnet", "main", "0x68", "68":
+			chainId = core.MainnetId
+		case "testnet", "test", "0x98", "98":
+			chainId = core.TestnetId
+		default:
+			panic("Unknown chain")
+		}
+
+		acc, err := keypair.GenAddress(chainId)
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		acc, err := vanity.GenerateAccount(chainId)
-		spin.Stop()
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
+
 		fmt.Println("Account: ", acc)
-
 		return nil
 	}
+
 	_ = app.Run(os.Args)
 }

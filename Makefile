@@ -8,7 +8,6 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/pierrre/gotestcover
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/urfave/cli
-	go get -u github.com/goreleaser/goreleaser
 	dep ensure
 	gometalinter --install --update
 
@@ -40,7 +39,7 @@ lint: ## Run all the linters
 ci: lint test ## Run all the tests and code checks
 
 build: ## Build a beta version
-	go build -o example ./cmd/nem/main.go
+	go build -o bin/nem ./cmd/nem/main.go
 
 install: ## Install to $GOPATH/src
 	go install ./cmd/...
