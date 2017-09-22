@@ -1,4 +1,4 @@
-# nem-toolchain
+# ![Logo](assets/logo_64.png) nem-toolchain
 
 [![Join the chat at https://gitter.im/nem-toolchain/Lobby](https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Release](https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square)](https://github.com/r8d8/nem-toolchain/releases/latest)
@@ -8,8 +8,6 @@
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/r8d8/nem-toolchain)
 [![Go Report Card](https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square)](https://goreportcard.com/report/github.com/r8d8/nem-toolchain)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-
-![Logo](assets/logo_128.png)
 
 Command line toolchain for [NEM blockchain](https://nem.io/).
 
