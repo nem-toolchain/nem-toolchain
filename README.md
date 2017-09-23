@@ -45,10 +45,9 @@ Private key: 7d77192b3cc6f3770ffae4f7a85f3c40bca1256abfa1e59a3cf57cefd260af80
 Instead of option you can specify the desired network via environment variables:
 
 ```
-> NEM_CHAIN=testnet nem testnet account generate
+> NEM_CHAIN=testnet nem account generate
 ...
 ```
-
 
 ### Vanity addresses
 
