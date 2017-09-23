@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Address is a readable string representation for a public key
+// Address is a readable string representation for a public key.
 type Address string
 
 // KeyPair is a private/public crypto key pair.
@@ -45,7 +45,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	return Address(base32.StdEncoding.EncodeToString(a))
 }
 
-// PrettyString returns pretty formatted address with separators ('-')
+// PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {
 	return string(addr)
 }
