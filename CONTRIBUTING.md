@@ -27,13 +27,25 @@ $ make test
 You can create a branch for your changes and try to build from the source as you go:
 
 ``` sh
-$ go build
+$ make build
+```
+
+Make sure your `PATH` includes the `bin` directory so your local builds can be easily used:
+
+```bash
+export PATH=$PATH:./bin
+```
+
+Simplest first test after build is:
+
+```bash
+nem -h
 ```
 
 When you are satisfied with the changes, we suggest you run:
 
 ``` sh
-$ make ci
+$ make fmt && make ci
 ```
 
 Which runs all the linters and tests.

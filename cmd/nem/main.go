@@ -1,4 +1,7 @@
-// Command nem ...
+// Copyright 2017 The nem-toolchain project authors. All rights reserved.
+// Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+
+// Command nem responses for command line user interface
 package main
 
 import (
@@ -38,10 +41,9 @@ func main() {
 			Usage:   "Account related bundle of actions",
 			Subcommands: []cli.Command{
 				{
-					Name:      "generate",
-					Aliases:   []string{"g"},
-					Usage:     "Generate a new account",
-					UsageText: "New private/public key pair will be generated",
+					Name:    "generate",
+					Aliases: []string{"g"},
+					Usage:   "Generate a new account",
 					Action: func(c *cli.Context) error {
 						var chain core.Chain
 						switch c.GlobalString("chain") {
@@ -56,7 +58,7 @@ func main() {
 						}
 
 						pair := keypair.Gen()
-						fmt.Println("Address:", pair.Address(chain))
+						fmt.Println("Address:", pair.Address(chain).PrettyString())
 						fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 						fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 

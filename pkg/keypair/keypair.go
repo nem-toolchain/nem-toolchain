@@ -13,6 +13,9 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// Address is a readable string representation for a public key
+type Address string
+
 // KeyPair is a private/public crypto key pair.
 type KeyPair struct {
 	Private []byte
@@ -21,12 +24,15 @@ type KeyPair struct {
 
 // Gen generates a new private/public key pair using entropy from crypto rand.
 func Gen() KeyPair {
-	pub, priv, _ := ed25519.GenerateKey(nil)
+	pub, priv, err := ed25519.GenerateKey(nil)
+	if err != nil {
+		panic("assert: ed25519 generate key function internal error")
+	}
 	return KeyPair{priv[:32], pub}
 }
 
 // Address converts a key pair into corresponding address string representation.
-func (pair KeyPair) Address(chain core.Chain) string {
+func (pair KeyPair) Address(chain core.Chain) Address {
 	h := sha3.SumKeccak256(pair.Public)
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
@@ -36,5 +42,14 @@ func (pair KeyPair) Address(chain core.Chain) string {
 	b := append([]byte{chain.Id}, r.Sum(nil)...)
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
-	return base32.StdEncoding.EncodeToString(a)
+	return Address(base32.StdEncoding.EncodeToString(a))
+}
+
+// PrettyString returns pretty formatted address with separators ('-')
+func (addr Address) PrettyString() string {
+	return string(addr)
+}
+
+func (addr Address) String() string {
+	return string(addr)
 }
