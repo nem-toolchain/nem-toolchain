@@ -9,6 +9,8 @@ import (
 
 	"strings"
 
+	"regexp"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
@@ -49,19 +51,9 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 
 // PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {
-	pretty := make([]string, 0)
-
-	j := 0
-	for _, s := range string(addr) {
-		j++
-		pretty = append(pretty, string(s))
-		if j == 6 {
-			pretty = append(pretty, "-")
-			j = 0
-		}
-	}
-
-	return strings.Join(pretty, "")
+	ps := regexp.MustCompile(".{6}").FindAllString(string(addr), -1)
+	ps = append(ps, string(addr)[len(addr)-4:])
+	return strings.Join(ps, "-")
 }
 
 func (addr Address) String() string {
