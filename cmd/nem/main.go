@@ -12,6 +12,7 @@ import (
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
+	"github.com/r8d8/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
 )
 
@@ -49,6 +50,11 @@ func main() {
 					Usage:  "Generate a new account",
 					Action: generateAction,
 				},
+				{
+					Name:   "vanity",
+					Usage:  "Find vanity address by given prefix",
+					Action: vanityAction,
+				},
 			},
 		},
 	}
@@ -61,18 +67,24 @@ func generateAction(c *cli.Context) error {
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
+	printAccountDetails(ch, keypair.Gen())
+	return nil
+}
 
-	pair := keypair.Gen()
-	fmt.Println("Address:", pair.Address(ch).PrettyString())
-	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
-	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
-
+func vanityAction(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+	if len(c.Args()) != 1 {
+		return cli.NewExitError("wrong args - prefix is not specified", 1)
+	}
+	printAccountDetails(ch, vanity.ByPrefix(c.Args().First()))
 	return nil
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	var ch core.Chain
-
 	switch c.GlobalString("chain") {
 	case "mijin":
 		ch = core.Mijin
@@ -83,6 +95,11 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	default:
 		return ch, fmt.Errorf("unknown chain '%v'", c.GlobalString("chain"))
 	}
-
 	return ch, nil
+}
+
+func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
+	fmt.Println("Address:", pair.Address(chain).PrettyString())
+	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 }
