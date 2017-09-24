@@ -19,7 +19,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Address length
+// ADDRESS_BYTES stores the address length
 const ADDRESS_BYTES = 25
 
 // Address is a readable string representation for a public key.
@@ -31,13 +31,13 @@ type KeyPair struct {
 	Public  []byte
 }
 
+// FromString constructs an instance of `Address`
 func FromString(s string) (Address, error) {
-	addr := Address{}
+	var addr Address
 	b, err := base32.StdEncoding.DecodeString(s)
 	if err != nil {
-		return Address{}, errors.New("can't decode address string")
+		return addr, errors.New("can't decode address string")
 	}
-
 	copy(addr[:], b)
 	return addr, nil
 }
@@ -70,9 +70,9 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 
 // PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {
-	addr_str := addr.String()
-	ps := regexp.MustCompile(".{6}").FindAllString(addr_str, -1)
-	ps = append(ps, addr_str[36:])
+	str := addr.String()
+	ps := regexp.MustCompile(".{6}").FindAllString(str, -1)
+	ps = append(ps, str[36:])
 	return strings.Join(ps, "-")
 }
 
