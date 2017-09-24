@@ -48,7 +48,7 @@ When you are satisfied with the changes, we suggest you run:
 $ make fmt && make ci
 ```
 
-Which runs all the linters and tests.
+Which runs all the formatters, linters and tests.
 
 ## License
 

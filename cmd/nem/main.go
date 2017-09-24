@@ -17,13 +17,17 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "snapshot"
+var (
+	BuildTime  = "undefined"
+	CommitHash = "undefined"
+	Version    = "undefined"
+)
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "nem"
 	app.Usage = "command-line toolchain for Nem blockchain"
-	app.Version = version
+	app.Version = fmt.Sprintf("%v (%v / %v)", Version, CommitHash, BuildTime)
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -60,18 +64,18 @@ func generateAction(c *cli.Context) error {
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
-	var chain core.Chain
+	var ch core.Chain
 
 	switch c.GlobalString("chain") {
 	case "mijin":
-		chain = core.Mijin
+		ch = core.Mijin
 	case "mainnet":
-		chain = core.Mainnet
+		ch = core.Mainnet
 	case "testnet":
-		chain = core.Testnet
+		ch = core.Testnet
 	default:
-		return chain, errors.New("unknown chain")
+		return ch, errors.New("unknown chain")
 	}
 
-	return chain, nil
+	return ch, nil
 }
