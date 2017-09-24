@@ -58,7 +58,12 @@ func main() {
 						}
 
 						pair := keypair.Gen()
-						fmt.Println("Address:", pair.Address(chain).PrettyString())
+						ps, err := pair.Address(chain).PrettyString()
+						if err != nil {
+							panic(err)
+						}
+
+						fmt.Println("Address:", ps)
 						fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 						fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 
