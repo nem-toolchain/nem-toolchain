@@ -31,7 +31,8 @@ type KeyPair struct {
 	Public  []byte
 }
 
-func (addr Address) FromString(s string) (Address, error) {
+func FromString(s string) (Address, error) {
+	addr := Address{}
 	b, err := base32.StdEncoding.DecodeString(s)
 	if err != nil {
 		return Address{}, errors.New("can't decode address string")
