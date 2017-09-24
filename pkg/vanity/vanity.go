@@ -5,15 +5,31 @@
 package vanity
 
 import (
+	"strings"
+
+	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
-	"golang.org/x/crypto/ed25519"
 )
 
-// ByPrefix looking for the address in accordance with the given prefix
-func ByPrefix(prefix string) keypair.KeyPair {
-	pub, priv, err := ed25519.GenerateKey(nil)
-	if err != nil {
-		panic("assert: ed25519 generate key function internal error")
+// FindByPrefix looking for the address in accordance with the given prefix
+func FindByPrefix(chain core.Chain, prefix string, numGoroutine int) keypair.KeyPair {
+	ch := make(chan keypair.KeyPair)
+	for i := 0; i < numGoroutine; i++ {
+		go lookByPrefix(chain, prefix, ch)
 	}
-	return keypair.KeyPair{priv[:32], pub}
+	return <-ch
+}
+
+func lookByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
+	for {
+		pair := keypair.Gen()
+		if checkByPrefix(chain, pair, prefix) {
+			ch <- pair
+			break
+		}
+	}
+}
+
+func checkByPrefix(chain core.Chain, pair keypair.KeyPair, prefix string) bool {
+	return strings.HasPrefix(pair.Address(chain).String(), prefix)
 }

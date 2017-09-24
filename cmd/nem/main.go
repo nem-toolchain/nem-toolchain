@@ -10,6 +10,8 @@ import (
 
 	"encoding/hex"
 
+	"runtime"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
@@ -79,7 +81,7 @@ func vanityAction(c *cli.Context) error {
 	if len(c.Args()) != 1 {
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
 	}
-	printAccountDetails(ch, vanity.ByPrefix(c.Args().First()))
+	printAccountDetails(ch, vanity.FindByPrefix(ch, c.Args().First(), runtime.NumCPU()))
 	return nil
 }
 
