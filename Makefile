@@ -1,6 +1,15 @@
+.DEFAULT_GOAL := build
+
+BUILD_VERSION?=snapshot
 SOURCE_FILES?=$$(go list ./... | grep -v /vendor/)
 TEST_PATTERN?=.
 TEST_OPTIONS?=-race
+
+BINARY=bin
+BUILD_TIME=`date +%FT%T%z`
+COMMIT=`git log --pretty=format:'%h' -n 1`
+
+LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME} -X main.CommitHash=${COMMIT} -X main.Version=${BUILD_VERSION}"
 
 setup: ## Install all the build and lint dependencies
 	go get -u github.com/alecthomas/gometalinter
@@ -37,14 +46,17 @@ lint: ## Run all the linters
 
 ci: lint test ## Run all the tests and code checks
 
-build: ## Build a beta version
-	go build -o bin/nem ./cmd/nem/main.go
+build: ## Build a local snapshot binary version
+	go build ${LDFLAGS} -o ${BINARY}/nem ./cmd/nem/main.go
+
+clean: ## Remove a local snapshot binary version
+	if [ -d ${BINARY} ] ; then rm -rf ${BINARY} ; fi
 
 install: ## Install to $GOPATH/src
-	go install ./cmd/...
+	go install ${LDFLAGS} ./cmd/...
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.DEFAULT_GOAL := build
+.PHONY: setup test cover fmt lint ci build clean install help

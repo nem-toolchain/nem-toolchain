@@ -7,8 +7,9 @@ open a pull request against the master branch.
 
 Prerequisites are:
 
+* [`git`](https://git-scm.com)
 * `make`
-* [Go 1.8+](http://golang.org/doc/install)
+* [`Go 1.8+`](http://golang.org/doc/install)
 
 Install the build and lint dependencies:
 
@@ -48,7 +49,7 @@ When you are satisfied with the changes, we suggest you run:
 $ make fmt && make ci
 ```
 
-Which runs all the linters and tests.
+Which runs all the formatters, linters and tests.
 
 ## License
 
