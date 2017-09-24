@@ -18,9 +18,12 @@ import (
 )
 
 var (
-	BuildTime  = "undefined"
+	// BuildTime stores build timestamp
+	BuildTime = "undefined"
+	// CommitHash stores actual commit hash
 	CommitHash = "undefined"
-	Version    = "undefined"
+	// Version indicates actual version
+	Version = "undefined"
 )
 
 func main() {
