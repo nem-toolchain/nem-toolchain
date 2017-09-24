@@ -9,7 +9,6 @@ _*
 .DS_Store
 
 # Binaries for programs and plugins
-bin
 *.exe
 *.dll
 *.so
@@ -22,9 +21,9 @@ bin
 *.out
 
 # Makefile
+bin
 vendor
 coverage.txt
-dist
 
 # IntelliJ
 *.iml

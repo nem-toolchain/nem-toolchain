@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := build
 
+BUILD_VERSION?=snapshot
 SOURCE_FILES?=$$(go list ./... | grep -v /vendor/)
 TEST_PATTERN?=.
 TEST_OPTIONS?=-race
@@ -7,9 +8,8 @@ TEST_OPTIONS?=-race
 BINARY=bin
 BUILD_TIME=`date +%FT%T%z`
 COMMIT=`git log --pretty=format:'%h' -n 1`
-VERSION?=`git describe --tags`
 
-LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME} -X main.CommitHash=${COMMIT} -X main.Version=${VERSION}"
+LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME} -X main.CommitHash=${COMMIT} -X main.Version=${BUILD_VERSION}"
 
 setup: ## Install all the build and lint dependencies
 	go get -u github.com/alecthomas/gometalinter
@@ -46,10 +46,10 @@ lint: ## Run all the linters
 
 ci: lint test ## Run all the tests and code checks
 
-build: ## Build a local version
+build: ## Build a local snapshot binary version
 	go build ${LDFLAGS} -o ${BINARY}/nem ./cmd/nem/main.go
 
-clean: ## Remove a local version
+clean: ## Remove a local snapshot binary version
 	if [ -d ${BINARY} ] ; then rm -rf ${BINARY} ; fi
 
 install: ## Install to $GOPATH/src

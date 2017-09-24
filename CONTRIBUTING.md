@@ -7,8 +7,9 @@ open a pull request against the master branch.
 
 Prerequisites are:
 
+* [`git`](https://git-scm.com)
 * `make`
-* [Go 1.8+](http://golang.org/doc/install)
+* [`Go 1.8+`](http://golang.org/doc/install)
 
 Install the build and lint dependencies:
 
