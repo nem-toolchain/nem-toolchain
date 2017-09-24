@@ -10,8 +10,6 @@ import (
 
 	"encoding/hex"
 
-	"errors"
-
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/urfave/cli"
@@ -43,9 +41,15 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:   "generate",
-			Usage:  "Generate a new account",
-			Action: generateAction,
+			Name:  "account",
+			Usage: "Account related bundle of actions",
+			Subcommands: []cli.Command{
+				{
+					Name:   "generate",
+					Usage:  "Generate a new account",
+					Action: generateAction,
+				},
+			},
 		},
 	}
 
@@ -77,7 +81,7 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	case "testnet":
 		ch = core.Testnet
 	default:
-		return ch, errors.New("unknown chain")
+		return ch, fmt.Errorf("unknown chain '%v'", c.GlobalString("chain"))
 	}
 
 	return ch, nil
