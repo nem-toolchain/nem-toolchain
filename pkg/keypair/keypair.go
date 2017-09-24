@@ -11,7 +11,7 @@ import (
 
 	"regexp"
 
-	"fmt"
+	"errors"
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
@@ -20,15 +20,26 @@ import (
 )
 
 // Address length
-const ADDRESS_LENGTH = 40
+const ADDRESS_BYTES = 25
 
 // Address is a readable string representation for a public key.
-type Address string
+type Address [ADDRESS_BYTES]byte
 
 // KeyPair is a private/public crypto key pair.
 type KeyPair struct {
 	Private []byte
 	Public  []byte
+}
+
+func FromString(s string) (Address, error) {
+	addr := Address{}
+	b, err := base32.StdEncoding.DecodeString(s)
+	if err != nil {
+		return Address{}, errors.New("can't decode address string")
+	}
+
+	copy(addr[:], b)
+	return addr, nil
 }
 
 // Gen generates a new private/public key pair using entropy from crypto rand.
@@ -51,20 +62,20 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	b := append([]byte{chain.Id}, r.Sum(nil)...)
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
-	return Address(base32.StdEncoding.EncodeToString(a))
+
+	addr := Address{}
+	copy(addr[:], a[:])
+	return addr
 }
 
 // PrettyString returns pretty formatted address with separators ('-').
-func (addr Address) PrettyString() (string, error) {
-	if len(addr) != ADDRESS_LENGTH {
-		return "", fmt.Errorf(
-			"invalid address length. Expected %v, but received %v", ADDRESS_LENGTH, len(addr))
-	}
-	ps := regexp.MustCompile(".{6}").FindAllString(string(addr), -1)
-	ps = append(ps, string(addr)[ADDRESS_LENGTH-4:])
-	return strings.Join(ps, "-"), nil
+func (addr Address) PrettyString() string {
+	addr_str := addr.String()
+	ps := regexp.MustCompile(".{6}").FindAllString(addr_str, -1)
+	ps = append(ps, addr_str[36:])
+	return strings.Join(ps, "-")
 }
 
 func (addr Address) String() string {
-	return string(addr)
+	return string(base32.StdEncoding.EncodeToString(addr[:]))
 }
