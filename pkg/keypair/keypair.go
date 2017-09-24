@@ -54,12 +54,15 @@ func Gen() KeyPair {
 // Address converts a key pair into corresponding address string representation.
 func (pair KeyPair) Address(chain core.Chain) Address {
 	h := sha3.SumKeccak256(pair.Public)
+
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
 	if err != nil {
 		panic("assert: Ripemd160 hash function internal error")
 	}
+
 	b := append([]byte{chain.Id}, r.Sum(nil)...)
+
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
 
@@ -71,11 +74,11 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 // PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {
 	str := addr.String()
-	ps := regexp.MustCompile(".{6}").FindAllString(str, -1)
-	ps = append(ps, str[36:])
-	return strings.Join(ps, "-")
+	els := regexp.MustCompile(".{6}").FindAllString(str, -1)
+	els = append(els, str[36:])
+	return strings.Join(els, "-")
 }
 
 func (addr Address) String() string {
-	return string(base32.StdEncoding.EncodeToString(addr[:]))
+	return base32.StdEncoding.EncodeToString(addr[:])
 }
