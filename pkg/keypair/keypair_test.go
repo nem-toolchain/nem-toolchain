@@ -18,7 +18,11 @@ func TestKeyPair_Address(t *testing.T) {
 }
 
 func TestAddress_PrettyString(t *testing.T) {
+	_, err := Address("TCGQQKN5HED66OQ67Z2F7GWC").PrettyString()
+	assert.Error(t, err)
+
+	ps, _ := Address("TCGQQKN5HED66OQ67Z2F7GGWZ66DWVBFJUW6F5WC").PrettyString()
 	assert.Equal(t,
 		"TCGQQK-N5HED6-6OQ67Z-2F7GGW-Z66DWV-BFJUW6-F5WC",
-		Address("TCGQQKN5HED66OQ67Z2F7GGWZ66DWVBFJUW6F5WC").PrettyString())
+		ps)
 }

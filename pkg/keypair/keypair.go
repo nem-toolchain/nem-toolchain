@@ -11,11 +11,16 @@ import (
 
 	"regexp"
 
+	"fmt"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
 )
+
+// Address length
+const ADDRESS_LENGTH = 40
 
 // Address is a readable string representation for a public key.
 type Address string
@@ -50,10 +55,14 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 }
 
 // PrettyString returns pretty formatted address with separators ('-').
-func (addr Address) PrettyString() string {
+func (addr Address) PrettyString() (string, error) {
+	if len(addr) != ADDRESS_LENGTH {
+		return "", fmt.Errorf(
+			"invalid address length. Expected %v, but received %v", ADDRESS_LENGTH, len(addr))
+	}
 	ps := regexp.MustCompile(".{6}").FindAllString(string(addr), -1)
-	ps = append(ps, string(addr)[len(addr)-4:])
-	return strings.Join(ps, "-")
+	ps = append(ps, string(addr)[ADDRESS_LENGTH-4:])
+	return strings.Join(ps, "-"), nil
 }
 
 func (addr Address) String() string {
