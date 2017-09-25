@@ -92,7 +92,11 @@ func vanityAction(c *cli.Context) error {
 	case core.Testnet:
 		pr = "T" + pr
 	}
-	printAccountDetails(ch, vanity.FindByPrefix(ch, pr, runtime.NumCPU()))
+	rs := make(chan keypair.KeyPair)
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go vanity.FindByPrefix(ch, pr, rs)
+	}
+	printAccountDetails(ch, <-rs)
 	return nil
 }
 

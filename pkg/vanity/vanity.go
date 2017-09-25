@@ -16,15 +16,7 @@ import (
 )
 
 // FindByPrefix looking for the address in accordance with the given prefix
-func FindByPrefix(chain core.Chain, prefix string, numGoroutine int) keypair.KeyPair {
-	ch := make(chan keypair.KeyPair)
-	for i := 0; i < numGoroutine; i++ {
-		go lookByPrefix(chain, prefix, ch)
-	}
-	return <-ch
-}
-
-func lookByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
+func FindByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
 	if !isPrefixCorrect(prefix) {
 		panic(fmt.Sprintf("incorrect prefix '%v'", prefix))
 	}
