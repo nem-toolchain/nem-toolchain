@@ -20,6 +20,7 @@ jobs:
     steps:
       - checkout
       - run: mkdir -p dist
+      - run: make setup
       - run: go get github.com/mitchellh/gox
       - run: go get github.com/tcnksm/ghr
       - run: gox -ldflags "-X main.Version $BUILD_VERSION -X main.BuildDate $BUILD_DATE" -output "dist/ncd_{{.OS}}_{{.Arch}}" /go/src/github.com/r8d8/nem-toolchain/cmd/nem/main.go
