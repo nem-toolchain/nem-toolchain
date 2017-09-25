@@ -33,7 +33,7 @@ workflows:
         requires:
           - build
         filters:
-          tags:
-            only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+#          tags:
+#            only: /v[0-9]+(\.[0-9]+)*(-.*)*/
           branches:
             only: feature/init_cli
