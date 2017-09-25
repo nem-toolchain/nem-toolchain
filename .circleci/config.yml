@@ -30,10 +30,11 @@ workflows:
     jobs:
       - build
       - deploy:
-        requires:
-          - build
-        filters:
+          requires:
+            - build
+          filters:
 #          tags:
 #            only: /v[0-9]+(\.[0-9]+)*(-.*)*/
-          branches:
-            only: feature/init_cli
+            branches:
+              only: feature/init_cli
+              
