@@ -17,11 +17,12 @@ jobs:
     enviroment:
       BUILD_DATE=$(date -u '+%Y/%m/%d %H:%M:%S')
       BUILD_VERSION=$(git describe --tags)
+      GITHUB_TOKEN=5311dab717c11c936a21d759e9364a1b63849df4
     steps:
       - checkout
       - run: mkdir -p dist
       - run: make setup
-      - run: ./deploy.sh
+      - run: curl -sL https://git.io/goreleaser | bash
 #      - run: go get github.com/tcnksm/ghr
 #      - run: gox -ldflags "-X main.Version $BUILD_VERSION -X main.BuildDate $BUILD_DATE" -output "dist/ncd_{{.OS}}_{{.Arch}}" /go/src/github.com/r8d8/nem-toolchain/cmd/nem/main.go
 #      - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace `git describe --tags` dist/
