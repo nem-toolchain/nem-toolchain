@@ -12,6 +12,8 @@ import (
 
 	"runtime"
 
+	"strings"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
@@ -81,7 +83,20 @@ func vanityAction(c *cli.Context) error {
 	if len(c.Args()) != 1 {
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
 	}
-	printAccountDetails(ch, vanity.FindByPrefix(ch, c.Args().First(), runtime.NumCPU()))
+	pr := strings.ToUpper(c.Args().First())
+	switch ch {
+	case core.Mijin:
+		pr = "M" + pr
+	case core.Mainnet:
+		pr = "N" + pr
+	case core.Testnet:
+		pr = "T" + pr
+	}
+	rs := make(chan keypair.KeyPair)
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go vanity.FindByPrefix(ch, pr, rs)
+	}
+	printAccountDetails(ch, <-rs)
 	return nil
 }
 

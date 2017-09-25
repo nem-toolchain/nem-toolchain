@@ -7,20 +7,19 @@ package vanity
 import (
 	"strings"
 
+	"fmt"
+
+	"regexp"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 )
 
 // FindByPrefix looking for the address in accordance with the given prefix
-func FindByPrefix(chain core.Chain, prefix string, numGoroutine int) keypair.KeyPair {
-	ch := make(chan keypair.KeyPair)
-	for i := 0; i < numGoroutine; i++ {
-		go lookByPrefix(chain, prefix, ch)
+func FindByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
+	if !isPrefixCorrect(prefix) {
+		panic(fmt.Sprintf("incorrect prefix '%v'", prefix))
 	}
-	return <-ch
-}
-
-func lookByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
 	for {
 		pair := keypair.Gen()
 		if checkByPrefix(chain, pair, prefix) {
@@ -32,4 +31,8 @@ func lookByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
 
 func checkByPrefix(chain core.Chain, pair keypair.KeyPair, prefix string) bool {
 	return strings.HasPrefix(pair.Address(chain).String(), prefix)
+}
+
+func isPrefixCorrect(prefix string) bool {
+	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix[1:])
 }
