@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "Deploying..."
-(export GITHUB_TOKEN=d0898dbb529e387638730ccb78ac0b7f5be34c61 && curl -sL https://git.io/goreleaser | bash)
+(export GITHUB_TOKEN=5311dab717c11c936a21d759e9364a1b63849df4 && curl -sL https://git.io/goreleaser | bash)
