@@ -17,7 +17,7 @@ jobs:
     enviroment:
       BUILD_DATE=$(date -u '+%Y/%m/%d %H:%M:%S')
       BUILD_VERSION=$(git describe --tags)
-      GITHUB_TOKEN=`5311dab717c11c936a21d759e9364a1b63849df4`
+#      GITHUB_TOKEN=`5311dab717c11c936a21d759e9364a1b63849df4`
     steps:
       - checkout
       - run: mkdir -p dist
