@@ -9,10 +9,36 @@ jobs:
       - run: make setup
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
-    deployment:
-      filters:
-        branches:
-          only: master
-      tag: /v[0-9]+(\.[0-9]+)*(-.*)*/
-      steps:
-         - run: curl -sL https://git.io/goreleaser | bash
+
+  deploy:
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: /go/src/github.com/r8d8/nem-toolchain
+    enviroment:
+      BUILD_DATE=$(date -u '+%Y/%m/%d %H:%M:%S')
+      BUILD_VERSION=$(git describe --tags)
+    steps:
+      - checkout
+      - run: mkdir -p dist
+      - run: make setup
+      - run: go get github.com/tcnksm/ghr
+      - run: go get github.com/mitchellh/gox
+      - run: gox -ldflags "-X main.Version=$BUILD_VERSION -X main.BuildDate=$BUILD_DATE" -output="dist/nem_{{.OS}}_{{.Arch}}" ./cmd/nem/
+      - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace `git describe --tags` dist/
+
+workflows:
+  version: 2
+  build-n-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              only: master
