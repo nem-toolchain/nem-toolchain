@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
 // Package nem provides a bundle of tools for Nem blockchain.
-package nem
+package doc
 
 // blank docs to pass golint.
 import (
