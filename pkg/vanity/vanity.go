@@ -17,12 +17,15 @@ type Predicate interface {
 	call(addr keypair.Address) bool
 }
 
+// NoDigitPredicate checks account for absence of digits
 type NoDigitPredicate struct{}
 
+// PrefixPredicate checks account for selected prefix
 type PrefixPredicate struct {
 	Prefix string
 }
 
+// MultPrefixPredicate checks account for any of specified prefixes
 type MultPrefixPredicate struct {
 	Prefixes []string
 }
@@ -62,11 +65,12 @@ func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate)
 	}
 }
 
-// CheckPrefix checks if address satisfies prefix
+
 func checkPrefix(addr keypair.Address, prefix string) bool {
 	return strings.HasPrefix(addr.String(), prefix)
 }
 
+// IsPrefixCorrect verify that prefix can be used
 func IsPrefixCorrect(prefix string) bool {
 	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix)
 }

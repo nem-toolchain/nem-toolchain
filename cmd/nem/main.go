@@ -90,7 +90,7 @@ func vanityAction(c *cli.Context) error {
 
 	var pr string
 	var prefixes []string
-	switch len(c.Args()) {
+	switch c.Args() {
 	case 0:
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
 	case 1:
@@ -104,14 +104,14 @@ func vanityAction(c *cli.Context) error {
 			if !vanity.IsPrefixCorrect(pr) {
 				return cli.NewExitError("wrong args - invalid prefix format", 1)
 			}
-			pr = prependPrefix(ch, pr)
-			prefixes = append(prefixes, pr)
+			prefixes = append(prefixes, prependPrefix(ch, pr))
 		}
 	}
 
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
 		predicates := make([]vanity.Predicate, 0)
+
 		if len(prefixes) != 0 {
 			predicates = append(predicates, vanity.MultPrefixPredicate{
 				Prefixes: prefixes,
