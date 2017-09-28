@@ -51,10 +51,10 @@ Instead of option you can specify the desired network via environment variables:
 
 ### Vanity addresses
 
-How to find vanity address with predefined prefix `CGQQK` for testnet:
+How to find vanity address with predefined prefix `TCGQQK` for testnet:
 
 ```
-> nem --chain testnet account vanity CGQQK
+> nem --chain testnet account vanity TCGQQK
 Address: TCGQQK-N5HED6-6OQ67Z-2F7GGW-Z66DWV-BFJUW6-F5WC
 Public key: c342dbf7cdd3096c4c3910c511a57049e62847dd5030c7e644bc855acc1fd626
 Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002
