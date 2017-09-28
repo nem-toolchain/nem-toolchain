@@ -75,10 +75,10 @@ Important notes:
 1. Second symbols are `A`, `B`, `C`, or `D` only, so for mainnet you won't find addresses that start with `NE` or `N4`.
 1. The digits `0`, `1`, `8` and `9` are not part of [Base32 encoding](https://en.wikipedia.org/wiki/Base32) and therefore will not appear in any address. 
 
-## Bugs and Feedback
+## Other topics
 
-For bugs please use the [GitHub Issues](https://github.com/r8d8/nem-toolchain/issues),
-for questions and discussions you are welcome to the [Gitter Chat](https://gitter.im/nem-toolchain/Lobby).
+* [How to contribute](CONTRIBUTING.md)
+* [How to get support](SUPPORT.md)
 
 ## Thanks to
 
