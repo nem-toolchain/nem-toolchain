@@ -9,7 +9,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square)](https://goreportcard.com/report/github.com/r8d8/nem-toolchain)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-Command line toolchain for [NEM blockchain](https://nem.io/).
+Command line toolchain for [NEM blockchain](https://nem.io).
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ Command line toolchain for [NEM blockchain](https://nem.io/).
 To install, simply run:
 
 ```shell
-go get github.com/r8d8/nem-toolchain
+go get github.com/r8d8/nem-toolchain/cmd/nem
 ```
 
 Make sure your `PATH` includes the `$GOPATH/bin` directory so your commands can be easily used:
@@ -64,7 +64,7 @@ Important notes:
 
 1. Mainnet addresses start with `N`, Mijin - with `M`, Testnet - with `T`.
 1. Second symbols are `A`, `B`, `C`, or `D` only, so for mainnet you won't find addresses that start with `NE` or `N4`.
-1. The digits `0`, `1`, `8` and `9` are not part of base32 encoding and therefore will not appear in any address. 
+1. The digits `0`, `1`, `8` and `9` are not part of [Base32 encoding](https://en.wikipedia.org/wiki/Base32) and therefore will not appear in any address. 
 
 ## Bugs and Feedback
 
@@ -73,7 +73,7 @@ for questions and discussions you are welcome to the [Gitter Chat](https://gitte
 
 ## Thanks to
 
-* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/) free open-source license.
+* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea) free open-source license.
 
 ## Licence
 
