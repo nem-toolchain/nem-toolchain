@@ -10,9 +10,9 @@ import (
 )
 
 func TestIsPrefixCorrect(t *testing.T) {
-	assert.True(t, IsPrefixCorrect("-A"))
-	assert.True(t, IsPrefixCorrect("-AB"))
-	assert.True(t, IsPrefixCorrect("_D234"))
+	assert.True(t, IsPrefixCorrect("A"))
+	assert.True(t, IsPrefixCorrect("AB"))
+	assert.True(t, IsPrefixCorrect("D234"))
 
 	assert.False(t, IsPrefixCorrect("_A123"))
 	assert.False(t, IsPrefixCorrect("_ABC_"))
