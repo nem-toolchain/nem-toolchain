@@ -56,13 +56,12 @@ func main() {
 				},
 				{
 					Name:   "vanity",
-					Usage:  "Find vanity address by given prefix",
+					Usage:  "Find vanity address by a given list of prefixes",
 					Action: vanityAction,
 					Flags: []cli.Flag{
 						cli.BoolFlag{
-							Name:   "no-digits",
-							EnvVar: "NEM_NO_DIGIT",
-							Usage:  "disallow digits in account",
+							Name:  "no-digits",
+							Usage: "Digits in address are disallow",
 						},
 					},
 				},
@@ -88,60 +87,30 @@ func vanityAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	var pr string
-	var prefixes []string
-	switch len(c.Args()) {
-	case 0:
-		return cli.NewExitError("wrong args - prefix is not specified", 1)
-	case 1:
-		pr = strings.ToUpper(c.Args().First())
-		if !vanity.IsPrefixCorrect(pr) {
-			return cli.NewExitError("wrong args - invalid prefix format", 1)
-		}
-		pr = prependPrefix(ch, pr)
-	default:
-		for _, pr := range c.Args() {
-			if !vanity.IsPrefixCorrect(pr) {
-				return cli.NewExitError("wrong args - invalid prefix format", 1)
+	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
+	if c.Bool("no-digits") {
+		noDigitsSel = vanity.NoDigitSelector{}
+	}
+
+	var prMultiSel vanity.Selector = vanity.TrueSelector{}
+	if len(c.Args()) != 0 {
+		prefixes := make([]vanity.Selector, len(c.Args()))
+		for i, pr := range c.Args() {
+			sel, err := vanity.PrefixSelectorFrom(ch, strings.ToUpper(pr))
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
 			}
-			prefixes = append(prefixes, prependPrefix(ch, pr))
+			prefixes[i] = sel
 		}
+		prMultiSel = vanity.OrMultiSelector(prefixes...)
 	}
 
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
-		predicates := make([]vanity.Predicate, 0)
-
-		if len(prefixes) != 0 {
-			predicates = append(predicates, vanity.MultPrefixPredicate{
-				Prefixes: prefixes,
-			})
-		} else {
-			predicates = append(predicates, vanity.PrefixPredicate{
-				Prefix: pr,
-			})
-		}
-
-		if c.Bool("no-digits") {
-			predicates = append(predicates, vanity.NoDigitPredicate{})
-		}
-
-		go vanity.Search(ch, rs, predicates)
+		go vanity.Search(ch, vanity.AndMultiSelector(noDigitsSel, prMultiSel), rs)
 	}
 	printAccountDetails(ch, <-rs)
 	return nil
-}
-
-func prependPrefix(ch core.Chain, pr string) string {
-	switch ch {
-	case core.Mijin:
-		pr = "M" + pr
-	case core.Mainnet:
-		pr = "N" + pr
-	case core.Testnet:
-		pr = "T" + pr
-	}
-	return pr
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
