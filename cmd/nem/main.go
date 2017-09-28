@@ -64,12 +64,6 @@ func main() {
 							EnvVar: "NEM_NO_DIGIT",
 							Usage:  "disallow digits in account",
 						},
-						cli.StringSliceFlag{
-							Name:   "any-pos",
-							Value:  nil,
-							EnvVar: "NEM_ANY_POS",
-							Usage:  "list of prefixes for vanity search",
-						},
 					},
 				},
 			},
@@ -100,14 +94,13 @@ func vanityAction(c *cli.Context) error {
 	case 0:
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
 	case 1:
-		pr := strings.ToUpper(c.Args().First())
+		pr = strings.ToUpper(c.Args().First())
 		if !vanity.IsPrefixCorrect(pr) {
 			return cli.NewExitError("wrong args - invalid prefix format", 1)
 		}
 		pr = prependPrefix(ch, pr)
-
 	default:
-		for _, pr := range c.GlobalStringSlice("any-pos") {
+		for _, pr := range c.Args() {
 			if !vanity.IsPrefixCorrect(pr) {
 				return cli.NewExitError("wrong args - invalid prefix format", 1)
 			}
@@ -119,36 +112,18 @@ func vanityAction(c *cli.Context) error {
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
 		predicates := make([]vanity.Predicate, 0)
-		addr_ch := make(chan keypair.Address, 1)
-
 		if len(prefixes) != 0 {
-			predicates = append(predicates, vanity.Predicate{
-				F: func() bool {
-					addr := <-addr_ch
-					vanity.CheckMultPrefix(addr, prefixes)
-					return true
-				},
-				Addr_ch: addr_ch,
+			predicates = append(predicates, vanity.MultPrefixPredicate{
+				Prefixes: prefixes,
 			})
 		} else {
-			predicates = append(predicates, vanity.Predicate{
-				F: func() bool {
-					addr := <-addr_ch
-					vanity.CheckPrefix(addr, pr)
-					return true
-				},
-				Addr_ch: addr_ch,
+			predicates = append(predicates, vanity.PrefixPredicate{
+				Prefix: pr,
 			})
 		}
 
-		if c.GlobalBool("no-digits") {
-			predicates = append(predicates, vanity.Predicate{
-				F: func() bool {
-					addr := <-addr_ch
-					return vanity.CheckNoDigits(addr)
-				},
-				Addr_ch: addr_ch,
-			})
+		if c.Bool("no-digits") {
+			predicates = append(predicates, vanity.NoDigitPredicate{})
 		}
 
 		go vanity.Search(ch, rs, predicates)

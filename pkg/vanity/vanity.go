@@ -9,16 +9,39 @@ import (
 
 	"regexp"
 
-	"fmt"
-
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 )
 
-// Wrapper
-type Predicate struct {
-	F       func() bool
-	Addr_ch chan<- keypair.Address
+type Predicate interface {
+	call(addr keypair.Address) bool
+}
+
+type NoDigitPredicate struct{}
+
+type PrefixPredicate struct {
+	Prefix string
+}
+
+type MultPrefixPredicate struct {
+	Prefixes []string
+}
+
+func (nd NoDigitPredicate) call(addr keypair.Address) bool {
+	return !strings.ContainsAny(addr.String(), "2 3 4 5 6 7")
+}
+
+func (pr PrefixPredicate) call(addr keypair.Address) bool {
+	return checkPrefix(addr, pr.Prefix)
+}
+
+func (mpr MultPrefixPredicate) call(addr keypair.Address) bool {
+	for _, p := range mpr.Prefixes {
+		if checkPrefix(addr, p) {
+			return true
+		}
+	}
+	return false
 }
 
 // Search for account that satisfies for all predicates
@@ -27,8 +50,7 @@ func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate)
 		pair := keypair.Gen()
 		addr := pair.Address(chain)
 		for i, p := range predicates {
-			p.Addr_ch <- addr
-			if !p.F() {
+			if !p.call(addr) {
 				break
 			}
 
@@ -41,23 +63,8 @@ func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate)
 }
 
 // CheckPrefix checks if address satisfies prefix
-func CheckPrefix(addr keypair.Address, prefix string) bool {
+func checkPrefix(addr keypair.Address, prefix string) bool {
 	return strings.HasPrefix(addr.String(), prefix)
-}
-
-// CheckMultPrefix check is address satisfies any of prefixes
-func CheckMultPrefix(addr keypair.Address, prefixes []string) bool {
-	for _, p := range prefixes {
-		if CheckPrefix(addr, p) {
-			return true
-		}
-	}
-	return false
-}
-
-// CheckNoDigits check address for any digit
-func CheckNoDigits(addr keypair.Address) bool {
-	return !strings.ContainsAny(addr.String(), "2 3 4 5 6 7")
 }
 
 func IsPrefixCorrect(prefix string) bool {
