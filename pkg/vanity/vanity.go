@@ -9,67 +9,108 @@ import (
 
 	"regexp"
 
+	"fmt"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 )
 
-type Predicate interface {
-	call(addr keypair.Address) bool
+// Search for vanity account address that satisfies a given selector
+func Search(chain core.Chain, selector Selector, ch chan<- keypair.KeyPair) {
+	for {
+		pair := keypair.Gen()
+		if !selector.Pass(pair.Address(chain)) {
+			continue
+		}
+		ch <- pair
+		return
+	}
 }
 
-// NoDigitPredicate checks account for absence of digits
-type NoDigitPredicate struct{}
+// Selector defines generic search strategy
+type Selector interface {
+	// Pass checks address by a given search pattern
+	Pass(addr keypair.Address) bool
+}
 
-// PrefixPredicate checks account for selected prefix
-type PrefixPredicate struct {
+// FalseSelector rejects all addresses and can be used as a default placeholder
+type FalseSelector struct{}
+
+// TrueSelector accepts all addresses and can be used as a default placeholder
+type TrueSelector struct{}
+
+// NoDigitSelector checks an address for absence of digits
+type NoDigitSelector struct{}
+
+// PrefixSelector checks an address by given prefix
+type PrefixSelector struct {
+	// Prefix determines a required address prefix to search
 	Prefix string
 }
 
-// MultPrefixPredicate checks account for any of specified prefixes
-type MultPrefixPredicate struct {
-	Prefixes []string
+// PrefixSelectorFrom creates a new prefix selector from given string
+func PrefixSelectorFrom(ch core.Chain, prefix string) (PrefixSelector, error) {
+	if !isPrefixCorrect(ch, prefix) {
+		return PrefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
+	}
+	return PrefixSelector{prefix}, nil
 }
 
-func (nd NoDigitPredicate) call(addr keypair.Address) bool {
-	return !strings.ContainsAny(addr.String(), "2 3 4 5 6 7")
+func (FalseSelector) Pass(addr keypair.Address) bool {
+	return false
 }
 
-func (pr PrefixPredicate) call(addr keypair.Address) bool {
-	return checkPrefix(addr, pr.Prefix)
+func (TrueSelector) Pass(addr keypair.Address) bool {
+	return true
 }
 
-func (mpr MultPrefixPredicate) call(addr keypair.Address) bool {
-	for _, p := range mpr.Prefixes {
-		if checkPrefix(addr, p) {
+func (NoDigitSelector) Pass(addr keypair.Address) bool {
+	return !strings.ContainsAny(addr.String(), "234567")
+}
+
+func (pr PrefixSelector) Pass(addr keypair.Address) bool {
+	return strings.HasPrefix(addr.String(), pr.Prefix)
+}
+
+// AndMultiSelector combines several selectors into a sequential multi selector chain (`AND` logic)
+func AndMultiSelector(selectors ...Selector) Selector {
+	return seqMultiSelector{selectors}
+}
+
+// OrMultiSelector combines several selectors into a parallel multi selector chain (`OR` logic)
+func OrMultiSelector(selectors ...Selector) Selector {
+	return parMultiSelector{selectors}
+}
+
+// seqMultiSelector allows multiple selectors to be combined into a sequential multi selector chain (`AND` logic)
+type seqMultiSelector struct {
+	items []Selector
+}
+
+// parMultiSelector allows multiple selectors to be combined into a parallel multi selector chain (`OR` logic)
+type parMultiSelector struct {
+	items []Selector
+}
+
+func (sel seqMultiSelector) Pass(addr keypair.Address) bool {
+	for _, it := range sel.items {
+		if !it.Pass(addr) {
+			return false
+		}
+	}
+	return true
+}
+
+func (sel parMultiSelector) Pass(addr keypair.Address) bool {
+	for _, it := range sel.items {
+		if it.Pass(addr) {
 			return true
 		}
 	}
 	return false
 }
 
-// Search for account that satisfies for all predicates
-func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate) {
-	for {
-		pair := keypair.Gen()
-		addr := pair.Address(chain)
-		for i, p := range predicates {
-			if !p.call(addr) {
-				break
-			}
-
-			if i == len(predicates)-1 {
-				ch <- pair
-				return
-			}
-		}
-	}
-}
-
-func checkPrefix(addr keypair.Address, prefix string) bool {
-	return strings.HasPrefix(addr.String(), prefix)
-}
-
 // IsPrefixCorrect verify that prefix can be used
-func IsPrefixCorrect(prefix string) bool {
-	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix)
+func isPrefixCorrect(ch core.Chain, prefix string) bool {
+	return regexp.MustCompile(fmt.Sprintf("^%v[A-D][A-Z2-7]*$", ch.ChainPrefix())).MatchString(prefix)
 }

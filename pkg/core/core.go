@@ -15,3 +15,16 @@ var (
 	Mainnet = Chain{byte(0x68)}
 	Testnet = Chain{byte(0x98)}
 )
+
+// ChainPrefix returns unique chain prefix
+func (ch Chain) ChainPrefix() string {
+	switch ch {
+	case Mijin:
+		return "M"
+	case Mainnet:
+		return "N"
+	case Testnet:
+		return "T"
+	}
+	panic("unknown chain")
+}
