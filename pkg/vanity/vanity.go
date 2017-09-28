@@ -7,32 +7,59 @@ package vanity
 import (
 	"strings"
 
-	"fmt"
-
 	"regexp"
+
+	"fmt"
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 )
 
-// FindByPrefix looking for the address in accordance with the given prefix
-func FindByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
-	if !isPrefixCorrect(prefix) {
-		panic(fmt.Sprintf("incorrect prefix '%v'", prefix))
-	}
+// Wrapper
+type Predicate struct {
+	F       func() bool
+	Addr_ch chan<- keypair.Address
+}
+
+// Search for account that satisfies for all predicates
+func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate) {
 	for {
 		pair := keypair.Gen()
-		if checkByPrefix(chain, pair, prefix) {
-			ch <- pair
-			break
+		addr := pair.Address(chain)
+		for i, p := range predicates {
+			p.Addr_ch <- addr
+			if !p.F() {
+				break
+			}
+
+			if i == len(predicates)-1 {
+				ch <- pair
+				return
+			}
 		}
 	}
 }
 
-func checkByPrefix(chain core.Chain, pair keypair.KeyPair, prefix string) bool {
-	return strings.HasPrefix(pair.Address(chain).String(), prefix)
+// CheckPrefix checks if address satisfies prefix
+func CheckPrefix(addr keypair.Address, prefix string) bool {
+	return strings.HasPrefix(addr.String(), prefix)
 }
 
-func isPrefixCorrect(prefix string) bool {
-	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix[1:])
+// CheckMultPrefix check is address satisfies any of prefixes
+func CheckMultPrefix(addr keypair.Address, prefixes []string) bool {
+	for _, p := range prefixes {
+		if CheckPrefix(addr, p) {
+			return true
+		}
+	}
+	return false
+}
+
+// CheckNoDigits check address for any digit
+func CheckNoDigits(addr keypair.Address) bool {
+	return !strings.ContainsAny(addr.String(), "2 3 4 5 6 7")
+}
+
+func IsPrefixCorrect(prefix string) bool {
+	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix)
 }

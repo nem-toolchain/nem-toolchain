@@ -58,6 +58,19 @@ func main() {
 					Name:   "vanity",
 					Usage:  "Find vanity address by given prefix",
 					Action: vanityAction,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:   "no-digits",
+							EnvVar: "NEM_NO_DIGIT",
+							Usage:  "disallow digits in account",
+						},
+						cli.StringSliceFlag{
+							Name:   "any-pos",
+							Value:  nil,
+							EnvVar: "NEM_ANY_POS",
+							Usage:  "list of prefixes for vanity search",
+						},
+					},
 				},
 			},
 		},
@@ -80,10 +93,71 @@ func vanityAction(c *cli.Context) error {
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
-	if len(c.Args()) != 1 {
+
+	var pr string
+	var prefixes []string
+	switch len(c.Args()) {
+	case 0:
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
+	case 1:
+		pr := strings.ToUpper(c.Args().First())
+		if !vanity.IsPrefixCorrect(pr) {
+			return cli.NewExitError("wrong args - invalid prefix format", 1)
+		}
+		pr = prependPrefix(ch, pr)
+
+	default:
+		for _, pr := range c.GlobalStringSlice("any-pos") {
+			if !vanity.IsPrefixCorrect(pr) {
+				return cli.NewExitError("wrong args - invalid prefix format", 1)
+			}
+			pr = prependPrefix(ch, pr)
+			prefixes = append(prefixes, pr)
+		}
 	}
-	pr := strings.ToUpper(c.Args().First())
+
+	rs := make(chan keypair.KeyPair)
+	for i := 0; i < runtime.NumCPU(); i++ {
+		predicates := make([]vanity.Predicate, 0)
+		addr_ch := make(chan keypair.Address, 1)
+
+		if len(prefixes) != 0 {
+			predicates = append(predicates, vanity.Predicate{
+				F: func() bool {
+					addr := <-addr_ch
+					vanity.CheckMultPrefix(addr, prefixes)
+					return true
+				},
+				Addr_ch: addr_ch,
+			})
+		} else {
+			predicates = append(predicates, vanity.Predicate{
+				F: func() bool {
+					addr := <-addr_ch
+					vanity.CheckPrefix(addr, pr)
+					return true
+				},
+				Addr_ch: addr_ch,
+			})
+		}
+
+		if c.GlobalBool("no-digits") {
+			predicates = append(predicates, vanity.Predicate{
+				F: func() bool {
+					addr := <-addr_ch
+					return vanity.CheckNoDigits(addr)
+				},
+				Addr_ch: addr_ch,
+			})
+		}
+
+		go vanity.Search(ch, rs, predicates)
+	}
+	printAccountDetails(ch, <-rs)
+	return nil
+}
+
+func prependPrefix(ch core.Chain, pr string) string {
 	switch ch {
 	case core.Mijin:
 		pr = "M" + pr
@@ -92,12 +166,7 @@ func vanityAction(c *cli.Context) error {
 	case core.Testnet:
 		pr = "T" + pr
 	}
-	rs := make(chan keypair.KeyPair)
-	for i := 0; i < runtime.NumCPU(); i++ {
-		go vanity.FindByPrefix(ch, pr, rs)
-	}
-	printAccountDetails(ch, <-rs)
-	return nil
+	return pr
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
