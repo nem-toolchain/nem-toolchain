@@ -7,32 +7,69 @@ package vanity
 import (
 	"strings"
 
-	"fmt"
-
 	"regexp"
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 )
 
-// FindByPrefix looking for the address in accordance with the given prefix
-func FindByPrefix(chain core.Chain, prefix string, ch chan<- keypair.KeyPair) {
-	if !isPrefixCorrect(prefix) {
-		panic(fmt.Sprintf("incorrect prefix '%v'", prefix))
+type Predicate interface {
+	call(addr keypair.Address) bool
+}
+
+// NoDigitPredicate checks account for absence of digits
+type NoDigitPredicate struct{}
+
+// PrefixPredicate checks account for selected prefix
+type PrefixPredicate struct {
+	Prefix string
+}
+
+// MultPrefixPredicate checks account for any of specified prefixes
+type MultPrefixPredicate struct {
+	Prefixes []string
+}
+
+func (nd NoDigitPredicate) call(addr keypair.Address) bool {
+	return !strings.ContainsAny(addr.String(), "2 3 4 5 6 7")
+}
+
+func (pr PrefixPredicate) call(addr keypair.Address) bool {
+	return checkPrefix(addr, pr.Prefix)
+}
+
+func (mpr MultPrefixPredicate) call(addr keypair.Address) bool {
+	for _, p := range mpr.Prefixes {
+		if checkPrefix(addr, p) {
+			return true
+		}
 	}
+	return false
+}
+
+// Search for account that satisfies for all predicates
+func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate) {
 	for {
 		pair := keypair.Gen()
-		if checkByPrefix(chain, pair, prefix) {
-			ch <- pair
-			break
+		addr := pair.Address(chain)
+		for i, p := range predicates {
+			if !p.call(addr) {
+				break
+			}
+
+			if i == len(predicates)-1 {
+				ch <- pair
+				return
+			}
 		}
 	}
 }
 
-func checkByPrefix(chain core.Chain, pair keypair.KeyPair, prefix string) bool {
-	return strings.HasPrefix(pair.Address(chain).String(), prefix)
+func checkPrefix(addr keypair.Address, prefix string) bool {
+	return strings.HasPrefix(addr.String(), prefix)
 }
 
-func isPrefixCorrect(prefix string) bool {
-	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix[1:])
+// IsPrefixCorrect verify that prefix can be used
+func IsPrefixCorrect(prefix string) bool {
+	return regexp.MustCompile("^[A-D][A-Z2-7]*$").MatchString(prefix)
 }
