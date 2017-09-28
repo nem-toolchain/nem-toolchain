@@ -65,7 +65,6 @@ func Search(chain core.Chain, ch chan<- keypair.KeyPair, predicates []Predicate)
 	}
 }
 
-
 func checkPrefix(addr keypair.Address, prefix string) bool {
 	return strings.HasPrefix(addr.String(), prefix)
 }

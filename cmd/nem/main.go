@@ -90,7 +90,7 @@ func vanityAction(c *cli.Context) error {
 
 	var pr string
 	var prefixes []string
-	switch c.Args() {
+	switch len(c.Args()) {
 	case 0:
 		return cli.NewExitError("wrong args - prefix is not specified", 1)
 	case 1:
