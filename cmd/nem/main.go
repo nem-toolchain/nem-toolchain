@@ -134,14 +134,10 @@ func vanityAction(c *cli.Context) error {
 	run()
 	if count > 0 {
 		for i := uint64(0); i < count; {
-			select {
-			case pair := <-rs:
-				pairs = append(pairs, pair)
-				i++
-				if uint64(len(pairs)) == count {
-					break
-				}
-			default:
+			pairs = append(pairs, <-rs)
+			i++
+
+			if i != 0 && i%uint64(runtime.NumCPU()) == 0 {
 				run()
 			}
 		}
