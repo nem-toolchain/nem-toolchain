@@ -33,10 +33,10 @@ type Selector interface {
 	Pass(addr keypair.Address) bool
 }
 
-// FalseSelector rejects all addresses and can be used as a default placeholder
+// FalseSelector rejects all addresses, can be used as a default placeholder
 type FalseSelector struct{}
 
-// TrueSelector accepts all addresses and can be used as a default placeholder
+// TrueSelector accepts all addresses, can be used as a default placeholder
 type TrueSelector struct{}
 
 // NoDigitSelector checks an address for absence of digits
@@ -56,18 +56,22 @@ func PrefixSelectorFrom(ch core.Chain, prefix string) (PrefixSelector, error) {
 	return PrefixSelector{prefix}, nil
 }
 
+// Pass always returns false
 func (FalseSelector) Pass(addr keypair.Address) bool {
 	return false
 }
 
+// Pass always returns true
 func (TrueSelector) Pass(addr keypair.Address) bool {
 	return true
 }
 
+// Pass returns true only if address doesn't contain any digits
 func (NoDigitSelector) Pass(addr keypair.Address) bool {
 	return !strings.ContainsAny(addr.String(), "234567")
 }
 
+// Pass returns true only if address has a given prefix
 func (pr PrefixSelector) Pass(addr keypair.Address) bool {
 	return strings.HasPrefix(addr.String(), pr.Prefix)
 }
@@ -112,5 +116,6 @@ func (sel parMultiSelector) Pass(addr keypair.Address) bool {
 
 // IsPrefixCorrect verify that prefix can be used
 func isPrefixCorrect(ch core.Chain, prefix string) bool {
-	return regexp.MustCompile(fmt.Sprintf("^%v[A-D][A-Z2-7]*$", ch.ChainPrefix())).MatchString(prefix)
+	str := fmt.Sprintf("^%v[A-D][A-Z2-7]*$", ch.ChainPrefix())
+	return regexp.MustCompile(str).MatchString(prefix)
 }
