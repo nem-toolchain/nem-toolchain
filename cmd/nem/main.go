@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"encoding/hex"
 
@@ -14,8 +15,9 @@ import (
 
 	"strings"
 
+	"math"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
-	"github.com/r8d8/nem-toolchain/pkg/domain"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
@@ -78,7 +80,7 @@ func main() {
 						},
 						cli.BoolFlag{
 							Name:  "skip-estimate",
-							Usage: "skip estimation on accounts calculation rate",
+							Usage: "Skip the step to calculate estimation times to search",
 						},
 					},
 				},
@@ -109,12 +111,6 @@ func vanityAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	var rate uint
-	if !c.Bool("skip-estimate") {
-		rate = domain.EstimateRate(3.0)
-		fmt.Printf("Estimated calculation rate - %v accounts/sec\n", rate)
-	}
-
 	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
 	if c.Bool("no-digits") {
 		noDigitsSel = vanity.NoDigitSelector{}
@@ -135,6 +131,19 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
+	if !c.Bool("skip-estimate") {
+		fmt.Print("Calculate actual rate")
+		ticker := time.NewTicker(time.Second)
+		go func() {
+			for range ticker.C {
+				fmt.Print(".")
+			}
+		}()
+		rate := float64(countKeyPairs(3500)*runtime.NumCPU()) / 3.5
+		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+		ticker.Stop()
+	}
+
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go vanity.Search(ch, sel, rs)
@@ -147,6 +156,19 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	return nil
+}
+
+func countKeyPairs(milliseconds time.Duration) int {
+	timeout := time.After(time.Millisecond * milliseconds)
+	for count := 0; ; count++ {
+		keypair.Gen().Address(core.Mainnet)
+		select {
+		case <-timeout:
+			return count
+		default:
+			continue
+		}
+	}
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
