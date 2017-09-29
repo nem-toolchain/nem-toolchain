@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/r8d8/nem-toolchain/pkg/domain"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
@@ -75,6 +76,10 @@ func main() {
 							Name:  "no-digits",
 							Usage: "Digits in address are disallow",
 						},
+						cli.BoolFlag{
+							Name:  "skip-estimate",
+							Usage: "skip estimation on accounts calculation rate",
+						},
 					},
 				},
 			},
@@ -102,6 +107,12 @@ func vanityAction(c *cli.Context) error {
 	ch, err := chainGlobalOption(c)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
+	}
+
+	var rate uint
+	if !c.Bool("skip-estimate") {
+		rate = domain.EstimateRate(3.0)
+		fmt.Printf("Estimated calculation rate - %v accounts/sec\n", rate)
 	}
 
 	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
