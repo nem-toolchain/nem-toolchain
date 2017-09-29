@@ -133,7 +133,7 @@ func vanityAction(c *cli.Context) error {
 		fmt.Print("Calculate actual rate")
 		ticker := time.NewTicker(time.Second)
 		go func() {
-			for _ := range ticker.C {
+			for range ticker.C {
 				fmt.Print(".")
 			}
 		}()
