@@ -1,15 +1,20 @@
-# ![Logo](assets/logo_64.png) nem-toolchain
+<p align="center">
+  <img alt="Nem Toolchain Logo" src="assets/logo.png" height="128" />
+  <h3 align="center">nem-toolchain</h3>
+  <p align="center">Command line toolchain for <a href=https://nem.io>Nem blockchain</a>.</p>
+  <p align="center">
+    <a href="https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img alt="Join the chat at https://gitter.im/nem-toolchain/Lobby" src="https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square"></a>
+    <a href="https://github.com/r8d8/nem-toolchain/releases/latest"><img alt="Release" src="https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square"></a>
+    <a href="https://circleci.com/gh/r8d8/nem-toolchain"><img alt="CircleCI" src="https://img.shields.io/circleci/project/github/r8d8/nem-toolchain.svg?style=flat-square"></a>
+    <a href="https://travis-ci.org/r8d8/nem-toolchain"><img alt="Travis" src="https://img.shields.io/travis/r8d8/nem-toolchain.svg?style=flat-square"></a>
+    <a href="https://codecov.io/gh/r8d8/nem-toolchain"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/r8d8/nem-toolchain/master.svg?style=flat-square"></a>
+    <a href="http://godoc.org/github.com/r8d8/nem-toolchain"><img alt="Go Doc" src="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square"></a>
+    <a href="https://goreportcard.com/report/github.com/r8d8/nem-toolchain"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square"></a>
+    <a href="LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square"></a>
+  </p>
+</p>
 
-[![Join the chat at https://gitter.im/nem-toolchain/Lobby](https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square)](https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Release](https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square)](https://github.com/r8d8/nem-toolchain/releases/latest)
-[![CircleCI](https://img.shields.io/circleci/project/github/r8d8/nem-toolchain.svg?style=flat-square)](https://circleci.com/gh/r8d8/nem-toolchain)
-[![Travis](https://img.shields.io/travis/r8d8/nem-toolchain.svg?style=flat-square)](https://travis-ci.org/r8d8/nem-toolchain)
-[![Coverage Status](https://img.shields.io/codecov/c/github/r8d8/nem-toolchain/master.svg?style=flat-square)](https://codecov.io/gh/r8d8/nem-toolchain)
-[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/r8d8/nem-toolchain)
-[![Go Report Card](https://goreportcard.com/badge/github.com/r8d8/nem-toolchain?style=flat-square)](https://goreportcard.com/report/github.com/r8d8/nem-toolchain)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-
-Command line toolchain for [NEM blockchain](https://nem.io).
+---
 
 ## Prerequisites
 
