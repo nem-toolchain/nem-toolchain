@@ -145,6 +145,8 @@ func vanityAction(c *cli.Context) error {
 				run()
 			}
 		}
+	} else {
+		pairs = append(pairs, <-rs)
 	}
 
 	printAccountDetails(ch, pairs...)
@@ -171,5 +173,6 @@ func printAccountDetails(chain core.Chain, pairs ...keypair.KeyPair) {
 		fmt.Println("Address:", pair.Address(chain).PrettyString())
 		fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 		fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+		fmt.Printf("\n")
 	}
 }
