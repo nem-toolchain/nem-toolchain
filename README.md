@@ -98,6 +98,10 @@ Important notes:
 * [How to contribute](CONTRIBUTING.md)
 * [How to get support](SUPPORT.md)
 
+## Donations
+
+Our NEM address: `NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`
+
 ## Thanks to
 
 * [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea) free open-source license.
