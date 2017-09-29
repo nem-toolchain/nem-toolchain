@@ -4,7 +4,7 @@
 // Package core contains core domain model.
 package core
 
-// Chain is the type of Nem chain.
+// Chain is the type of NEM chain.
 type Chain struct {
 	Id byte
 }

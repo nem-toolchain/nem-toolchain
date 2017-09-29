@@ -1,7 +1,7 @@
 <p align="center">
-  <img alt="Nem Toolchain Logo" src="assets/logo.png" height="128" />
+  <img alt="nem-toolchain logo" src="assets/logo.png" height="128" />
   <h3 align="center">nem-toolchain</h3>
-  <p align="center">Command line toolchain for <a href=https://nem.io>Nem blockchain</a>.</p>
+  <p align="center">Command line toolchain for <a href=https://nem.io>NEM blockchain</a>.</p>
   <p align="center">
     <a href="https://gitter.im/nem-toolchain/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img alt="Join the chat at https://gitter.im/nem-toolchain/Lobby" src="https://img.shields.io/gitter/room/badges/shields.svg?style=flat-square"></a>
     <a href="https://github.com/r8d8/nem-toolchain/releases/latest"><img alt="Release" src="https://img.shields.io/github/release/r8d8/nem-toolchain.svg?style=flat-square"></a>
