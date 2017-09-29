@@ -32,7 +32,7 @@ var (
 func main() {
 	app := cli.NewApp()
 	app.Name = "nem"
-	app.Usage = "command-line toolchain for Nem blockchain"
+	app.Usage = "command-line toolchain for NEM blockchain"
 	app.Version = fmt.Sprintf("%v (%v / %v)", Version, CommitHash, BuildTime)
 
 	app.Flags = []cli.Flag{
