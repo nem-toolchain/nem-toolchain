@@ -1,8 +1,7 @@
 # How to contribute
 
-If you would like to contribute code you can do so through GitHub by forking the repository and
-open a pull request against the master branch.
-
+If you would like to contribute code you can do so through GitHub by forking the
+repository and open a pull request against the master branch.
 Additionally please note [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## How to build
