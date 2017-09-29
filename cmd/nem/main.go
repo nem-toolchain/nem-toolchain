@@ -15,6 +15,8 @@ import (
 
 	"strings"
 
+	"math"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
@@ -137,7 +139,8 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		fmt.Printf(" %v accounts/sec\n", countKeyPairs(3)*runtime.NumCPU()/3)
+		rate := float64(countKeyPairs(3500)*runtime.NumCPU()) / 3.5
+		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 		ticker.Stop()
 	}
 
@@ -155,8 +158,8 @@ func vanityAction(c *cli.Context) error {
 	return nil
 }
 
-func countKeyPairs(seconds time.Duration) int {
-	timeout := time.After(time.Second * seconds)
+func countKeyPairs(milliseconds time.Duration) int {
+	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
 		keypair.Gen().Address(core.Mainnet)
 		select {
