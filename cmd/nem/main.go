@@ -48,6 +48,12 @@ func main() {
 		{
 			Name:  "account",
 			Usage: "Account related bundle of actions",
+			Flags: []cli.Flag{
+				cli.Uint64Flag{
+					Name:  "n",
+					Usage: "Number of generated accounts",
+				},
+			},
 			Subcommands: []cli.Command{
 				{
 					Name:   "generate",
@@ -77,7 +83,18 @@ func generateAction(c *cli.Context) error {
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
-	printAccountDetails(ch, keypair.Gen())
+
+	pairs := make([]keypair.KeyPair, 0)
+	count := c.GlobalUint64("n")
+	if count > 0 {
+		for i := uint64(0); i < count; i++ {
+			pairs = append(pairs, keypair.Gen())
+		}
+	} else {
+		pairs = append(pairs, keypair.Gen())
+	}
+
+	printAccountDetails(ch, pairs...)
 	return nil
 }
 
@@ -106,10 +123,29 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	rs := make(chan keypair.KeyPair)
-	for i := 0; i < runtime.NumCPU(); i++ {
-		go vanity.Search(ch, vanity.AndMultiSelector(noDigitsSel, prMultiSel), rs)
+	pairs := make([]keypair.KeyPair, 0)
+	count := c.GlobalUint64("n")
+	run := func() {
+		for i := 0; i < runtime.NumCPU(); i++ {
+			go vanity.Search(ch, vanity.AndMultiSelector(noDigitsSel, prMultiSel), rs)
+		}
 	}
-	printAccountDetails(ch, <-rs)
+
+	run()
+	if count > 0 {
+		for i := uint64(0); i < count; {
+			pairs = append(pairs, <-rs)
+			i++
+
+			if i != 0 && i%uint64(runtime.NumCPU()) == 0 {
+				run()
+			}
+		}
+	} else {
+		pairs = append(pairs, <-rs)
+	}
+
+	printAccountDetails(ch, pairs...)
 	return nil
 }
 
@@ -128,8 +164,11 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
-	fmt.Println("Address:", pair.Address(chain).PrettyString())
-	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
-	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+func printAccountDetails(chain core.Chain, pairs ...keypair.KeyPair) {
+	for _, pair := range pairs {
+		fmt.Println("Address:", pair.Address(chain).PrettyString())
+		fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+		fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+		fmt.Printf("\n")
+	}
 }

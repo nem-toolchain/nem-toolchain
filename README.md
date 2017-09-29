@@ -54,6 +54,20 @@ Instead of option you can specify the desired network via environment variables:
 ...
 ```
 
+How to create multiple accounts:
+
+```
+> nem --chain testnet account -n 2 generate
+Address: NAU6YK-24PNZX-ADXUPG-56BXUV-II4XYO-52JXAN-47UV
+Public key: aef0136c2b99a08475ad8ec3b4bb56410d034f02053674531514501d3f6975fc
+Private key: ddd749e79a22d6a79fd551cbedcf99a5160f8dd5984445daccb1a1fbf9b77ea6
+
+Address: NAQZWC-ZUDCZ5-4IRKJN-WXJ76C-HLFSP5-RWYCXN-XJCZ
+Public key: 77717697183da6fa770400c8b7187cc7bdeb098dcd6c539f0d7c08d822cb44c8
+Private key: fdd38df995c7fbb7b3de12613a5578f26bbe625333b538401dac4c24bab8b6f5
+
+```
+
 ### Vanity addresses
 
 How to find vanity address with predefined prefix `TCGQQK` for testnet:
@@ -63,6 +77,20 @@ How to find vanity address with predefined prefix `TCGQQK` for testnet:
 Address: TCGQQK-N5HED6-6OQ67Z-2F7GGW-Z66DWV-BFJUW6-F5WC
 Public key: c342dbf7cdd3096c4c3910c511a57049e62847dd5030c7e644bc855acc1fd626
 Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002
+```
+
+How to find multiple vanity address with predefined prefix `TCGQQK` for testnet:
+
+```
+> nem --chain testnet account -n 2 vanity TCGQQK
+Address: TCGQQK-JSRLPR-5HMQ4U-VX4VIS-EBICPN-6YWC3P-5HQR
+Public key: 7c5ccf5fb622c191a40611968d7a17eb563a34e89239522a398798bbc0862e1e
+Private key: 7fd8acd0ab9fdb8d2727e7a8cfee87ad166f642c6fdf6c566cd0516c482a372d
+
+Address: TCGQQK-P4KVPB-MFYNJT-CE3ZUG-4TMASW-2UAKXF-7H5G
+Public key: c841742c97f9d670602c78b2538468986a9f399c90fa28b87c13b5169b20455d
+Private key: edcba382481a4f0b5ab3e77bb3fc1d53496fe8dca39ed2ec7798e6cb2238070f
+
 ```
 
 If you would like to search for multiple prefixes at the same time and without digits at all:
