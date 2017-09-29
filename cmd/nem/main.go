@@ -14,6 +14,8 @@ import (
 
 	"strings"
 
+	"time"
+
 	"github.com/r8d8/nem-toolchain/pkg/core"
 	"github.com/r8d8/nem-toolchain/pkg/keypair"
 	"github.com/r8d8/nem-toolchain/pkg/vanity"
@@ -75,6 +77,11 @@ func main() {
 							Name:  "no-digits",
 							Usage: "Digits in address are disallow",
 						},
+						cli.BoolFlag{
+							Name:   "skip-estimate",
+							EnvVar: "NEM_SKIP_ESTIMATE",
+							Usage:  "skip estimation on accounts calculation rate",
+						},
 					},
 				},
 			},
@@ -102,6 +109,12 @@ func vanityAction(c *cli.Context) error {
 	ch, err := chainGlobalOption(c)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
+	}
+
+	var account_rate uint64
+	if !c.Bool("skip-estimate") {
+		account_rate = estimateRate()
+		fmt.Printf("Estimated calculation rate - %v account/sec\n", account_rate)
 	}
 
 	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
@@ -158,4 +171,19 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 	fmt.Println()
+}
+
+// Estimates search rate in `account/sec`
+func estimateRate() uint64 {
+	test_time := 3.0
+	start := time.Now()
+	count := 0
+
+	for time.Since(start).Seconds() <= test_time {
+		keypair.Gen().Address(core.Testnet)
+		count++
+	}
+
+	rate := count / int(test_time)
+	return uint64(rate * runtime.NumCPU())
 }
