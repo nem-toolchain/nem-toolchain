@@ -48,23 +48,29 @@ func main() {
 		{
 			Name:  "account",
 			Usage: "Account related bundle of actions",
-			Flags: []cli.Flag{
-				cli.Uint64Flag{
-					Name:  "n",
-					Usage: "Number of generated accounts",
-				},
-			},
 			Subcommands: []cli.Command{
 				{
 					Name:   "generate",
 					Usage:  "Generate a new account",
 					Action: generateAction,
+					Flags: []cli.Flag{
+						cli.UintFlag{
+							Name:  "number, n",
+							Usage: "Number of generated accounts",
+							Value: 1,
+						},
+					},
 				},
 				{
 					Name:   "vanity",
 					Usage:  "Find vanity address by a given list of prefixes",
 					Action: vanityAction,
 					Flags: []cli.Flag{
+						cli.UintFlag{
+							Name:  "number, n",
+							Usage: "Number of generated accounts",
+							Value: 1,
+						},
 						cli.BoolFlag{
 							Name:  "no-digits",
 							Usage: "Digits in address are disallow",
@@ -84,17 +90,11 @@ func generateAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	pairs := make([]keypair.KeyPair, 0)
-	count := c.GlobalUint64("n")
-	if count > 0 {
-		for i := uint64(0); i < count; i++ {
-			pairs = append(pairs, keypair.Gen())
-		}
-	} else {
-		pairs = append(pairs, keypair.Gen())
+	num := c.Uint("number")
+	for i := uint(0); i < num; i++ {
+		printAccountDetails(ch, keypair.Gen())
 	}
 
-	printAccountDetails(ch, pairs...)
 	return nil
 }
 
@@ -113,7 +113,7 @@ func vanityAction(c *cli.Context) error {
 	if len(c.Args()) != 0 {
 		prefixes := make([]vanity.Selector, len(c.Args()))
 		for i, pr := range c.Args() {
-			sel, err := vanity.PrefixSelectorFrom(ch, strings.ToUpper(pr))
+			sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
 			}
@@ -122,30 +122,19 @@ func vanityAction(c *cli.Context) error {
 		prMultiSel = vanity.OrMultiSelector(prefixes...)
 	}
 
+	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
+
 	rs := make(chan keypair.KeyPair)
-	pairs := make([]keypair.KeyPair, 0)
-	count := c.GlobalUint64("n")
-	run := func() {
-		for i := 0; i < runtime.NumCPU(); i++ {
-			go vanity.Search(ch, vanity.AndMultiSelector(noDigitsSel, prMultiSel), rs)
-		}
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go vanity.Search(ch, sel, rs)
 	}
 
-	run()
-	if count > 0 {
-		for i := uint64(0); i < count; {
-			pairs = append(pairs, <-rs)
-			i++
-
-			if i != 0 && i%uint64(runtime.NumCPU()) == 0 {
-				run()
-			}
-		}
-	} else {
-		pairs = append(pairs, <-rs)
+	num := c.Uint("number")
+	for i := uint(0); i < num; i++ {
+		printAccountDetails(ch, <-rs)
+		go vanity.Search(ch, sel, rs)
 	}
 
-	printAccountDetails(ch, pairs...)
 	return nil
 }
 
@@ -164,11 +153,9 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-func printAccountDetails(chain core.Chain, pairs ...keypair.KeyPair) {
-	for _, pair := range pairs {
-		fmt.Println("Address:", pair.Address(chain).PrettyString())
-		fmt.Println("Public key:", hex.EncodeToString(pair.Public))
-		fmt.Println("Private key:", hex.EncodeToString(pair.Private))
-		fmt.Printf("\n")
-	}
+func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
+	fmt.Println("Address:", pair.Address(chain).PrettyString())
+	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+	fmt.Println()
 }

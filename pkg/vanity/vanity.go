@@ -48,8 +48,8 @@ type PrefixSelector struct {
 	Prefix string
 }
 
-// PrefixSelectorFrom creates a new prefix selector from given string
-func PrefixSelectorFrom(ch core.Chain, prefix string) (PrefixSelector, error) {
+// NewPrefixSelector creates a new prefix selector from given string
+func NewPrefixSelector(ch core.Chain, prefix string) (PrefixSelector, error) {
 	if !isPrefixCorrect(ch, prefix) {
 		return PrefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
 	}

@@ -19,4 +19,4 @@ of the nem-toolchain project may take action, removing issues, comments,
 and PRs or blocking accounts as deemed appropriate.
 
 If you are subject to or witness unacceptable behavior, or have any other concerns,
-please email us at [ckryvomaz@gmail.com](mailto:ckryvomaz@gmail.com).
+please email our team privately at [ckryvomaz@gmail.com](mailto:ckryvomaz@gmail.com).
