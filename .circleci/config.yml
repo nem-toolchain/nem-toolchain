@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/r8d8/nem-toolchain
+    working_directory: /go/src/github.com/nem-toolchain/nem-toolchain
     steps:
       - checkout
       - run: make setup
@@ -13,7 +13,7 @@ jobs:
   deploy:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/r8d8/nem-toolchain
+    working_directory: /go/src/github.com/nem-toolchain/nem-toolchain
     enviroment:
       BUILD_DATE=$(date -u '+%Y/%m/%d %H:%M:%S')
       BUILD_VERSION=$(git describe --tags)
@@ -21,10 +21,7 @@ jobs:
       - checkout
       - run: mkdir -p dist
       - run: make setup
-      - run: go get github.com/tcnksm/ghr
-      - run: go get github.com/mitchellh/gox
-      - run: gox -ldflags "-X main.Version=$BUILD_VERSION -X main.BuildDate=$BUILD_DATE" -output="dist/nem_{{.OS}}_{{.Arch}}" ./cmd/nem/
-      - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace `git describe --tags` dist/
+      - run: curl -sL https://git.io/goreleaser | bash
 
 workflows:
   version: 2
@@ -41,4 +38,4 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
-              only: master
+              only: feature/init_deploy
