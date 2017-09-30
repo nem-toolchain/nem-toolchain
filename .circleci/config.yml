@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/r8d8/nem-toolchain
+    working_directory: /go/src/github.com/nem-toolchain/nem-toolchain
     steps:
       - checkout
       - run: make setup
