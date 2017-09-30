@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/nem-toolchain/nem-toolchain
     steps:
       - checkout
       - run: make setup
@@ -13,7 +13,7 @@ jobs:
   deploy:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/nem-toolchain/nem-toolchain
     enviroment:
       BUILD_DATE=$(date -u '+%Y/%m/%d %H:%M:%S')
       BUILD_VERSION=$(git describe --tags)
