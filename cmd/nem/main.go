@@ -131,28 +131,31 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
+	fmt.Printf("Specified complexity: %v\n", math.Trunc(1.0/vanity.Probability(sel)))
+
 	if !c.Bool("skip-estimate") {
-		fmt.Print("Calculate actual rate")
+		fmt.Print("Calculate rate")
 		ticker := time.NewTicker(time.Second)
 		go func() {
 			for range ticker.C {
 				fmt.Print(".")
 			}
 		}()
-		rate := float64(countKeyPairs(3500)*runtime.NumCPU()) / 3.5
-		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+		rate := float64(countKeyPairs(3200)*runtime.NumCPU()) / 3.2
 		ticker.Stop()
+		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+		fmt.Println()
 	}
 
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
-		go vanity.Search(ch, sel, rs)
+		go vanity.StartSearch(ch, sel, rs)
 	}
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		printAccountDetails(ch, <-rs)
-		go vanity.Search(ch, sel, rs)
+		go vanity.StartSearch(ch, sel, rs)
 	}
 
 	return nil
