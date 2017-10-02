@@ -23,20 +23,20 @@ import (
 	"github.com/urfave/cli"
 )
 
-// BuildTime stores build timestamp
-var BuildTime string
+// date stores build timestamp
+var date string
 
-// CommitHash stores actual commit hash
-var CommitHash string
+// commit stores actual commit hash
+var commit string
 
-// Version indicates actual version
-var Version string
+// version indicates actual version
+var version string
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "nem"
 	app.Usage = "command-line toolchain for NEM blockchain"
-	app.Version = fmt.Sprintf("%v (%v / %v)", Version, CommitHash, BuildTime)
+	app.Version = fmt.Sprintf("%v (%v / %v)", version, commit, date)
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
