@@ -9,10 +9,15 @@ builds:
       - amd64
 
 archive:
-  format: tar.gz
   replacements:
-    amd64: 64-bit
-    darwin: macOS
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+  format_overrides:
+    - goos: windows
+      format: zip
 
 snapshot:
   name_template: SNAPSHOT-{{.Commit}}
