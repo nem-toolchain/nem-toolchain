@@ -8,12 +8,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/nem-toolchain/nem-toolchain"
-  packages = ["pkg/core","pkg/keypair","pkg/vanity"]
-  revision = "87b9379c3ec8bc7cf1fbb39646a276670bb368b7"
-  version = "v111.111.114"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -41,6 +35,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f3d7bf41d547d86d17fcce89ea72dc57d57fa7e0eb5ddc667982e0d92be06b3a"
+  inputs-digest = "c8f4315b96713cfa271d58f994c8d2b3dce5797dec767c4689d90e7bbb631669"
   solver-name = "gps-cdcl"
   solver-version = 1
