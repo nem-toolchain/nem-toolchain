@@ -9,7 +9,7 @@ BINARY=bin
 BUILD_TIME=`date +%FT%T%z`
 COMMIT=`git log --pretty=format:'%h' -n 1`
 
-LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME} -X main.CommitHash=${COMMIT} -X main.Version=${BUILD_VERSION}"
+LDFLAGS=-ldflags "-X main.date=${BUILD_TIME} -X main.commit=${COMMIT} -X main.version=${BUILD_VERSION}"
 
 setup: ## Install all the build and lint dependencies
 	go get -u github.com/alecthomas/gometalinter
