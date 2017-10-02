@@ -82,6 +82,10 @@ func main() {
 							Name:  "skip-estimate",
 							Usage: "Skip the step to calculate estimation times to search",
 						},
+						cli.BoolFlag{
+							Name:  "show-complexity",
+							Usage: "Show additionally the specified search complexity",
+						},
 					},
 				},
 			},
@@ -132,8 +136,8 @@ func vanityAction(c *cli.Context) error {
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
 	if !c.Bool("skip-estimate") {
-		showAccountEstimate(vanity.Probability(sel))
-		println()
+		showAccountEstimate(vanity.Probability(sel), c.Bool("show-complexity"))
+		println("----")
 	}
 
 	rs := make(chan keypair.KeyPair)
@@ -143,8 +147,10 @@ func vanityAction(c *cli.Context) error {
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
+		if i != 0 {
+			println("----")
+		}
 		printAccountDetails(ch, <-rs)
-		println()
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
@@ -166,8 +172,8 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-func showAccountEstimate(probability float64) {
-	fmt.Print("Calculate rate")
+func showAccountEstimate(pbty float64, cxty bool) {
+	fmt.Print("Calculate accounts rate")
 	ticker := time.NewTicker(time.Second)
 	go func() {
 		for range ticker.C {
@@ -177,21 +183,23 @@ func showAccountEstimate(probability float64) {
 	rate := float64(countKeyPairs(3200)*runtime.NumCPU()) / 3.2
 	ticker.Stop()
 	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
-	fmt.Printf("Specified complexity: %v\n", math.Trunc(1.0/probability))
-	fmt.Printf("Estimate times: %.2f sec (50%%), %.2f sec (80%%), %.2f sec (99.9%%)\n",
-		estimateTime(probability, 0.5, rate),
-		estimateTime(probability, 0.8, rate),
-		estimateTime(probability, 0.99, rate))
-}
-
-func estimateTime(probability, precition, rate float64) float64 {
-	return math.Log(1-precition) / math.Log(1-probability) / rate
+	if cxty {
+		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
+	}
+	fmt.Printf("Estimate search times: %.2f sec (50%%), %.2f sec (80%%), %.2f sec (99.9%%)\n",
+		estimateTime(pbty, 0.5, rate),
+		estimateTime(pbty, 0.8, rate),
+		estimateTime(pbty, 0.99, rate))
 }
 
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+}
+
+func estimateTime(pbty, prec, rate float64) float64 {
+	return math.Log(1-prec) / math.Log(1-pbty) / rate
 }
 
 func countKeyPairs(milliseconds time.Duration) int {
