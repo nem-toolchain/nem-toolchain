@@ -10,11 +10,11 @@ jobs:
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
       - deploy:
-        name: Release
-        command: |
-          if [ -n "$CIRCLE_TAG" ]
-          then
-            curl -sL https://git.io/goreleaser | bash
-          else
-            echo "Not a release, just skip deploy step"
-          fi
+          name: Release
+          command: |
+            if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
+            then
+              curl -sL https://git.io/goreleaser | bash
+            else
+              echo "Not a release, skipping build"
+            fi
