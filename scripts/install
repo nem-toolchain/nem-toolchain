@@ -14,12 +14,11 @@ last_version() {
 
 test -z "$VERSION" && VERSION="$(last_version)"
 test -z "$VERSION" && {
-echo "Unable to get nem-toolchain version." >&2
-exit 1
+  echo "Unable to get nem-toolchain version." >&2
+  exit 1
 }
-
 rm -f "$TAR_FILE"
 curl -s -L -o "$TAR_FILE" \
-"$RELEASES_URL/download/$VERSION/nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
+  "$RELEASES_URL/download/$VERSION/nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
 tar -xf "$TAR_FILE" -C "$TMPDIR"
 export PATH="$PATH:$TMPDIR"
