@@ -39,4 +39,4 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
-              only: master
+              only: feature/init_deploy
