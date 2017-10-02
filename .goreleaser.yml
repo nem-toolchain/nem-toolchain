@@ -1,13 +1,42 @@
 builds:
   - main: cmd/nem/main.go
     binary: nem
+    env:
+      - CGO_ENABLED=0
     goos:
-    - windows
-    - darwin
-    - linux
+      - linux
+      - darwin
+      - windows
     goarch:
-    - amd64
+      - 386
+      - amd64
+checksum:
+  name_template: '{{ .ProjectName }}_checksums.txt'
 archive:
+  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
   format_overrides:
     - goos: windows
       format: zip
+fpm:
+  homepage:  http://git.io/nemtool
+  description: Command line toolchain for NEM blockchain
+  maintainer: Constantine <ckryvomaz@gmail.com>
+  license: MIT
+  vendor: nem-toolchain
+  formats:
+    - deb
+    - rpm
+  dependencies:
+    - git
+snapcraft:
+  summary: Command line toolchain for NEM blockchain
+  description: |
+    Command line toolchain for NEM blockchain.
+  grade: stable
+  confinement: classic
