@@ -126,7 +126,7 @@ func (sel seqMultiSelector) Pass(addr keypair.Address) bool {
 }
 
 func (sel seqMultiSelector) rules() []searchRule {
-	res := []searchRule{}
+	res := []searchRule{{}}
 	for _, it := range sel.items {
 		res = combineSearchRules(res, it.rules())
 	}
@@ -154,8 +154,8 @@ func (sel parMultiSelector) rules() []searchRule {
 func combineSearchRules(rls1 []searchRule, rls2 []searchRule) []searchRule {
 	res := make([]searchRule, len(rls1)*len(rls2))
 	for i, r1 := range rls1 {
-		for j, r2 := range rls1 {
-			res[i*j] = r1.merge(r2)
+		for j, r2 := range rls2 {
+			res[i*len(rls2)+j] = r1.merge(r2)
 		}
 	}
 	return res

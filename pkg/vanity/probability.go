@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	base32FirstPosProbability  = 1
-	base32SecondPosProbability = 1 / 4
-	base32OtherPosProbability  = 1 / 32
+	base32FirstPosProbability  = 1.
+	base32SecondPosProbability = 1. / 4
+	base32OtherPosProbability  = 1. / 32
 
-	base32OtherCharProbability  = 27 * base32OtherPosProbability
-	base32OtherDigitProbability = 5 * base32OtherPosProbability
+	base32OtherCharProbability = 27. * base32OtherPosProbability
+	//base32OtherDigitProbability = 5. * base32OtherPosProbability
 )
 
 // Probability determines a probability to find an address on random basis in one attempt
@@ -23,6 +23,9 @@ func Probability(sel Selector) float64 {
 	res := float64(0)
 	for _, rule := range sel.rules() {
 		res += rule.probability()
+	}
+	if res > 1 {
+		res = 1
 	}
 	return res
 }
@@ -42,7 +45,7 @@ func (rule searchRule) probability() float64 {
 
 func (NoDigitSelector) probability(offset uint) float64 {
 	// first two chars are always not digits
-	if offset <= 2 {
+	if offset < 2 {
 		offset = 2
 	}
 	return math.Pow(base32OtherCharProbability, float64(keypair.AddressLength-offset))
