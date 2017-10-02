@@ -25,8 +25,10 @@ import (
 
 // BuildTime stores build timestamp
 var BuildTime string
+
 // CommitHash stores actual commit hash
 var CommitHash string
+
 // Version indicates actual version
 var Version string
 
