@@ -16,5 +16,5 @@ jobs:
           then
             curl -sL https://git.io/goreleaser | bash
           else
-            echo "Not a release, skipping build"
+            echo "Not a release, just skip deploy step"
           fi
