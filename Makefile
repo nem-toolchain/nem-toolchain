@@ -17,7 +17,7 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/pierrre/gotestcover
 	go get -u golang.org/x/tools/cmd/cover
 	dep ensure
-	gometalinter --install --update
+	gometalinter --install
 
 test: ## Run all the tests
 	gotestcover $(TEST_OPTIONS) -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
