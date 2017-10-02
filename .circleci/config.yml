@@ -18,4 +18,4 @@ jobs:
             fi
 deployment:
   trigger_tag:
-    tag: /v[0-9]+(\.[0-9]+)*(-.*)*/
+    tag: /v\d+(\.\d+)*(-.*)*/
