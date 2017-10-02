@@ -11,8 +11,8 @@ import (
 
 	"fmt"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
-	"github.com/r8d8/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
 // StartSearch starts search process for vanity account address that satisfies a given selector

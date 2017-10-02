@@ -13,7 +13,7 @@ import (
 
 	"errors"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"

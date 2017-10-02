@@ -6,7 +6,7 @@ package vanity
 import (
 	"math"
 
-	"github.com/r8d8/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
 const (

@@ -7,9 +7,9 @@ package nem
 // blank docs to pass golint.
 import (
 	// blank docs to pass golint.
-	_ "github.com/r8d8/nem-toolchain/pkg/core"
+	_ "github.com/nem-toolchain/nem-toolchain/pkg/core"
 	// blank docs to pass golint.
-	_ "github.com/r8d8/nem-toolchain/pkg/keypair"
+	_ "github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	// blank docs to pass golint.
-	_ "github.com/r8d8/nem-toolchain/pkg/vanity"
+	_ "github.com/nem-toolchain/nem-toolchain/pkg/vanity"
 )

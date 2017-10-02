@@ -17,9 +17,9 @@ import (
 
 	"math"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
-	"github.com/r8d8/nem-toolchain/pkg/keypair"
-	"github.com/r8d8/nem-toolchain/pkg/vanity"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
 )
 
