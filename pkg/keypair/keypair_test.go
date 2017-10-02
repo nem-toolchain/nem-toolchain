@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/stretchr/testify/assert"
 )
 

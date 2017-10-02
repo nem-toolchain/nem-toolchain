@@ -13,17 +13,23 @@ import (
 
 	"errors"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
 )
 
-// ADDRESS_BYTES stores the address length
-const ADDRESS_BYTES = 25
+const (
+	// AddressBytes stores the address length
+	AddressBytes = 25
+	// AddressLength stores the address string representation length
+	AddressLength = 40
+	// PrettyAddressLength stores the address pretty string length
+	PrettyAddressLength = 46
+)
 
 // Address is a readable string representation for a public key.
-type Address [ADDRESS_BYTES]byte
+type Address [AddressBytes]byte
 
 // KeyPair is a private/public crypto key pair.
 type KeyPair struct {
