@@ -23,14 +23,14 @@ import (
 	"github.com/urfave/cli"
 )
 
-var (
-	// BuildTime stores build timestamp
-	BuildTime = "undefined"
-	// CommitHash stores actual commit hash
-	CommitHash = "undefined"
-	// Version indicates actual version
-	Version = "undefined"
-)
+// BuildTime stores build timestamp
+var BuildTime string
+
+// CommitHash stores actual commit hash
+var CommitHash string
+
+// Version indicates actual version
+var Version string
 
 func main() {
 	app := cli.NewApp()
