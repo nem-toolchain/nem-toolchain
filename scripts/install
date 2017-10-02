@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/sh
 set -e
 
 TAR_FILE="/tmp/nem.tar.gz"

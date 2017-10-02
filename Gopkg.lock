@@ -30,11 +30,11 @@
   name = "golang.org/x/crypto"
   packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3"]
   revision = "7ed87166a3637399832d6c057ddb8221469a8de3"
-  source = "https://github.com/r8d8/crypto.git"
+  source = "https://github.com/nem-toolchain/crypto.git"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "72fb1a15d0968493e2fabaa1c313eea55356a7febe5f2cba43a423aa75a37738"
+  inputs-digest = "c8f4315b96713cfa271d58f994c8d2b3dce5797dec767c4689d90e7bbb631669"
   solver-name = "gps-cdcl"
   solver-version = 1
