@@ -17,9 +17,9 @@ import (
 
 	"math"
 
-	"github.com/r8d8/nem-toolchain/pkg/core"
-	"github.com/r8d8/nem-toolchain/pkg/keypair"
-	"github.com/r8d8/nem-toolchain/pkg/vanity"
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
 	"github.com/urfave/cli"
 )
 
@@ -132,43 +132,23 @@ func vanityAction(c *cli.Context) error {
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
 	if !c.Bool("skip-estimate") {
-		fmt.Print("Calculate actual rate")
-		ticker := time.NewTicker(time.Second)
-		go func() {
-			for range ticker.C {
-				fmt.Print(".")
-			}
-		}()
-		rate := float64(countKeyPairs(3500)*runtime.NumCPU()) / 3.5
-		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
-		ticker.Stop()
+		showAccountEstimate(vanity.Probability(sel))
+		println()
 	}
 
 	rs := make(chan keypair.KeyPair)
 	for i := 0; i < runtime.NumCPU(); i++ {
-		go vanity.Search(ch, sel, rs)
+		go vanity.StartSearch(ch, sel, rs)
 	}
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		printAccountDetails(ch, <-rs)
-		go vanity.Search(ch, sel, rs)
+		println()
+		go vanity.StartSearch(ch, sel, rs)
 	}
 
 	return nil
-}
-
-func countKeyPairs(milliseconds time.Duration) int {
-	timeout := time.After(time.Millisecond * milliseconds)
-	for count := 0; ; count++ {
-		keypair.Gen().Address(core.Mainnet)
-		select {
-		case <-timeout:
-			return count
-		default:
-			continue
-		}
-	}
 }
 
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
@@ -186,9 +166,43 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
+func showAccountEstimate(probability float64) {
+	fmt.Print("Calculate rate")
+	ticker := time.NewTicker(time.Second)
+	go func() {
+		for range ticker.C {
+			fmt.Print(".")
+		}
+	}()
+	rate := float64(countKeyPairs(3200)*runtime.NumCPU()) / 3.2
+	ticker.Stop()
+	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+	fmt.Printf("Specified complexity: %v\n", math.Trunc(1.0/probability))
+	fmt.Printf("Estimate times: %.2f sec (50%%), %.2f sec (80%%), %.2f sec (99.9%%)\n",
+		estimateTime(probability, 0.5, rate),
+		estimateTime(probability, 0.8, rate),
+		estimateTime(probability, 0.99, rate))
+}
+
+func estimateTime(probability, precition, rate float64) float64 {
+	return math.Log(1-precition) / math.Log(1-probability) / rate
+}
+
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
-	fmt.Println()
+}
+
+func countKeyPairs(milliseconds time.Duration) int {
+	timeout := time.After(time.Millisecond * milliseconds)
+	for count := 0; ; count++ {
+		keypair.Gen().Address(core.Mainnet)
+		select {
+		case <-timeout:
+			return count
+		default:
+			continue
+		}
+	}
 }
