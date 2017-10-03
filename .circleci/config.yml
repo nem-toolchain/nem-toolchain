@@ -10,7 +10,7 @@ jobs:
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
 deployment:
-  goreleaser:
+  trigger_tag:
     tag: /v\d+(\.\d+)*/
     commands: |
       if [[ ${CIRCLE_TAG} == v* ]]; then
