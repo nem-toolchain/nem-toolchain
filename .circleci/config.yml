@@ -9,6 +9,7 @@ jobs:
       - run: make setup
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
+<<<<<<< HEAD
 deployment:
   goreleaser:
     tag: /v\d+(\.\d+)*/
@@ -17,3 +18,15 @@ deployment:
         curl -sL https://git.io/goreleaser | bash -s -- --release-notes \
           <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
       fi
+=======
+      - deploy:
+          name: goreleaser
+          command: |
+            if [[ -n ${CIRCLE_TAG} ]]; then
+              curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
+                bash -s -- --release-notes <(echo "# Hi")
+            fi
+deployment:
+  trigger_tag:
+    tag: /.*/
+>>>>>>> f0b9302... circleci build fails
