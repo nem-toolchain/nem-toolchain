@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-FILENAME="nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
+# FILENAME="nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
+FILENAME="nem-toolchain_Linux_x86_64.tar.gz"
 RELEASES_URL="https://github.com/nem-toolchain/nem-toolchain/releases"
 
 last_version() {
@@ -19,4 +20,4 @@ test -z "$TMPDIR" && TMPDIR="$(mktemp -d)"
 curl -sL -o "$TMPDIR/$FILENAME" "$RELEASES_URL/download/$VERSION/$FILENAME"
 
 mkdir -p bin
-tar -xf "$TMPDIR/$FILENAME" -C "bin"
+tar -xf "$TMPDIR/$FILENAME" -C bin nem
