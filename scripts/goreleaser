@@ -30,4 +30,4 @@ echo $1
 echo $2
 cat $2
 i=1; for a in $@; do echo "$i = $a"; i=$((i+1)); done
-"${TMPDIR}/goreleaser" $@
+"${TMPDIR}/goreleaser" "$@"
