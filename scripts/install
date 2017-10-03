@@ -1,17 +1,12 @@
 #!/bin/sh
 set -e
 
-TMP_DIR="/tmp/nem"
-mkdir -p $TMP_DIR
-
-TAR_FILE="$TMP_DIR/nem.tar.gz"
+FILENAME="nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
 RELEASES_URL="https://github.com/nem-toolchain/nem-toolchain/releases"
 
 last_version() {
   curl -sL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" |
-    rev |
-    cut -f1 -d'/'|
-    rev
+    rev | cut -f1 -d'/'| rev
 }
 
 test -z "$VERSION" && VERSION="$(last_version)"
@@ -20,8 +15,8 @@ test -z "$VERSION" && {
   exit 1
 }
 
-rm -f "$TAR_FILE"
-curl -s -L -o "$TAR_FILE" \
-  "$RELEASES_URL/download/$VERSION/nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
+test -z "$TMPDIR" && TMPDIR="$(mktemp -d)"
+curl -sL -o "$TMPDIR/$FILENAME" "$RELEASES_URL/download/$VERSION/$FILENAME"
 
-tar -xf "$TAR_FILE" -C "$TMP_DIR"
+mkdir -p bin
+tar -xf "$TMPDIR/$FILENAME" -C bin nem
