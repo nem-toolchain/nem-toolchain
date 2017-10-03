@@ -1,7 +1,6 @@
 #!/bin/sh
 set -e
 
-FILENAME="nem-toolchain_$(uname -s)_$(uname -m).tar.gz"
 RELEASES_URL="https://github.com/nem-toolchain/nem-toolchain/releases"
 
 last_version() {
@@ -9,14 +8,14 @@ last_version() {
     rev | cut -f1 -d'/'| rev
 }
 
+test -z "$OS" && OS="$(uname -s)"
+test -z "$ARCH" && ARCH="$(uname -m)"
 test -z "$VERSION" && VERSION="$(last_version)"
 test -z "$VERSION" && {
   echo "Unable to get nem-toolchain version." >&2
   exit 1
 }
 
-test -z "$TMPDIR" && TMPDIR="$(mktemp -d)"
-curl -sL -o "$TMPDIR/$FILENAME" "$RELEASES_URL/download/$VERSION/$FILENAME"
-
 mkdir -p bin
-tar -xf "$TMPDIR/$FILENAME" -C bin nem
+curl -sL "$RELEASES_URL/download/$VERSION/nem-toolchain-$VERSION-$OS-$ARCH.tar.gz" |
+  tar zx -C bin nem
