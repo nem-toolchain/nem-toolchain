@@ -14,8 +14,7 @@ jobs:
           command: |
             echo "$CIRCLE_TAG"
             if [[ ${CIRCLE_TAG} == v* ]]; then
-              git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. |
-                grep '^[^ ]* \[' > RELEASE_NOTES
+              echo "A test message" | tee RELEASE_NOTES
               curl -sL https://git.io/goreleaser | bash -s -- --release-notes=RELEASE_NOTES
             fi
 deployment:
