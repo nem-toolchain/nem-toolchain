@@ -16,9 +16,10 @@ jobs:
               echo "1"
               tempfile=$(mktemp)
               echo "Hello, World!" | tee $tempfile
+              echo $tempfile
               cat $tempfile
               curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
-                bash -s -- --release-notes $tempfile
+                bash -s -- --release-notes=$tempfile
             fi
 deployment:
   trigger_tag:
