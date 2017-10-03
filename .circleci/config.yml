@@ -9,13 +9,11 @@ jobs:
       - run: make setup
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
-      - deploy:
-          name: goreleaser
-          command: |
-            echo "$CIRCLE_TAG"
-            if [[ ${CIRCLE_TAG} == v* ]]; then
-              curl -sL https://git.io/goreleaser | bash -s -- --release-notes <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
-            fi
 deployment:
-  trigger_tag:
+  goreleaser:
     tag: /v\d+(\.\d+)*/
+    commands: |
+      if [[ ${CIRCLE_TAG} == v* ]]; then
+        curl -sL https://git.io/goreleaser | bash -s -- --release-notes \
+          <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
+      fi
