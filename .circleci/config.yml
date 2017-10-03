@@ -15,10 +15,7 @@ jobs:
             if [[ -n ${CIRCLE_TAG} ]]; then
               echo "1"
               tempfile=$(mktemp)
-              echo "$tempfile"
-              git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. |
-                grep '^[^ ]* \[' |
-                tee $tempfile
+              echo "Hello, World!" | tee $tempfile
               cat $tempfile
               curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
                 bash -s -- --release-notes $tempfile
