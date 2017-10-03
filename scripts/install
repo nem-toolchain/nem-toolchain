@@ -17,5 +17,5 @@ test -z "$VERSION" && {
 }
 
 mkdir -p bin
-curl -sL "$RELEASES_URL/download/$VERSION/nem-toolchain-$VERSION-$OS-$ARCH.tar.gz" |
+curl -sL "$RELEASES_URL/download/$VERSION/nem-toolchain-${VERSION:1}-$OS-$ARCH.tar.gz" |
   tar zx -C bin nem
