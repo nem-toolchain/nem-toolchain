@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-
-curl -s https://git.io/getnem | bash
