@@ -14,7 +14,7 @@ jobs:
           command: |
             if [[ -n ${CIRCLE_TAG} ]]; then
               curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
-                bash -s -- --release-notes=SUPPORT.md
+                bash -s -- --release-notes SUPPORT.md
             fi
 deployment:
   trigger_tag:
