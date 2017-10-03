@@ -13,7 +13,7 @@ jobs:
           name: goreleaser
           command: |
             if [[ -n ${CIRCLE_TAG} ]]; then
-              curl -sL https://git.io/goreleaser | bash -s -- --release-notes \
+              curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser | bash -s -- --release-notes \
                 <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
             fi
 deployment:
