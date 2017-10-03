@@ -12,12 +12,10 @@ jobs:
       - deploy:
           name: goreleaser
           command: |
-            echo "$CIRCLE_TAG"
-            if [[ ${CIRCLE_TAG} == v* ]]; then
-              git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. |
-                grep '^[^ ]* \[' > RELEASE_NOTES
-              curl -sL https://git.io/goreleaser | bash -s -- --release-notes=RELEASE_NOTES
+            if [[ -n ${CIRCLE_TAG} ]]; then
+              curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
+                bash -s -- --release-notes <(echo "# Hi")
             fi
 deployment:
   trigger_tag:
-    tag: /v\d+(\.\d+)*/
+    tag: /.*/
