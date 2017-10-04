@@ -64,4 +64,3 @@ static:
 	@static-docs --in docs --out ../nem-toolchain.github.io --title nem-toolchain --subtitle "Command line toolchain for NEM blockchain"
 
 .PHONY: setup test cover fmt lint ci build clean install help static
-
