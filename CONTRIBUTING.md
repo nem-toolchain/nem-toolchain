@@ -2,7 +2,9 @@
 
 If you would like to contribute code you can do so through GitHub by forking
 the repository and open a pull request against the master branch.
-Please also note [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+
+This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code.
 
 ## How to build
 
