@@ -59,4 +59,23 @@ install: ## Install to $GOPATH/src
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: setup test cover fmt lint ci build clean install help
+HIGHLIGHT=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0
+
+# Generate the static documentation
+static:
+	@static-docs \
+		--in docs \
+		--out ../nem-toolchain.github.io \
+		--title Nem-toolchain \
+		--subtitle "Command line toolchain for NEM blockchain" \
+		--script "$(HIGHLIGHT)/highlight.min.js" \
+		--script "$(HIGHLIGHT)/languages/go.min.js" \
+		--script "$(HIGHLIGHT)/languages/yaml.min.js" \
+		--script "$(HIGHLIGHT)/languages/dockerfile.min.js" \
+		--style "$(HIGHLIGHT)/styles/atom-one-dark.min.css" \
+		--inline-script 'hljs.initHighlightingOnLoad();' \
+		--inline-style 'pre { padding: 0; }'
+
+
+.PHONY: setup test cover fmt lint ci build clean install help static
+
