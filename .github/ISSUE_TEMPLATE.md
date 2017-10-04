@@ -1,8 +1,14 @@
+Just have a general question? Join us on https://gitter.im/nem-toolchain/Lobby
+
+<!--- Please follow the template for every bug -->
+
+### Description
+
+Describe the bug or feature.
+
 ### Steps to reproduce
 
-1.
-2.
-3.
+Describe the steps required to reproduce the issue if applicable.
 
 ### Expected behavior
 

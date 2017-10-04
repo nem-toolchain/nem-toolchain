@@ -59,13 +59,9 @@ install: ## Install to $GOPATH/src
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-HIGHLIGHT=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0
-
 # Generate the static documentation
 static:
-	@static-docs  --in docs --out ../nem-toolchain.github.io --title Nem-toolchain --subtitle "Command line toolchain for NEM blockchain"
-
-
+	@static-docs --in docs --out ../nem-toolchain.github.io --title nem-toolchain --subtitle "Command line toolchain for NEM blockchain"
 
 .PHONY: setup test cover fmt lint ci build clean install help static
 
