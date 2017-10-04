@@ -63,18 +63,8 @@ HIGHLIGHT=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0
 
 # Generate the static documentation
 static:
-	@static-docs \
-		--in docs \
-		--out ../nem-toolchain.github.io \
-		--title Nem-toolchain \
-		--subtitle "Command line toolchain for NEM blockchain" \
-		--script "$(HIGHLIGHT)/highlight.min.js" \
-		--script "$(HIGHLIGHT)/languages/go.min.js" \
-		--script "$(HIGHLIGHT)/languages/yaml.min.js" \
-		--script "$(HIGHLIGHT)/languages/dockerfile.min.js" \
-		--style "$(HIGHLIGHT)/styles/atom-one-dark.min.css" \
-		--inline-script 'hljs.initHighlightingOnLoad();' \
-		--inline-style 'pre { padding: 0; }'
+	@static-docs  --in docs --out ../nem-toolchain.github.io --title Nem-toolchain --subtitle "Command line toolchain for NEM blockchain"
+
 
 
 .PHONY: setup test cover fmt lint ci build clean install help static
