@@ -135,9 +135,10 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
+	num := c.Uint("number")
 	if !c.Bool("skip-estimate") {
-		showAccountEstimate(vanity.Probability(sel), c.Bool("show-complexity"))
-		println("----")
+		showAccountEstimate(vanity.Probability(sel), c.Bool("show-complexity"), num)
+		fmt.Println("----")
 	}
 
 	rs := make(chan keypair.KeyPair)
@@ -145,10 +146,9 @@ func vanityAction(c *cli.Context) error {
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
-	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		if i != 0 {
-			println("----")
+			fmt.Println("----")
 		}
 		printAccountDetails(ch, <-rs)
 		go vanity.StartSearch(ch, sel, rs)
@@ -172,7 +172,7 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-func showAccountEstimate(pbty float64, showCxty bool) {
+func showAccountEstimate(pbty float64, showCxty bool, num uint) {
 	fmt.Print("Calculate accounts rate")
 
 	ticker := time.NewTicker(time.Second)
@@ -199,9 +199,9 @@ func showAccountEstimate(pbty float64, showCxty bool) {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 	}
 	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-		formatEstimatedTime(estimate(pbty, 0.5, rate)),
-		formatEstimatedTime(estimate(pbty, 0.8, rate)),
-		formatEstimatedTime(estimate(pbty, 0.99, rate)))
+		formatEstimatedTime(float64(num)*estimate(pbty, 0.5, rate)),
+		formatEstimatedTime(float64(num)*estimate(pbty, 0.8, rate)),
+		formatEstimatedTime(float64(num)*estimate(pbty, 0.99, rate)))
 }
 
 func countKeyPairs(milliseconds time.Duration, res chan int) {
