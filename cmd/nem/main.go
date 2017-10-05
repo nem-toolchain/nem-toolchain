@@ -198,8 +198,10 @@ func showAccountEstimate(pbty float64, showCxty bool) {
 	if showCxty {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 	}
-	fmt.Printf("Estimate search times: %.3f sec (50%%), %.3f sec (80%%), %.3f sec (99.9%%)\n",
-		estimate(pbty, 0.5, rate), estimate(pbty, 0.8, rate), estimate(pbty, 0.99, rate))
+	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
+		formatEstimatedTime(estimate(pbty, 0.5, rate)),
+		formatEstimatedTime(estimate(pbty, 0.8, rate)),
+		formatEstimatedTime(estimate(pbty, 0.99, rate)))
 }
 
 func countKeyPairs(milliseconds time.Duration, res chan int) {
@@ -220,6 +222,14 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+}
+
+func formatEstimatedTime(t float64) string {
+	h := uint64(t) / 3600
+	m := (uint64(t) % 3600) / 60
+	s := t - float64(h) * 3600.0 - float64(m) * 60.0
+
+	return fmt.Sprintf("%v:%v:%.3f", h, m, s)
 }
 
 func estimate(pbty, prec, rate float64) float64 {
