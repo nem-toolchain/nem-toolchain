@@ -24,13 +24,13 @@ How to create multiple accounts:
 
 ```console
 $ nem --chain testnet account generate -n 2
-Address: NAU6YK-24PNZX-ADXUPG-56BXUV-II4XYO-52JXAN-47UV
-Public key: aef0136c2b99a08475ad8ec3b4bb56410d034f02053674531514501d3f6975fc
-Private key: ddd749e79a22d6a79fd551cbedcf99a5160f8dd5984445daccb1a1fbf9b77ea6
-
-Address: NAQZWC-ZUDCZ5-4IRKJN-WXJ76C-HLFSP5-RWYCXN-XJCZ
-Public key: 77717697183da6fa770400c8b7187cc7bdeb098dcd6c539f0d7c08d822cb44c8
-Private key: fdd38df995c7fbb7b3de12613a5578f26bbe625333b538401dac4c24bab8b6f5
+Address: TCH3WQ-DRDTOH-SAJK3C-ZJ6FT4-JT6INP-PAOUV2-K5LA
+Public key: 208773e61dc7c53cc055af6ec1d5daad84912da80218db1fe2a26ad30ec459cc
+Private key: 0ab24e580e14f0ac9a79c27f00c1ab6081ddc72adedd305476b4e695a4d3e3d7
+----
+Address: TDQJOD-DIBV7Q-6DATIR-IRLPNV-TK5XUT-2XD3Z6-HBEP
+Public key: 9cb76dbcdeac1e2cc4ab8ae56ea8545cacac781dc333f334b0604cee70d59153
+Private key: 3caf6c68dbda89f3c760261d76f83d75bf440509f8615395071f11721e498f3e
 ```
 
 ## Vanity address
@@ -48,13 +48,17 @@ If you would like to search for multiple prefixes at the same time and without d
 
 ```console
 $ nem --chain testnet account vanity --show-complexity --no-digits TABC TACB TBAC TBCA TCAB TCBA
-Address: TACBLF-CJBFVE-TPTUIP-HBIRVI-PHQKKD-OSJMOF-KGNU
-Public key: 8a68fdf463b4531f409369ffe368f9d78eb5e0b713459b767fbb4c4bfd148667
-Private key: ae4e943300554508d52c863329a53e40787e994e7c2733d54c378fb88421d387
+Calculate accounts rate... 19320 accounts/sec
+Specified search complexity: 1.203836e+06
+Estimate search times: 0:0:43.189 (50%), 0:1:40.281 (80%), 0:4:46.940 (99.9%)
+----
+Address: TCBAFK-CHFHUL-FNTNTP-PMYOFI-ICEKIV-YGIXSD-IKLG
+Public key: fcd12b631491585921eb8054280ebeaab894f391411ce1377f008fbfd21fb254
+Private key: 7f4d2b4364ed8803ce565fb4ae2b4a97aac73f9c6629c44dcf7dde5c85e6a1af
 ```
 
 As you can see from the last output, `nem-toolchain` can show specified search complexity
-and calculates estimate times for three predefined accuracies - `50%`, `80%` and `99.9%`.
+and calculates estimate times for three predefined accuracies: `50%`, `80%` and `99.9%`.
 
 Important notes:
 
