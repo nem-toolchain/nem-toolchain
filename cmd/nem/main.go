@@ -174,29 +174,44 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 
 func showAccountEstimate(pbty float64, showCxty bool) {
 	fmt.Print("Calculate accounts rate")
+
 	ticker := time.NewTicker(time.Second)
 	go func() {
 		for range ticker.C {
 			fmt.Print(".")
 		}
 	}()
-	rate := float64(countKeyPairs(3200)*runtime.NumCPU()) / 3.2
+
+	num_cpu := runtime.NumCPU()
+	res := make(chan int, num_cpu)
+	for i := 0; i < num_cpu; i++ {
+		go countKeyPairs(3200, res)
+	}
+
+	var rate float64
+	for i := 0; i < num_cpu; i++ {
+		rate += float64(<-res) / 3.2
+	}
 	ticker.Stop()
+
 	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 	if showCxty {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 	}
-	fmt.Printf("Estimate search times: %.3f sec (50%%), %.3f sec (80%%), %.3f sec (99.9%%)\n",
-		estimate(pbty, 0.5, rate), estimate(pbty, 0.8, rate), estimate(pbty, 0.99, rate))
+	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
+		formatEstimatedTime(estimate(pbty, 0.5, rate)),
+		formatEstimatedTime(estimate(pbty, 0.8, rate)),
+		formatEstimatedTime(estimate(pbty, 0.99, rate)))
 }
 
-func countKeyPairs(milliseconds time.Duration) int {
+func countKeyPairs(milliseconds time.Duration, res chan int) {
 	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
 		keypair.Gen().Address(core.Mainnet)
 		select {
 		case <-timeout:
-			return count
+			res <- count
+			return
 		default:
 			continue
 		}
@@ -207,6 +222,14 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+}
+
+func formatEstimatedTime(t float64) string {
+	h := uint64(t) / 3600
+	m := (uint64(t) % 3600) / 60
+	s := t - float64(h)*3600.0 - float64(m)*60.0
+
+	return fmt.Sprintf("%v:%v:%.3f", h, m, s)
 }
 
 func estimate(pbty, prec, rate float64) float64 {
