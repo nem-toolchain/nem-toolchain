@@ -33,7 +33,7 @@ Public key: 77717697183da6fa770400c8b7187cc7bdeb098dcd6c539f0d7c08d822cb44c8
 Private key: fdd38df995c7fbb7b3de12613a5578f26bbe625333b538401dac4c24bab8b6f5
 ```
 
-## Vanity addresses
+## Vanity address
 
 How to find vanity address with predefined prefix `TCGQQK` for testnet:
 
