@@ -34,9 +34,13 @@ Make sure your `PATH` includes the `$GOPATH/bin` directory so your commands can 
 export PATH=$PATH:$GOPATH/bin
 ```
 
-## How to start
+Verify installation with:
 
-Your journey will begin with the `nem -h` command.
+```
+$ nem -v
+```
+
+## Further steps
 
 Check out the [documentation](https://git.io/nemtool) for more details,
 or chat with us in the [Gitter Chat](https://gitter.im/nem-toolchain/Lobby).
