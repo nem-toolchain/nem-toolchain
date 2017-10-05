@@ -43,7 +43,7 @@ $ nem -v
 ## Further steps
 
 Check out the [documentation](https://git.io/nemtool) for more details,
-or chat with us in the [Gitter Chat](https://gitter.im/nem-toolchain/Lobby).
+or chat with us in the [Gitter chat](https://gitter.im/nem-toolchain/Lobby).
 
 ## Donations
 
