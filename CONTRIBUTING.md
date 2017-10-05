@@ -10,7 +10,6 @@ By participating, you are expected to uphold this code.
 
 Prerequisites are:
 
-* [`git`](https://git-scm.com)
 * `make`
 * [`Go 1.8+`](http://golang.org/doc/install)
 
@@ -53,16 +52,6 @@ $ make fmt && make ci
 ```
 
 Which runs all the formatters, linters and tests.
-
-## Categorized commits
-
-All commits started with `[` will be included to release notes automatically, good candidates are:
-
-* `[FIX]` - bug or other issue fix (non-breaking change which fixes an issue)
-* `[IMPROVEMENT]` - existing feature improvement (non-breaking change which expend some functionality)
-* `[FEATURE]` - new feature (non-breaking change which adds functionality)
-* `[BREAKING]` - breaking change (fix or feature that would cause existing functionality to change)
-* `[MISC]` - not fall under any of the above categories (non-breaking non-functional change)
 
 ## License
 

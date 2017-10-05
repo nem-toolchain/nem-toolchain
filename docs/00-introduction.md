@@ -6,7 +6,7 @@ title: Introduction
 
 Main features:
 
-* Generate new accounts for `Mijin`, `mainnet`, `testnet`.
+* Generate new accounts for `mijin`, `mainnet`, `testnet`.
 * Find vanity address by a given list of prefixes.
 
 Quick demo:

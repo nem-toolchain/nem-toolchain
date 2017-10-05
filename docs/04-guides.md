@@ -48,13 +48,13 @@ If you would like to search for multiple prefixes at the same time and without d
 
 ```console
 $ nem --chain testnet account vanity --show-complexity --no-digits TABC TACB TBAC TBCA TCAB TCBA
-Calculate accounts rate... 19320 accounts/sec
+Calculate accounts rate... 15225 accounts/sec
 Specified search complexity: 1.203836e+06
-Estimate search times: 0:0:43.189 (50%), 0:1:40.281 (80%), 0:4:46.940 (99.9%)
+Estimate search times: 54s (50%), 2m7s (80%), 6m4s (99.9%)
 ----
-Address: TCBAFK-CHFHUL-FNTNTP-PMYOFI-ICEKIV-YGIXSD-IKLG
-Public key: fcd12b631491585921eb8054280ebeaab894f391411ce1377f008fbfd21fb254
-Private key: 7f4d2b4364ed8803ce565fb4ae2b4a97aac73f9c6629c44dcf7dde5c85e6a1af
+Address: TBACRS-TXXWHM-LZYKPI-ULCOZU-WFMVIX-UMVLYT-LMKM
+Public key: bb326c920bb5b42d5d99df602bb82fdcdd922911ef3b46e73af654babba43698
+Private key: 2d9a61cee0a3b210c2cde438b7f620931049320fd8dffbda04e28e9dd0fbfdef
 ```
 
 As you can see from the last output, `nem-toolchain` can show specified search complexity
