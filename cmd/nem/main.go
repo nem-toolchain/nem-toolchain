@@ -174,14 +174,26 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 
 func showAccountEstimate(pbty float64, showCxty bool) {
 	fmt.Print("Calculate accounts rate")
+
 	ticker := time.NewTicker(time.Second)
 	go func() {
 		for range ticker.C {
 			fmt.Print(".")
 		}
 	}()
-	rate := float64(countKeyPairs(3200)*runtime.NumCPU()) / 3.2
+
+	num_cpu := runtime.NumCPU()
+	res := make(chan int, num_cpu)
+	for i := 0; i < num_cpu; i++ {
+		go countKeyPairs(3200, res)
+	}
+
+	var rate float64
+	for i := 0; i < num_cpu; i++ {
+		rate += float64(<-res) / 3.2
+	}
 	ticker.Stop()
+
 	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 	if showCxty {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
@@ -190,13 +202,14 @@ func showAccountEstimate(pbty float64, showCxty bool) {
 		estimate(pbty, 0.5, rate), estimate(pbty, 0.8, rate), estimate(pbty, 0.99, rate))
 }
 
-func countKeyPairs(milliseconds time.Duration) int {
+func countKeyPairs(milliseconds time.Duration, res chan int) {
 	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
 		keypair.Gen().Address(core.Mainnet)
 		select {
 		case <-timeout:
-			return count
+			res <- count
+			return
 		default:
 			continue
 		}
