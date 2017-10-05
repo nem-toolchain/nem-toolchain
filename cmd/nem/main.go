@@ -214,7 +214,7 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 func formatEstimatedTime(t float64) string {
 	h := uint64(t) / 3600
 	m := (uint64(t) % 3600) / 60
-	s := t - float64(h) * 3600.0 - float64(m) * 60.0
+	s := t - float64(h)*3600.0 - float64(m)*60.0
 
 	return fmt.Sprintf("%v:%v:%.3f", h, m, s)
 }
