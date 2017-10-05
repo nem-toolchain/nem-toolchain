@@ -117,6 +117,9 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	num := c.Uint("number")
+	if num == 0 {
+		return nil
+	}
 
 	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
 	if c.Bool("no-digits") {
@@ -139,8 +142,25 @@ func vanityAction(c *cli.Context) error {
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
 	if !c.Bool("skip-estimate") {
-		showAccountEstimate(
-			vanity.Probability(sel)/float64(num), c.Bool("show-complexity"))
+		fmt.Print("Calculate accounts rate")
+		ticker := time.NewTicker(time.Second)
+		go func() {
+			for range ticker.C {
+				fmt.Print(".")
+			}
+		}()
+		rate := allCPUKeyPairsInSeconds()
+		ticker.Stop()
+		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+
+		pbty := vanity.Probability(sel) / float64(num)
+		if c.Bool("show-complexity") {
+			fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
+		}
+		fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
+			printTimeInSeconds(numberOfKeyPairs(pbty, 0.5)/rate),
+			printTimeInSeconds(numberOfKeyPairs(pbty, 0.8)/rate),
+			printTimeInSeconds(numberOfKeyPairs(pbty, 0.99)/rate))
 		fmt.Println("----")
 	}
 
@@ -173,30 +193,6 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 		return ch, fmt.Errorf("unknown chain '%v'", c.GlobalString("chain"))
 	}
 	return ch, nil
-}
-
-func showAccountEstimate(pbty float64, showCxty bool) {
-	fmt.Print("Calculate accounts rate")
-
-	ticker := time.NewTicker(time.Second)
-	go func() {
-		for range ticker.C {
-			fmt.Print(".")
-		}
-	}()
-	rate := allCPUKeyPairsInSeconds()
-	ticker.Stop()
-
-	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
-
-	if showCxty {
-		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
-	}
-
-	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-		printTimeInSeconds(numberOfKeyPairs(pbty, 0.5)/rate),
-		printTimeInSeconds(numberOfKeyPairs(pbty, 0.8)/rate),
-		printTimeInSeconds(numberOfKeyPairs(pbty, 0.99)/rate))
 }
 
 func allCPUKeyPairsInSeconds() (rate float64) {
