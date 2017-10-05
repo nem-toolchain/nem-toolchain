@@ -9,40 +9,13 @@ jobs:
       - run: make setup
       - run: make ci
       - run: bash <(curl -s https://codecov.io/bash)
-<<<<<<< HEAD
-<<<<<<< HEAD
-deployment:
-  trigger_tag:
-    tag: /v\d+(\.\d+)*/
-    commands: |
-      if [[ ${CIRCLE_TAG} == v* ]]; then
-        curl -sL https://git.io/goreleaser | bash -s -- --release-notes \
-          <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
-      fi
-=======
       - deploy:
           name: goreleaser
           command: |
             if [[ -n ${CIRCLE_TAG} ]]; then
-              git describe --tags --abbrev=0
-              git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^..
-              git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \['
-              curl -sL https://raw.githubusercontent.com/nem-toolchain/nem-toolchain/master/scripts/goreleaser |
-                bash -s -- --debug --release-notes <(echo "# Hi")
+              curl -sL https://git.io/goreleaser |
+                bash -s -- --debug --release-notes <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
             fi
 deployment:
   trigger_tag:
     tag: /.*/
->>>>>>> f0b9302... circleci build fails
-=======
-      - deploy:
-          name: goreleaser
-          command: |
-            if [[ -n ${CIRCLE_TAG} ]]; then
-              curl -sL https://git.io/goreleaser | bash -s -- --release-notes \
-                <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep '^[^ ]* \[')
-            fi
-deployment:
-  trigger_tag:
-    tag: /.*/
->>>>>>> b3017f4... circleci build fails
