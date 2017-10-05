@@ -14,8 +14,8 @@ const (
 	base32SecondPosProbability = 1. / 4
 	base32OtherPosProbability  = 1. / 32
 
-	base32OtherCharProbability = 27. * base32OtherPosProbability
-	//base32OtherDigitProbability = 5. * base32OtherPosProbability
+	base32OtherCharProbability = 26. * base32OtherPosProbability
+	//base32OtherDigitProbability = 6. * base32OtherPosProbability
 )
 
 // Probability determines a probability to find an address on random basis in one attempt
