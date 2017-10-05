@@ -104,6 +104,7 @@ func generateAction(c *cli.Context) error {
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		printAccountDetails(ch, keypair.Gen())
+		fmt.Println("----")
 	}
 
 	return nil

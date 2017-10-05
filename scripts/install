@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eo pipefail
 
 RELEASES_URL="https://github.com/nem-toolchain/nem-toolchain/releases"
 

@@ -24,19 +24,19 @@
 
 To install, simply run:
 
-```shell
-go get github.com/nem-toolchain/nem-toolchain/cmd/nem
+```console
+$ go get github.com/nem-toolchain/nem-toolchain/cmd/nem
 ```
 
 Make sure your `PATH` includes the `$GOPATH/bin` directory so your commands can be easily used:
 
-```bash
-export PATH=$PATH:$GOPATH/bin
+```console
+$ export PATH=$PATH:$GOPATH/bin
 ```
 
 Verify installation with:
 
-```
+```console
 $ nem -v
 ```
 

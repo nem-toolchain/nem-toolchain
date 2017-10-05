@@ -1,4 +1,4 @@
-Just have a general question? Join us on https://gitter.im/nem-toolchain/Lobby
+<!--- Just have a general question? Join us on https://gitter.im/nem-toolchain/Lobby -->
 
 <!--- Please follow the template for every bug -->
 
