@@ -9,13 +9,13 @@ import (
 	"os"
 	"time"
 
-	"encoding/hex"
-
 	"runtime"
 
 	"strings"
 
 	"math"
+
+	"encoding/hex"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
@@ -149,7 +149,16 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		rate := allCPUKeyPairsInSeconds()
+		rate := float64(0)
+		res := make(chan int, runtime.NumCPU())
+		for i := 0; i < cap(res); i++ {
+			go func(res chan<- int) {
+				res <- keypair.CountKeyPairs(3200)
+			}(res)
+		}
+		for i := 0; i < cap(res); i++ {
+			rate += float64(<-res) / 3.2
+		}
 		ticker.Stop()
 		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 
@@ -158,9 +167,9 @@ func vanityAction(c *cli.Context) error {
 			fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 		}
 		fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-			printTimeInSeconds(numberOfKeyPairs(pbty, 0.5)/rate),
-			printTimeInSeconds(numberOfKeyPairs(pbty, 0.8)/rate),
-			printTimeInSeconds(numberOfKeyPairs(pbty, 0.99)/rate))
+			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.5)/rate),
+			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.8)/rate),
+			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.99)/rate))
 		fmt.Println("----")
 	}
 
@@ -195,37 +204,8 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-func allCPUKeyPairsInSeconds() (rate float64) {
-	res := make(chan int, runtime.NumCPU())
-	for i := 0; i < cap(res); i++ {
-		go func(res chan<- int) {
-			res <- countKeyPairs(3200)
-		}(res)
-	}
-	for i := 0; i < cap(res); i++ {
-		rate += float64(<-res) / 3.2
-	}
-	return
-}
-
-func countKeyPairs(milliseconds time.Duration) int {
-	timeout := time.After(time.Millisecond * milliseconds)
-	for count := 0; ; count++ {
-		keypair.Gen().Address(core.Mainnet)
-		select {
-		case <-timeout:
-			return count
-		default:
-			continue
-		}
-	}
-}
-
-func numberOfKeyPairs(pbty, prec float64) float64 {
-	return math.Log(1-prec) / math.Log(1-pbty)
-}
-
-func printTimeInSeconds(val float64) string {
+// Format estimated time
+func timeInSeconds(val float64) string {
 	val = 1e9 * math.Trunc(val)
 	if val >= math.MaxInt64 || math.IsInf(val, 0) {
 		return "Inf"
@@ -233,6 +213,7 @@ func printTimeInSeconds(val float64) string {
 	return time.Duration(val).String()
 }
 
+// Pretty print account details
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
