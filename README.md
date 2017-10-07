@@ -41,7 +41,7 @@ $ nem -v
 undefined (undefined / undefined)
 ```
 
-If you look at a release build, there are already prepared
+If you look at releases instead, there are already prepared
 [tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest)
 
 ## Further steps
