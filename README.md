@@ -38,10 +38,10 @@ Verify development snapshot installation with:
 
 ```console
 $ nem -v
-undefined (undefined / undefined)
+snapshot build
 ```
 
-If you look at releases instead, there are already prepared
+If you look for releases instead, there are already prepared
 [tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest).
 
 ## Further steps

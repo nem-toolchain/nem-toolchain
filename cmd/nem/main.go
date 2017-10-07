@@ -25,18 +25,23 @@ import (
 
 var (
 	// date stores build timestamp
-	date string = "undefined"
+	date string
 	// commit stores actual commit hash
-	commit string = "undefined"
+	commit string
 	// version indicates actual version
-	version string = "undefined"
+	version string
 )
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "nem"
 	app.Usage = "command-line toolchain for NEM blockchain"
-	app.Version = fmt.Sprintf("%v (%v / %v)", version, commit, date)
+
+	if version == "" {
+		app.Version = "snapshot build"
+	} else {
+		app.Version = fmt.Sprintf("%v (%v / %v)", version, commit, date)
+	}
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
