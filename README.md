@@ -34,11 +34,15 @@ Make sure your `PATH` includes the `$GOPATH/bin` directory so your commands can 
 $ export PATH=$PATH:$GOPATH/bin
 ```
 
-Verify installation with:
+Verify development snapshot installation with:
 
 ```console
 $ nem -v
+undefined (undefined / undefined)
 ```
+
+If you look at a release build, there are already prepared
+[tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest)
 
 ## Further steps
 

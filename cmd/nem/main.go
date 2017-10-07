@@ -25,11 +25,11 @@ import (
 
 var (
 	// date stores build timestamp
-	date string
+	date string = "undefined"
 	// commit stores actual commit hash
-	commit string
+	commit string = "undefined"
 	// version indicates actual version
-	version string
+	version string = "undefined"
 )
 
 func main() {
