@@ -42,7 +42,7 @@ export PATH=$PATH:./bin
 Simplest first test after build is:
 
 ```bash
-nem -h
+nem-snapshot -h
 ```
 
 When you are satisfied with the changes, we suggest you run:
