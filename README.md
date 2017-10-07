@@ -42,7 +42,7 @@ undefined (undefined / undefined)
 ```
 
 If you look at releases instead, there are already prepared
-[tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest)
+[tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest).
 
 ## Further steps
 
