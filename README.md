@@ -38,7 +38,7 @@ Verify development snapshot installation with:
 
 ```console
 $ nem -v
-snapshot build
+nem version git
 ```
 
 If you look for releases instead, there are already prepared

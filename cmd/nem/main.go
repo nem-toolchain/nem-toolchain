@@ -38,7 +38,7 @@ func main() {
 	app.Usage = "command-line toolchain for NEM blockchain"
 
 	if version == "" {
-		app.Version = "snapshot build"
+		app.Version = "git"
 	} else {
 		app.Version = fmt.Sprintf("%v (%v / %v)", version, commit, date)
 	}
