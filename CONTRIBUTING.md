@@ -53,6 +53,11 @@ $ make fmt && make ci
 
 Which runs all the formatters, linters and tests.
 
+## Special commit prefixes
+
+Commits begin with `Fix`, `Merge` and `Update` will be excluded from the release notes
+automatically, as they do not relate directly to development, but are more about supporting.
+
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the
