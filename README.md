@@ -44,9 +44,18 @@ nem version git
 If you look for releases instead, there are already prepared
 [tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest).
 
-## Further steps
+## How to contribute
 
-Check out the [documentation](https://git.io/nemtool) for more details,
+You are always welcome to fix
+[not yet assigned bugs](https://github.com/nem-toolchain/nem-toolchain/issues?q=is%3Aopen+label%3Abug+no%3Aassignee)
+or to help us with [extraordinary issues](https://github.com/nem-toolchain/nem-toolchain/labels/help%20wanted).
+
+Check out the [technical documentation](https://git.io/nemtool) for detailed implementation details
+and also don't forget to read and accept [contributing guide](CONTRIBUTING.md).
+
+## How to get support
+
+Check out [our website](https://git.io/nemtool) for more usage specific details,
 or chat with us in the [Gitter chat](https://gitter.im/nem-toolchain/Lobby).
 
 ## Donations
@@ -55,7 +64,8 @@ Our NEM address: `NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`
 
 ## Thanks to
 
-* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea) free open-source license.
+* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea)
+free open-source license.
 
 ## Licence
 
