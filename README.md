@@ -51,8 +51,7 @@ You are always welcome to fix
 or can help us with [extraordinary issues](https://github.com/nem-toolchain/nem-toolchain/labels/help%20wanted).
 
 Check out the [technical documentation](https://github.com/nem-toolchain/nem-toolchain/wiki),
-there you can find project roadmap, implementation details, useful links and another related info.
-
+there you can find project roadmap, implementation details, useful links and another development related info.
 In addition please don't forget to read and accept the [contributing guide](CONTRIBUTING.md).
 
 ## How to get support
