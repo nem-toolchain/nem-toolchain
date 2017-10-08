@@ -50,8 +50,9 @@ You are always welcome to fix
 [not yet assigned bugs](https://github.com/nem-toolchain/nem-toolchain/issues?q=is%3Aopen+label%3Abug+no%3Aassignee)
 or to help us with [extraordinary issues](https://github.com/nem-toolchain/nem-toolchain/labels/help%20wanted).
 
-Check out the [technical documentation](https://git.io/nemtool) for detailed implementation details
-and also don't forget to read and accept [contributing guide](CONTRIBUTING.md).
+Check out the [technical documentation](https://github.com/nem-toolchain/nem-toolchain/wiki)
+for detailed implementation details and also don't forget to read and accept
+[contributing guide](CONTRIBUTING.md).
 
 ## How to get support
 
