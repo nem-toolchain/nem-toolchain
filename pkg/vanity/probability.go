@@ -30,12 +30,6 @@ func Probability(sel Selector) float64 {
 	return res
 }
 
-// Calculate amount of keypairs to be generated
-// to find account with probability `pbty`
-func NumberOfKeyPairs(pbty, prec float64) float64 {
-	return math.Log(1-prec) / math.Log(1-pbty)
-}
-
 func (rule searchRule) probability() float64 {
 	res := float64(1)
 	if rule.noDigitSelector != nil && rule.prefixSelector != nil {
@@ -67,4 +61,10 @@ func (sel PrefixSelector) probability() float64 {
 		return base32SecondPosProbability *
 			math.Pow(base32OtherPosProbability, float64(len(sel.Prefix)-2))
 	}
+}
+
+// Calculate amount of keypairs to be generated to find account
+// with probability `pbty` with specified precision `prec`
+func NumberOfKeyPairs(pbty, prec float64) float64 {
+	return math.Log(1-prec) / math.Log(1-pbty)
 }

@@ -154,13 +154,11 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		rate := float64(0)
 		res := make(chan int, runtime.NumCPU())
 		for i := 0; i < cap(res); i++ {
-			go func(res chan<- int) {
-				res <- keypair.CountKeyPairs(3200)
-			}(res)
+			go countKeyPairs(3200, res)
 		}
+		rate := float64(0)
 		for i := 0; i < cap(res); i++ {
 			rate += float64(<-res) / 3.2
 		}
@@ -207,6 +205,21 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 		return ch, fmt.Errorf("unknown chain '%v'", c.GlobalString("chain"))
 	}
 	return ch, nil
+}
+
+// Count number of generated keypairs for specified interval
+func countKeyPairs(milliseconds time.Duration, res chan int) {
+	timeout := time.After(time.Millisecond * milliseconds)
+	for count := 0; ; count++ {
+		keypair.Gen().Address(core.Mainnet)
+		select {
+		case <-timeout:
+			res <- count
+			return
+		default:
+			continue
+		}
+	}
 }
 
 // Format estimated time
