@@ -13,8 +13,6 @@ import (
 
 	"errors"
 
-	"time"
-
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
@@ -89,18 +87,4 @@ func (addr Address) PrettyString() string {
 
 func (addr Address) String() string {
 	return base32.StdEncoding.EncodeToString(addr[:])
-}
-
-// Count generated keypairs for specified interval
-func CountKeyPairs(milliseconds time.Duration) int {
-	timeout := time.After(time.Millisecond * milliseconds)
-	for count := 0; ; count++ {
-		Gen().Address(core.Mainnet)
-		select {
-		case <-timeout:
-			return count
-		default:
-			continue
-		}
-	}
 }
