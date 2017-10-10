@@ -59,10 +59,6 @@ In addition please don't forget to read and accept the [contributing guide](CONT
 Check out [our website](https://git.io/nemtool) for more usage specific details,
 or chat with us in the [Gitter chat](https://gitter.im/nem-toolchain/Lobby).
 
-## Donations
-
-Our NEM address: `NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`
-
 ## Thanks to
 
 * [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea)
