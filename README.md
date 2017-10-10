@@ -61,7 +61,7 @@ or chat with us in the [Gitter chat](https://gitter.im/nem-toolchain/Lobby).
 
 ## Donations
 
-Our NEM address: ~`NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`~ (https://github.com/nem-toolchain/nem-toolchain/issues/127)
+Our NEM address: ~`NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`~ [#127](https://github.com/nem-toolchain/nem-toolchain/issues/127)
  
 ## Thanks to
 
