@@ -9,9 +9,9 @@ import (
 
 	"bytes"
 
-	"github.com/nem-toolchain/crypto/ed25519"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/ed25519"
 )
 
 func TestKeyPair_Gen(t *testing.T) {
