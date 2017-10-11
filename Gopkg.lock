@@ -8,12 +8,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/nem-toolchain/crypto"
-  packages = ["ed25519","ed25519/internal/edwards25519","sha3"]
-  revision = "90a8fb66ba62ad45f3e327d77aba5184bde3c31e"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -41,6 +35,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c8c4301b24e2a0b08b1036a00954caad6dfd003936d58bac812465ff737431d1"
+  inputs-digest = "c8f4315b96713cfa271d58f994c8d2b3dce5797dec767c4689d90e7bbb631669"
   solver-name = "gps-cdcl"
   solver-version = 1
