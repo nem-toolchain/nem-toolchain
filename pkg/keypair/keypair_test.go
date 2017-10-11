@@ -33,6 +33,12 @@ func TestKeyPair_Address_ForMainnet(t *testing.T) {
 	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Mainnet))
 }
 
+func TestKeyPair_Address_ForTestnet(t *testing.T) {
+	pub, _ := hex.DecodeString("4fe5efd97360bc8a32ec105d419222eeb714e6d06fd8b895a5eedda2b0edf931")
+	addr, _ := FromString("TA6XFSJYZYAIYP7FL7X2RL63647FRMB65YC6CO3G")
+	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Testnet))
+}
+
 func TestAddress_PrettyString(t *testing.T) {
 	addr, _ := FromString("TCGQQKN5HED66OQ67Z2F7GGWZ66DWVBFJUW6F5WC")
 	assert.Equal(t, "TCGQQK-N5HED6-6OQ67Z-2F7GGW-Z66DWV-BFJUW6-F5WC", addr.PrettyString())
