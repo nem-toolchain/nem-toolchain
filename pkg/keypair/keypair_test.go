@@ -7,14 +7,30 @@ import (
 	"encoding/hex"
 	"testing"
 
+	"bytes"
+
+	"github.com/nem-toolchain/crypto/ed25519"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestKeyPair_Gen(t *testing.T) {
+	prv, _ := hex.DecodeString("2c52aee96f0e30f21c86b3fab7a18e927f579618818e8148e7ded1e01875ef0b")
+	exp, _ := hex.DecodeString("9d1e9d01ab916dbdde0e76ba43df2246575d637db0bca090f46c1abce19a43e3")
+	pub, _, _ := ed25519.GenerateKey(bytes.NewReader(prv))
+	assert.Equal(t, pub, exp)
+}
 
 func TestKeyPair_Address(t *testing.T) {
 	pub, _ := hex.DecodeString("c342dbf7cdd3096c4c3910c511a57049e62847dd5030c7e644bc855acc1fd626")
 	addr, _ := FromString("TCGQQKN5HED66OQ67Z2F7GGWZ66DWVBFJUW6F5WC")
 	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Testnet))
+}
+
+func TestKeyPair_Address_ForMainnet(t *testing.T) {
+	pub, _ := hex.DecodeString("9d1e9d01ab916dbdde0e76ba43df2246575d637db0bca090f46c1abce19a43e3")
+	addr, _ := FromString("NAKTWAOYSE5F3J2FJWOXR56UTQLIOUXRJLBJ7CBF")
+	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Mainnet))
 }
 
 func TestAddress_PrettyString(t *testing.T) {
