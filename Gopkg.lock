@@ -32,10 +32,10 @@
   version = "v1.20.0"
 
 [[projects]]
-  branch = "master"
+  branch = "issue/lack_of_keccak"
   name = "golang.org/x/crypto"
-  packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3"]
-  revision = "7ed87166a3637399832d6c057ddb8221469a8de3"
+  packages = ["ed25519","ripemd160","sha3"]
+  revision = "0cb4b9d46af2692f3d53d1d3e9243d38d78bcaa3"
   source = "https://github.com/nem-toolchain/crypto.git"
 
 [solve-meta]
