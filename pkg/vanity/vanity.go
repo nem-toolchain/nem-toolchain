@@ -11,8 +11,11 @@ import (
 
 	"fmt"
 
+	"sort"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/util"
 )
 
 // StartSearch starts search process for vanity account address that satisfies a given selector
@@ -51,18 +54,32 @@ type FalseSelector struct{}
 // TrueSelector accepts all addresses, can be used as a default placeholder
 type TrueSelector struct{}
 
-// NoDigitSelector checks an address for absence of digits
-type NoDigitSelector struct{}
+// ExcludeSelector checks an address for absence of given characters
+type ExcludeSelector struct {
+	// chars determines a unique sorted list of excluded characters
+	chars string
+}
 
 // PrefixSelector checks an address by given prefix
 type PrefixSelector struct {
-	// Prefix determines a required address prefix to search
-	Prefix string
+	// prefix determines a required address prefix to search
+	prefix string
+}
+
+// NewExcludeSelector creates a new exclude selector from given string
+func NewExcludeSelector(chars string) (ExcludeSelector, error) {
+	if !regexp.MustCompile(`^[A-Z2-7]*$`).MatchString(chars) {
+		return ExcludeSelector{}, fmt.Errorf("incorrect exclude characters '%v'", chars)
+	}
+	arr := strings.Split(chars, "")
+	sort.Strings(arr)
+	return ExcludeSelector{strings.Join(arr, "")}, nil
 }
 
 // NewPrefixSelector creates a new prefix selector from given string
 func NewPrefixSelector(ch core.Chain, prefix string) (PrefixSelector, error) {
-	if !isPrefixCorrect(ch, prefix) {
+	str := fmt.Sprintf(`^%v[A-D][A-Z2-7]*$`, ch.ChainPrefix())
+	if !regexp.MustCompile(str).MatchString(prefix) {
 		return PrefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
 	}
 	return PrefixSelector{prefix}, nil
@@ -89,17 +106,25 @@ func (TrueSelector) rules() []searchRule {
 }
 
 // Pass returns true only if address doesn't contain any digits
-func (NoDigitSelector) Pass(addr keypair.Address) bool {
-	return !strings.ContainsAny(addr.String()[2:], "234567")
+func (sel ExcludeSelector) Pass(addr keypair.Address) bool {
+	return !strings.ContainsAny(addr.String()[1:], sel.chars)
 }
 
-func (sel NoDigitSelector) rules() []searchRule {
-	return []searchRule{{noDigitSelector: &sel}}
+func (sel ExcludeSelector) merge(other ExcludeSelector) ExcludeSelector {
+	arr := append(
+		strings.Split(sel.chars, ""),
+		strings.Split(other.chars, "")...)
+	sort.Strings(arr)
+	return ExcludeSelector{strings.Join(util.DistinctStrings(arr), "")}
+}
+
+func (sel ExcludeSelector) rules() []searchRule {
+	return []searchRule{{excludeSelector: &sel}}
 }
 
 // Pass returns true only if address has a given prefix
 func (sel PrefixSelector) Pass(addr keypair.Address) bool {
-	return strings.HasPrefix(addr.String(), sel.Prefix)
+	return strings.HasPrefix(addr.String(), sel.prefix)
 }
 
 func (sel PrefixSelector) rules() []searchRule {
@@ -128,7 +153,13 @@ func (sel seqMultiSelector) Pass(addr keypair.Address) bool {
 func (sel seqMultiSelector) rules() []searchRule {
 	res := []searchRule{{}}
 	for _, it := range sel.items {
-		res = combineSearchRules(res, it.rules())
+		n := []searchRule{}
+		for _, r1 := range res {
+			for _, r2 := range it.rules() {
+				n = append(n, r1.merge(r2))
+			}
+		}
+		res = n
 	}
 	return res
 }
@@ -150,36 +181,21 @@ func (sel parMultiSelector) rules() []searchRule {
 	return res
 }
 
-// combineSearchRules joins two separate bundle of search rules into a new one (AND logic)
-func combineSearchRules(rls1 []searchRule, rls2 []searchRule) []searchRule {
-	res := make([]searchRule, len(rls1)*len(rls2))
-	for i, r1 := range rls1 {
-		for j, r2 := range rls2 {
-			res[i*len(rls2)+j] = r1.merge(r2)
-		}
-	}
-	return res
-}
-
 // searchRule is one row declarative search rule used for example to calculate probability
 type searchRule struct {
-	noDigitSelector *NoDigitSelector
+	excludeSelector *ExcludeSelector
 	prefixSelector  *PrefixSelector
 }
 
 func (rule searchRule) merge(other searchRule) searchRule {
-	res := rule
-	if res.noDigitSelector == nil {
-		res.noDigitSelector = other.noDigitSelector
+	if rule.excludeSelector == nil {
+		rule.excludeSelector = other.excludeSelector
+	} else if other.excludeSelector != nil {
+		s := rule.excludeSelector.merge(*other.excludeSelector)
+		rule.excludeSelector = &s
 	}
-	if res.prefixSelector == nil {
-		res.prefixSelector = other.prefixSelector
+	if rule.prefixSelector == nil {
+		rule.prefixSelector = other.prefixSelector
 	}
-	return res
-}
-
-// isPrefixCorrect verify that prefix can be used
-func isPrefixCorrect(ch core.Chain, prefix string) bool {
-	str := fmt.Sprintf("^%v[A-D][A-Z2-7]*$", ch.ChainPrefix())
-	return regexp.MustCompile(str).MatchString(prefix)
+	return rule
 }

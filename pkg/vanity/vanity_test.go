@@ -7,14 +7,38 @@ import (
 	"testing"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsPrefixCorrect(t *testing.T) {
-	assert.True(t, isPrefixCorrect(core.Mijin, "MA"))
-	assert.True(t, isPrefixCorrect(core.Mainnet, "NAB"))
-	assert.True(t, isPrefixCorrect(core.Testnet, "TD234"))
+func TestNewPrefixSelector_normal(t *testing.T) {
+	for k, v := range map[core.Chain]string{
+		core.Mijin:   "MA",
+		core.Mainnet: "NAB",
+		core.Testnet: "TD234",
+	} {
+		t.Run(k.ChainPrefix(), func(t *testing.T) {
+			_, err := NewPrefixSelector(k, v)
+			assert.NoError(t, err)
+		})
+	}
+}
 
-	assert.False(t, isPrefixCorrect(core.Mijin, "MA123"))
-	assert.False(t, isPrefixCorrect(core.Mijin, "NABC"))
+func TestNewPrefixSelector_error(t *testing.T) {
+	for _, p := range []string{
+		"MA123",
+		"NABC",
+	} {
+		t.Run(p, func(t *testing.T) {
+			_, err := NewPrefixSelector(core.Mijin, p)
+			assert.Error(t, err)
+		})
+	}
+}
+
+func TestTrueSelector_pass(t *testing.T) {
+	sel := ExcludeSelector{"BCD234"}
+
+	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+	assert.True(t, sel.Pass(addr))
 }
