@@ -2,6 +2,24 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/FactomProject/basen"
+  packages = ["."]
+  revision = "fe3947df716ebfda9847eb1b9a48f9592e06478c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/FactomProject/btcutilecc"
+  packages = ["."]
+  revision = "d3a63a5752ecf3fbc06bd97365da752111c263df"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/btcsuite/btcd"
+  packages = ["btcjson"]
+  revision = "fb43a179cb37713cb19f93c9b62d436385edbc87"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -20,6 +38,12 @@
   version = "v1.1.4"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/tyler-smith/go-bip32"
+  packages = ["."]
+  revision = "2c9cfd17756470a0b7c3e4b7954bae7d11035504"
+
+[[projects]]
   name = "github.com/urfave/cli"
   packages = ["."]
   revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
@@ -35,6 +59,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c8f4315b96713cfa271d58f994c8d2b3dce5797dec767c4689d90e7bbb631669"
+  inputs-digest = "285f7fd0b16e0f4f236d057ff786f221a7803a00e743ef74b8927d395047e92c"
   solver-name = "gps-cdcl"
   solver-version = 1

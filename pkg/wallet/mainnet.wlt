@@ -1,0 +1,22 @@
+eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2NvdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5jIiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJiY2Q1ODM2ZGY5M2NjZDYwZGMxMTZjOGVjMGI1M2Y0NGQwZTRiZDg0NzJiYWEyMjcyOTcyNjFmNzM4YzY1NjNlNDNkIiwiaXYiOiIxOTBjODVmZjFlNGExNTI2MmZmOTE3YjgyZDVlOWQ4YyIsImFkZHJlc3MiOiJORExYUzJYSUFWT1BPVkhTVVpJM041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOTc5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19
+
+{
+  "privateKey": "",
+  "name": "mainnet",
+  "accounts": {
+    "0": {
+      "brain": false,
+      "algo": "pass:enc",
+      "encrypted": "e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d",
+      "iv": "190c85ff1e4a15262ff917b82d5e9d8c",
+      "address": "NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM",
+      "label": "Primary",
+      "network": 104,
+      "child": "613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f"
+    }
+  }
+}
+
+Address: NDLXS2-XIAVOP-OVHSUZ-I3N5VU-4HJ6EN-T24QVI-GAPM
+Public key: 929ebb2fe57ad0008f63baec26e89a4a939fa335939c5cfadf55eab4b076606a
+Private key: e3da763bde538be99e748733e24540379569d878d5678d0ff647dc4edf72cf0b
