@@ -6,9 +6,14 @@ import (
 	"crypto/rand"
 	"io"
 
+	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"io/ioutil"
+
+	"github.com/ethereumproject/go-ethereum/crypto/sha3"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
-	"github.com/ethereumproject/go-ethereum/crypto/sha3"
 )
 
 type Account struct {
@@ -25,8 +30,7 @@ type Account struct {
 type Wallet struct {
 	privateKey string
 	name       string
-
-	account []Account
+	accounts   map[string]Account
 }
 
 type EncryptedKey struct {
@@ -86,29 +90,72 @@ func derive(pass []byte) []byte {
 	return h
 }
 
+func (wlt *Wallet) UnmarshalJSON(b []byte) error {
+	var f interface{}
+	err := json.Unmarshal(b, &f)
+	if err != nil {
+		return err
+	}
+
+	data := f.(map[string]interface{})
+	wlt.name = data["name"].(string)
+	wlt.privateKey = data["privateKey"].(string)
+
+	wlt.accounts = make(map[string]Account)
+	val := data["accounts"].(map[string]interface{})
+	for i, v := range val {
+		var account Account
+		data := v.(map[string]interface{})
+		for k, v := range data {
+			switch k {
+			case "network":
+				val := v.(float64)
+				account.network = core.Chain{byte(val)}
+			case "label":
+				account.label = v.(string)
+			case "encrypted":
+				account.encrypted, _ = hex.DecodeString(v.(string))
+			case "iv":
+				account.iv, _ = hex.DecodeString(v.(string))
+			case "address":
+				addr, _ := keypair.FromString(v.(string))
+				account.address = addr
+			case "child":
+				account.child, _ = hex.DecodeString(v.(string))
+			case "algo":
+				account.algo = v.(string)
+			case "brain":
+				account.brain = v.(bool)
+			}
+		}
+
+		wlt.accounts[i] = account
+	}
+
+	return nil
+}
+
 func Serialize(w Wallet) error {
 	return nil
 }
 
-func Deserialize() (Wallet, error) {
-	wlt := Wallet{}
+func Deserialize(path string) (Wallet, error) {
+	var wlt Wallet
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return wlt, err
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		return wlt, err
+	}
+
+	err = json.Unmarshal(decoded, &wlt)
+	if err != nil {
+		return wlt, err
+	}
 
 	return wlt, nil
 }
-
-//{
-//"privateKey": "",
-//"name": "mainnet",
-//"accounts": {
-//"0": {
-//"brain": false,
-//"algo": "pass:enc",
-//"encrypted": "e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d",
-//"iv": "190c85ff1e4a15262ff917b82d5e9d8c",
-//"address": "NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM",
-//"label": "Primary",
-//"network": 104,
-//"child": "613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f"
-//}
-//}
-//}
