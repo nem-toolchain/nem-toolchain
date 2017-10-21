@@ -47,14 +47,23 @@ Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002
 If you would like to search for multiple prefixes at the same time and without digits at all:
 
 ```console
-$ nem --chain testnet account vanity --show-complexity --no-digits TABC TACB TBAC TBCA TCAB TCBA
-Calculate accounts rate... 15225 accounts/sec
-Specified search complexity: 1.203836e+06
-Estimate search times: 54s (50%), 2m7s (80%), 6m4s (99.9%)
-----
+$ nem --chain testnet account vanity --skip-estimate --no-digits TABC TACB TBAC TBCA TCAB TCBA
 Address: TBACRS-TXXWHM-LZYKPI-ULCOZU-WFMVIX-UMVLYT-LMKM
 Public key: bb326c920bb5b42d5d99df602bb82fdcdd922911ef3b46e73af654babba43698
 Private key: 2d9a61cee0a3b210c2cde438b7f620931049320fd8dffbda04e28e9dd0fbfdef
+```
+
+Or you can go further and customize excluded characters:
+
+```console
+> nem-snapshot --chain testnet account vanity --show-complexity --exclude 246 TABC TACB TBAC TBCA TCAB TCBA
+Calculate accounts rate... 18475 accounts/sec
+Specified search complexity: 23620
+Estimate search times: 0s (50%), 2s (80%), 5s (99.9%)
+----
+Address: TACBF3-5NBHOJ-75H3EL-QUJ3VZ-W3X73L-3BGENR-7YE5
+Public key: b2b32e526d9105d937c731d1a0f470acfae8ce1bc22f100d1210f962557feda0
+Private key: 6720d6a3d1601684c648d3f1fc2aa1109cb655c3fe0f86e458e55f8d7319b1e7
 ```
 
 As you can see from the last output, `nem-toolchain` can show specified search complexity

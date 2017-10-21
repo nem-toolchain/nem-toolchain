@@ -79,6 +79,10 @@ func main() {
 							Usage: "Number of generated accounts",
 							Value: 1,
 						},
+						cli.StringFlag{
+							Name:  "exclude",
+							Usage: "Characters that must not be in the address",
+						},
 						cli.BoolFlag{
 							Name:  "no-digits",
 							Usage: "Digits in address are disallow",
@@ -126,9 +130,17 @@ func vanityAction(c *cli.Context) error {
 		return nil
 	}
 
+	var excludeSel vanity.Selector = vanity.TrueSelector{}
+	if c.IsSet("exclude") {
+		excludeSel, err = vanity.NewExcludeSelector(c.String("exclude"))
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+	}
+
 	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
 	if c.Bool("no-digits") {
-		noDigitsSel = vanity.NoDigitSelector{}
+		noDigitsSel, _ = vanity.NewExcludeSelector("234567")
 	}
 
 	var prMultiSel vanity.Selector = vanity.TrueSelector{}
@@ -141,10 +153,10 @@ func vanityAction(c *cli.Context) error {
 			}
 			prefixes[i] = sel
 		}
-		prMultiSel = vanity.OrMultiSelector(prefixes...)
+		prMultiSel = vanity.OrSelector(prefixes...)
 	}
 
-	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
+	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
 
 	if !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
@@ -170,9 +182,9 @@ func vanityAction(c *cli.Context) error {
 			fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 		}
 		fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.5)/rate),
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.8)/rate),
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.99)/rate))
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.5)/rate),
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.8)/rate),
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.99)/rate))
 		fmt.Println("----")
 	}
 
