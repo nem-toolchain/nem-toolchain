@@ -18,6 +18,12 @@ const (
 	base32OtherPosProbability  = 1. / 32
 )
 
+// Calculate amount of keypairs to be generated to find account
+// with pre-calculated probability `pb` and with specified precision `pr`
+func NumberOfKeyPairs(pb, pr float64) float64 {
+	return math.Log2(1.-pr) / math.Log2(1.-pb)
+}
+
 // Probability determines a probability to find an address on random basis in one attempt
 func Probability(sel Selector) float64 {
 	res := float64(0)
@@ -32,17 +38,18 @@ func Probability(sel Selector) float64 {
 
 func (rule searchRule) probability() float64 {
 	res := float64(1)
-	if rule.excludeSelector != nil && rule.prefixSelector != nil {
-		res *= rule.excludeSelector.probability(uint(len(rule.prefixSelector.prefix)))
-	} else if rule.excludeSelector != nil {
-		res *= rule.excludeSelector.probability(0)
-	} else if rule.prefixSelector != nil {
-		res *= rule.prefixSelector.probability()
+	if rule.exclude != nil && rule.prefix != nil {
+		res *= rule.prefix.probability() *
+			rule.exclude.probability(uint(len(rule.prefix.prefix)))
+	} else if rule.exclude != nil {
+		res *= rule.exclude.probability(0)
+	} else if rule.prefix != nil {
+		res *= rule.prefix.probability()
 	}
 	return res
 }
 
-func (sel ExcludeSelector) probability(offset uint) float64 {
+func (sel excludeSelector) probability(offset uint) float64 {
 	res := float64(1)
 	if offset <= 0 {
 		res *= base32FirstPosProbability
@@ -58,7 +65,7 @@ func (sel ExcludeSelector) probability(offset uint) float64 {
 	return res
 }
 
-func (sel PrefixSelector) probability() float64 {
+func (sel prefixSelector) probability() float64 {
 	res := float64(1)
 	if len(sel.prefix) > 0 {
 		res *= base32FirstPosProbability
@@ -70,10 +77,4 @@ func (sel PrefixSelector) probability() float64 {
 		res *= math.Pow(base32OtherPosProbability, float64(len(sel.prefix)-2))
 	}
 	return res
-}
-
-// Calculate amount of keypairs to be generated to find account
-// with pre-calculated probability `pb` and with specified precision `pr`
-func NumberOfKeyPairs(pb, pr float64) float64 {
-	return math.Log(1-pr) / math.Log(1-pb)
 }

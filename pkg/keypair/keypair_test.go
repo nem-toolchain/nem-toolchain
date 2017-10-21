@@ -33,7 +33,7 @@ func TestKeyPair_Address_testnet(t *testing.T) {
 	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Testnet))
 }
 
-func TestParseAddress_wrongLength(t *testing.T) {
+func TestParseAddress_length(t *testing.T) {
 	for _, str := range []string{
 		"",
 		"TABC",
@@ -47,7 +47,7 @@ func TestParseAddress_wrongLength(t *testing.T) {
 	}
 }
 
-func TestParseAddress_wrongEncoding(t *testing.T) {
+func TestParseAddress_encoding(t *testing.T) {
 	for _, str := range []string{
 		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1",

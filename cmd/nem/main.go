@@ -153,10 +153,10 @@ func vanityAction(c *cli.Context) error {
 			}
 			prefixes[i] = sel
 		}
-		prMultiSel = vanity.OrMultiSelector(prefixes...)
+		prMultiSel = vanity.OrSelector(prefixes...)
 	}
 
-	sel := vanity.AndMultiSelector(excludeSel, noDigitsSel, prMultiSel)
+	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
 
 	if !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
