@@ -14,6 +14,7 @@ import (
 	"github.com/ethereumproject/go-ethereum/crypto/sha3"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"fmt"
 )
 
 type Account struct {
@@ -135,8 +136,61 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func Serialize(w Wallet) error {
-	return nil
+type AuxAccount struct {
+	Brain     bool   `json:"brain"`
+	Algo      string `json:"algo"`
+	Encrypted string `json:"encrypted"`
+	Iv        string `json:"iv"`
+	Address   string `json:"address"`
+	Label     string `json:"label"`
+	Network   byte   `json:"network"`
+	Child     string `json:"child"`
+}
+
+func (wlt Wallet) MarshalJSON() ([]byte, error) {
+	aux_accounts := make(map[string]AuxAccount)
+	for i, acc := range wlt.accounts {
+		var a AuxAccount
+		a.Brain = acc.brain
+		a.Algo = acc.algo
+		a.Encrypted = hex.EncodeToString(acc.encrypted)
+		a.Iv = hex.EncodeToString(acc.iv)
+		a.Address = acc.address.String()
+		a.Label = acc.label
+		a.Network = acc.network.Id
+		a.Child = hex.EncodeToString(acc.child)
+		aux_accounts[i] = a
+	}
+
+	acc := struct {
+		Name       string                `json:"name"`
+		PrivateKey string                `json:"privateKey"`
+		Accounts   map[string]AuxAccount `json:"accounts"`
+	}{
+		Name:       wlt.name,
+		PrivateKey: wlt.privateKey,
+		Accounts:   aux_accounts,
+	}
+
+	enc, err := json.Marshal(acc)
+	if err != nil {
+		return nil, err
+	}
+
+	return enc, nil
+}
+
+func Serialize(w Wallet) (string, error) {
+	var encoded string
+
+	ser, err := json.Marshal(w)
+	if err != nil {
+		return encoded, err
+	}
+	encoded = base64.StdEncoding.EncodeToString(ser)
+	fmt.Println(">> DEBUG serialized", string(ser))
+
+	return encoded, nil
 }
 
 func Deserialize(path string) (Wallet, error) {

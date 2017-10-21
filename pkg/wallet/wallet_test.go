@@ -8,10 +8,27 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
+	"fmt"
+	"encoding/base64"
 )
 
 func TestWalletSerialize(t *testing.T) {
+	exp := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
+		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
+		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
+		"Y2Q1ODM2ZGY5M2NjZDYwZGMxMTZjOGVjMGI1M2Y0NGQwZTRiZDg0NzJiYWEyM" +
+		"jcyOTcyNjFmNzM4YzY1NjNlNDNkIiwiaXYiOiIxOTBjODVmZjFlNGExNTI2MmZ" +
+		"mOTE3YjgyZDVlOWQ4YyIsImFkZHJlc3MiOiJORExYUzJYSUFWT1BPVkhTVVpJ" +
+		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
+		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
+		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
+	wlt, _ := Deserialize("./mainnet.wlt")
+	ser, _ := Serialize(wlt)
 
+	res, _ := base64.StdEncoding.DecodeString(ser)
+	fmt.Println(">> DEBUG  encoded `ser`", string(res))
+
+	assert.Equal(t, ser, exp)
 }
 
 func TestWalletDeserialize(t *testing.T) {
