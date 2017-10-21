@@ -29,7 +29,7 @@ func TestSearchRule_merge(t *testing.T) {
 			merge(searchRule{exclude: &excludeSelector{"6BC"}}))
 }
 
-func TestSearchRule_fail(t *testing.T) {
+func TestSearchRule_panic(t *testing.T) {
 	assert.Panics(t, func() { searchRule{prefix: &prefixSelector{}}.merge(searchRule{prefix: &prefixSelector{}}) })
 }
 
@@ -37,6 +37,6 @@ func TestNewExcludeSelector_merge(t *testing.T) {
 	assert.Equal(t, excludeSelector{}, excludeSelector{}.merge(excludeSelector{}))
 	assert.Equal(t, excludeSelector{"A"}, excludeSelector{}.merge(excludeSelector{"A"}))
 	assert.Equal(t, excludeSelector{"A"}, excludeSelector{"A"}.merge(excludeSelector{}))
-	assert.Equal(t, excludeSelector{"AB"}, excludeSelector{"A"}.merge(excludeSelector{"B"}))
-	assert.Equal(t, excludeSelector{"123AB"}, excludeSelector{"AB"}.merge(excludeSelector{"123"}))
+	assert.Equal(t, excludeSelector{"AB"}, excludeSelector{"A"}.merge(excludeSelector{"BBB"}))
+	assert.Equal(t, excludeSelector{"123AB"}, excludeSelector{"AB"}.merge(excludeSelector{"122333"}))
 }

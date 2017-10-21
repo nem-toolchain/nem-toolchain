@@ -41,6 +41,9 @@ func TestSeqMultiSelector_rules(t *testing.T) {
 		[]searchRule{{exclude: &excludeSelector{}}},
 		seqSelector{[]Selector{TrueSelector{}, excludeSelector{}}}.rules())
 	assert.Equal(t,
+		[]searchRule{{exclude: &excludeSelector{}}},
+		seqSelector{[]Selector{excludeSelector{}, excludeSelector{}}}.rules())
+	assert.Equal(t,
 		[]searchRule{{prefix: &prefixSelector{"TA"}}},
 		seqSelector{[]Selector{
 			seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}, prefixSelector{"TA"},
@@ -75,6 +78,9 @@ func TestParMultiSelector_rules(t *testing.T) {
 	assert.Equal(t, []searchRule{}, parSelector{[]Selector{FalseSelector{}}}.rules())
 	assert.Equal(t, []searchRule{{}}, parSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.rules())
 	assert.Equal(t, []searchRule{{}}, parSelector{[]Selector{TrueSelector{}, excludeSelector{}}}.rules())
+	assert.Equal(t,
+		[]searchRule{{exclude: &excludeSelector{}}},
+		parSelector{[]Selector{excludeSelector{}, excludeSelector{}}}.rules())
 	assert.Equal(t,
 		[]searchRule{{exclude: &excludeSelector{"BCD"}}, {prefix: &prefixSelector{"TA"}}},
 		parSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.rules())

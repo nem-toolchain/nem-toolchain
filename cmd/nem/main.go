@@ -182,9 +182,9 @@ func vanityAction(c *cli.Context) error {
 			fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 		}
 		fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.5)/rate),
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.8)/rate),
-			timeInSeconds(vanity.NumberOfKeyPairs(pbty, 0.99)/rate))
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.5)/rate),
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.8)/rate),
+			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.99)/rate))
 		fmt.Println("----")
 	}
 

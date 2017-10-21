@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStringsDistinct(t *testing.T) {
+func TestDistinctStringsSlice(t *testing.T) {
 	assert.Empty(t, DistinctStrings(nil))
 
 	assert.Equal(t, []string{"a"}, DistinctStrings([]string{"a"}))
@@ -24,7 +24,7 @@ func TestStringsDistinct(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "a"}, DistinctStrings([]string{"a", "b", "b", "a"}))
 }
 
-func TestStringsIntersection(t *testing.T) {
+func TestIntersectStrings(t *testing.T) {
 	assert.Empty(t, IntersectStrings(nil, nil))
 	assert.Empty(t, IntersectStrings(nil, []string{}))
 	assert.Empty(t, IntersectStrings([]string{"a"}, nil))

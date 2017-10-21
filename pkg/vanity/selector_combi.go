@@ -4,6 +4,8 @@
 package vanity
 
 import (
+	"reflect"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
@@ -68,9 +70,15 @@ func (sel parSelector) rules() []searchRule {
 	}
 	res := []searchRule{}
 	for _, it := range sel.items {
+	OUTER:
 		for _, r := range it.rules() {
 			if r == (searchRule{}) {
 				return []searchRule{{}}
+			}
+			for _, o := range res {
+				if reflect.DeepEqual(r, o) {
+					continue OUTER
+				}
 			}
 			res = append(res, r)
 		}

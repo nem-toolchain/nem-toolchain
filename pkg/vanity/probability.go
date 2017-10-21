@@ -18,9 +18,9 @@ const (
 	base32OtherPosProbability  = 1. / 32
 )
 
-// Calculate amount of keypairs to be generated to find account
+// NumberOfAttempts calculates number of keypairs to be generated to find account
 // with pre-calculated probability `pb` and with specified precision `pr`
-func NumberOfKeyPairs(pb, pr float64) float64 {
+func NumberOfAttempts(pb, pr float64) float64 {
 	return math.Log2(1.-pr) / math.Log2(1.-pb)
 }
 
@@ -50,19 +50,22 @@ func (rule searchRule) probability() float64 {
 }
 
 func (sel excludeSelector) probability(offset uint) float64 {
+	if offset >= keypair.AddressLength {
+		panic("wrong vanity selector probability offset")
+	}
 	res := float64(1)
-	if offset <= 0 {
+	if offset == 0 {
+		offset += 1
 		res *= base32FirstPosProbability
 	}
-	if offset <= 1 {
+	if offset == 1 {
+		offset += 1
 		res *= 1. - (float64(len(util.IntersectStrings(strings.Split(sel.chars, ""),
 			[]string{"A", "B", "C", "D"}))) * base32SecondPosProbability)
 	}
-	if offset <= 2 {
-		res *= math.Pow(1.-(float64(len(sel.chars))*base32OtherPosProbability),
+	return res *
+		math.Pow(1.-float64(len(sel.chars))*base32OtherPosProbability,
 			float64(keypair.AddressLength-offset))
-	}
-	return res
 }
 
 func (sel prefixSelector) probability() float64 {
