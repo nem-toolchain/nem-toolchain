@@ -4,6 +4,8 @@
 // Package core contains core domain model.
 package core
 
+import "regexp"
+
 // Chain is the type of NEM chain.
 type Chain struct {
 	Id byte
@@ -27,4 +29,8 @@ func (ch Chain) ChainPrefix() string {
 		return "T"
 	}
 	panic("unknown chain")
+}
+
+func IsChainPrefix(str string) bool {
+	return regexp.MustCompile(`^[MNT]`).MatchString(str)
 }

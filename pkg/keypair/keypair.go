@@ -24,8 +24,6 @@ const (
 	AddressBytes = 25
 	// AddressLength stores the address string representation length
 	AddressLength = 40
-	// PrettyAddressLength stores the address pretty string length
-	PrettyAddressLength = 46
 )
 
 // Address is a readable string representation for a public key.
@@ -37,24 +35,13 @@ type KeyPair struct {
 	Public  []byte
 }
 
-// FromString constructs an instance of `Address`
-func FromString(s string) (Address, error) {
-	var addr Address
-	b, err := base32.StdEncoding.DecodeString(s)
-	if err != nil {
-		return addr, errors.New("can't decode address string")
-	}
-	copy(addr[:], b)
-	return addr, nil
-}
-
 // Gen generates a new private/public key pair using entropy from crypto rand.
 func Gen() KeyPair {
-	pub, priv, err := ed25519.GenerateKey(nil)
+	pub, pr, err := ed25519.GenerateKey(nil)
 	if err != nil {
-		panic("assert: ed25519 generate key function internal error")
+		panic("assert: ed25519 GenerateKey function internal error")
 	}
-	return KeyPair{priv[:32], pub}
+	return KeyPair{pr[:32], pub}
 }
 
 // Address converts a key pair into corresponding address string representation.
@@ -77,12 +64,26 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	return addr
 }
 
+// ParseAddress constructs an instance of `Address` from given base32 string representation
+func ParseAddress(str string) (Address, error) {
+	var addr Address
+	str = strings.Replace(str, "-", "", -1)
+	if !core.IsChainPrefix(str) {
+		return addr, errors.New("unknown chain")
+	}
+	b, err := base32.StdEncoding.DecodeString(str)
+	if err != nil {
+		return addr, errors.New("can't decode address string")
+	}
+	copy(addr[:], b)
+	return addr, nil
+}
+
 // PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {
 	str := addr.String()
-	els := regexp.MustCompile(".{6}").FindAllString(str, -1)
-	els = append(els, str[36:])
-	return strings.Join(els, "-")
+	els := regexp.MustCompile(`.{6}`).FindAllString(str, -1)
+	return strings.Join(append(els, str[36:]), "-")
 }
 
 func (addr Address) String() string {
