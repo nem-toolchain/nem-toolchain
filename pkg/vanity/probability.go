@@ -58,9 +58,9 @@ func (sel excludeSelector) probability(offset uint) float64 {
 		offset, res = 1, res*base32FirstPosProbability
 	}
 	if offset == 1 {
-		offset, res = 2, res * (1. -
+		offset, res = 2, res*(1.-
 			(float64(len(util.IntersectStrings([]string{"A", "B", "C", "D"},
-				strings.Split(sel.chars, "")))) * base32SecondPosProbability))
+				strings.Split(sel.chars, ""))))*base32SecondPosProbability))
 	}
 	return res *
 		math.Pow(1.-float64(len(sel.chars))*base32OtherPosProbability,
