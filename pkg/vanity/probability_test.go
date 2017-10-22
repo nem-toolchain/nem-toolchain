@@ -23,6 +23,14 @@ func TestNumberOfAttempts(t *testing.T) {
 	assert.Equal(t, 1., NumberOfAttempts(0.5, 0.5))
 	assert.InDelta(t, 2, NumberOfAttempts(0.5, 0.8), 1)
 	assert.InDelta(t, 7, NumberOfAttempts(0.5, 0.99), 1)
+
+	assert.InDelta(t, 7., NumberOfAttempts(0.1, 0.5), 1)
+	assert.InDelta(t, 15, NumberOfAttempts(0.1, 0.8), 1)
+	assert.InDelta(t, 44, NumberOfAttempts(0.1, 0.99), 1)
+
+	assert.InDelta(t, 69314, NumberOfAttempts(1e-5, 0.5), 1)
+	assert.InDelta(t, 160943, NumberOfAttempts(1e-5, 0.8), 1)
+	assert.InDelta(t, 460515, NumberOfAttempts(1e-5, 0.99), 1)
 }
 
 func TestProbability(t *testing.T) {
@@ -41,9 +49,9 @@ func TestSearchRule_probability(t *testing.T) {
 	assert.Equal(t, 1., searchRule{}.probability())
 	assert.InDelta(t, 0.00593, searchRule{exclude: &excludeSelector{"ABC"}}.probability(), 1e-5)
 	assert.InDelta(t, 0.00024, searchRule{prefix: &prefixSelector{"TABC"}}.probability(), 1e-5)
-	assert.InDelta(t, 0.000007,
+	assert.InDelta(t, 0.0000071,
 		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{"TABC"}}.probability(),
-		1e-6)
+		1e-7)
 }
 
 func TestExcludePrefix_probability(t *testing.T) {
@@ -77,5 +85,6 @@ func TestPrefixPrefix_probability(t *testing.T) {
 	assert.Equal(t, 1., prefixSelector{}.probability())
 	assert.Equal(t, 1., prefixSelector{"T"}.probability())
 	assert.Equal(t, .25, prefixSelector{"TA"}.probability())
+	assert.InDelta(t, 0.00781, prefixSelector{"TAB"}.probability(), 1e-5)
 	assert.InDelta(t, 0.00024, prefixSelector{"TABC"}.probability(), 1e-5)
 }

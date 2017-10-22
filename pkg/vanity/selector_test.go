@@ -44,13 +44,13 @@ func TestTrueSelector_Pass(t *testing.T) {
 	assert.True(t, TrueSelector{}.Pass(keypair.Address{}))
 }
 
-func TestExcludeSelector_Pass(t *testing.T) {
+func TestExcludeSelector_Pass_true(t *testing.T) {
 	sel := excludeSelector{"BCD234"}
 	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	assert.True(t, sel.Pass(addr))
 }
 
-func TestExcludeSelector_Pass_fail(t *testing.T) {
+func TestExcludeSelector_Pass_false(t *testing.T) {
 	sel := excludeSelector{"BCD234"}
 	for _, s := range []string{
 		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -65,13 +65,13 @@ func TestExcludeSelector_Pass_fail(t *testing.T) {
 	}
 }
 
-func TestPrefixSelector_Pass(t *testing.T) {
+func TestPrefixSelector_Pass_true(t *testing.T) {
 	sel := prefixSelector{"TABC"}
 	addr, _ := keypair.ParseAddress("TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	assert.True(t, sel.Pass(addr))
 }
 
-func TestPrefixSelector_Pass_fail(t *testing.T) {
+func TestPrefixSelector_Pass_false(t *testing.T) {
 	sel := prefixSelector{"TABC"}
 	for _, s := range []string{
 		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",

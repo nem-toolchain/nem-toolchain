@@ -166,25 +166,11 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		res := make(chan int, runtime.NumCPU())
-		for i := 0; i < cap(res); i++ {
-			go countKeyPairs(3200, res)
-		}
-		rate := float64(0)
-		for i := 0; i < cap(res); i++ {
-			rate += float64(<-res) / 3.2
-		}
+		rate := countActualRate()
 		ticker.Stop()
 		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
-
-		pbty := vanity.Probability(sel) / float64(num)
-		if c.Bool("show-complexity") {
-			fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
-		}
-		fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
-			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.5)/rate),
-			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.8)/rate),
-			timeInSeconds(vanity.NumberOfAttempts(pbty, 0.99)/rate))
+		printEstimateDetails(
+			vanity.Probability(sel)/float64(num), rate, c.Bool("show-complexity"))
 		fmt.Println("----")
 	}
 
@@ -219,7 +205,20 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	return ch, nil
 }
 
-// Count number of generated keypairs for specified interval
+// countActualRate counts total number of generated keypairs per second
+func countActualRate() float64 {
+	res := make(chan int, runtime.NumCPU())
+	for i := 0; i < cap(res); i++ {
+		go countKeyPairs(3200, res)
+	}
+	rate := float64(0)
+	for i := 0; i < cap(res); i++ {
+		rate += float64(<-res) / 3.2
+	}
+	return rate
+}
+
+// countKeyPairs counts number of generated keypairs for specified interval
 func countKeyPairs(milliseconds time.Duration, res chan int) {
 	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
@@ -234,7 +233,18 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 	}
 }
 
-// Format estimated time
+// printEstimateDetails prints estimate search time details
+func printEstimateDetails(pbty, rate float64, compl bool) {
+	if compl {
+		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
+	}
+	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
+		timeInSeconds(vanity.NumberOfAttempts(pbty, 0.5)/rate),
+		timeInSeconds(vanity.NumberOfAttempts(pbty, 0.8)/rate),
+		timeInSeconds(vanity.NumberOfAttempts(pbty, 0.99)/rate))
+}
+
+// timeInSeconds formats estimated time
 func timeInSeconds(val float64) string {
 	val = 1e9 * math.Trunc(val)
 	if val >= math.MaxInt64 || math.IsInf(val, 0) {
@@ -243,7 +253,7 @@ func timeInSeconds(val float64) string {
 	return time.Duration(val).String()
 }
 
-// Pretty print account details
+// printAccountDetails prints account details in pretty user-oriented multi-line format
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))

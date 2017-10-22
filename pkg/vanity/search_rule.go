@@ -36,5 +36,6 @@ func (sel excludeSelector) merge(other excludeSelector) excludeSelector {
 		strings.Split(sel.chars, ""),
 		strings.Split(other.chars, "")...)
 	sort.Strings(arr)
-	return excludeSelector{strings.Join(util.DistinctStrings(arr), "")}
+	return excludeSelector{
+		strings.Join(util.DistinctStrings(arr), "")}
 }

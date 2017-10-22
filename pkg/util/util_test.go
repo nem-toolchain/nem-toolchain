@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDistinctStringsSlice(t *testing.T) {
+func TestDistinctStrings(t *testing.T) {
 	assert.Empty(t, DistinctStrings(nil))
 
 	assert.Equal(t, []string{"a"}, DistinctStrings([]string{"a"}))

@@ -53,15 +53,12 @@ func (sel seqSelector) rules() []searchRule {
 }
 
 func (sel parSelector) Pass(addr keypair.Address) bool {
-	if len(sel.items) == 0 {
-		return true
-	}
 	for _, it := range sel.items {
 		if it.Pass(addr) {
 			return true
 		}
 	}
-	return false
+	return len(sel.items) == 0
 }
 
 func (sel parSelector) rules() []searchRule {
@@ -70,14 +67,14 @@ func (sel parSelector) rules() []searchRule {
 	}
 	res := []searchRule{}
 	for _, it := range sel.items {
-	OUTER:
+	OUTER_LOOP:
 		for _, r := range it.rules() {
 			if r == (searchRule{}) {
 				return []searchRule{{}}
 			}
 			for _, o := range res {
 				if reflect.DeepEqual(r, o) {
-					continue OUTER
+					continue OUTER_LOOP
 				}
 			}
 			res = append(res, r)

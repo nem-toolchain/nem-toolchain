@@ -31,6 +31,7 @@ func (ch Chain) ChainPrefix() string {
 	panic("unknown chain")
 }
 
+// IsChainPrefix checks for existing chain prefixes
 func IsChainPrefix(str string) bool {
 	return regexp.MustCompile(`^[MNT]`).MatchString(str)
 }
