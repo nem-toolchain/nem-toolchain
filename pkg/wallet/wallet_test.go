@@ -8,11 +8,6 @@ import (
 
 	"encoding/hex"
 
-	"io/ioutil"
-	"os"
-
-	"log"
-
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
@@ -67,36 +62,36 @@ func TestWalletDeserialize(t *testing.T) {
 	assert.Equal(t, account.brain, false)
 }
 
-func TestReadWalletFile(t *testing.T) {
-	raw := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
-		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
-		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
-		"Y2Q1ODM2ZGY5M2NjZDYwZGMxMTZjOGVjMGI1M2Y0NGQwZTRiZDg0NzJiYWEyM" +
-		"jcyOTcyNjFmNzM4YzY1NjNlNDNkIiwiaXYiOiIxOTBjODVmZjFlNGExNTI2MmZ" +
-		"mOTE3YjgyZDVlOWQ4YyIsImFkZHJlc3MiOiJORExYUzJYSUFWT1BPVkhTVVpJ" +
-		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
-		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
-		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
-	exp, _ := Deserialize(raw)
-	wlt, _ := ReadWallet("./test_data/mainnet.wlt")
-
-	assert.Equal(t, exp, wlt)
-}
-
-func TestWriteWalletFile(t *testing.T) {
-	exp, _ := ReadWallet("./test_data/mainnet.wlt")
-
-	file, _ := ioutil.TempFile(os.TempDir(), "prefix")
-	defer func() {
-		e := os.Remove(file.Name())
-		if e != nil {
-			log.Fatal(e)
-		}
-	}()
-
-	err := WriteWallet(file.Name(), exp)
-	assert.NoError(t, err)
-
-	wlt, _ := ReadWallet(file.Name())
-	assert.Equal(t, wlt, exp)
-}
+//func TestReadWalletFile(t *testing.T) {
+//	raw := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
+//		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
+//		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
+//		"Y2Q1ODM2ZGY5M2NjZDYwZGMxMTZjOGVjMGI1M2Y0NGQwZTRiZDg0NzJiYWEyM" +
+//		"jcyOTcyNjFmNzM4YzY1NjNlNDNkIiwiaXYiOiIxOTBjODVmZjFlNGExNTI2MmZ" +
+//		"mOTE3YjgyZDVlOWQ4YyIsImFkZHJlc3MiOiJORExYUzJYSUFWT1BPVkhTVVpJ" +
+//		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
+//		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
+//		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
+//	exp, _ := Deserialize(raw)
+//	wlt, _ := ReadWallet("./test_data/mainnet.wlt")
+//
+//	assert.Equal(t, exp, wlt)
+//}
+//
+//func TestWriteWalletFile(t *testing.T) {
+//	exp, _ := ReadWallet("./test_data/mainnet.wlt")
+//
+//	file, _ := ioutil.TempFile(os.TempDir(), "prefix")
+//	defer func() {
+//		e := os.Remove(file.Name())
+//		if e != nil {
+//			log.Fatal(e)
+//		}
+//	}()
+//
+//	err := WriteWallet(file.Name(), exp)
+//	assert.NoError(t, err)
+//
+//	wlt, _ := ReadWallet(file.Name())
+//	assert.Equal(t, wlt, exp)
+//}

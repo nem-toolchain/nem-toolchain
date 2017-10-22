@@ -17,9 +17,12 @@ import (
 
 	"encoding/hex"
 
+	"bufio"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
+	"github.com/nem-toolchain/nem-toolchain/pkg/wallet"
 	"github.com/urfave/cli"
 )
 
@@ -58,6 +61,11 @@ func main() {
 			Usage: "Account related bundle of actions",
 			Subcommands: []cli.Command{
 				{
+					Name:   "import",
+					Usage:  "Import account from wallet file",
+					Action: importAction,
+				},
+				{
 					Name:   "generate",
 					Usage:  "Generate a new account",
 					Action: generateAction,
@@ -66,6 +74,10 @@ func main() {
 							Name:  "number, n",
 							Usage: "Number of generated accounts",
 							Value: 1,
+						},
+						cli.BoolFlag{
+							Name:  "save-wallet, w",
+							Usage: "Save to wallet file",
 						},
 					},
 				},
@@ -95,6 +107,10 @@ func main() {
 							Name:  "show-complexity",
 							Usage: "Show additionally the specified search complexity",
 						},
+						cli.BoolFlag{
+							Name:  "save-wallet, w",
+							Usage: "Save to wallet file",
+						},
 					},
 				},
 			},
@@ -102,6 +118,28 @@ func main() {
 	}
 
 	_ = app.Run(os.Args)
+}
+
+func importAction(c *cli.Context) error {
+	reader := bufio.NewReader(os.Stdin)
+	raw, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	wlt, err := wallet.Deserialize(raw)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print("Enter password: ")
+	pass, err := reader.ReadString('\n')
+
+	for _, acc := range wlt.Accounts {
+		acc.Decrypt(pass)
+	}
+
+	return err
 }
 
 func generateAction(c *cli.Context) error {
@@ -112,8 +150,17 @@ func generateAction(c *cli.Context) error {
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
-		printAccountDetails(ch, keypair.Gen())
-		fmt.Println("----")
+		kp := keypair.Gen()
+		if c.Bool("save-wallet") {
+			wlt, err := createWallet(ch, kp)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			fmt.Printf("Generated wallet: %+v\n", wlt)
+		} else {
+			printAccountDetails(ch, kp)
+			fmt.Println("----")
+		}
 	}
 
 	return nil
@@ -197,7 +244,15 @@ func vanityAction(c *cli.Context) error {
 		if i != 0 {
 			fmt.Println("----")
 		}
-		printAccountDetails(ch, <-rs)
+		if c.Bool("save-wallet") {
+			wlt, err := createWallet(ch, <-rs)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			fmt.Printf("Generated wallet: %+v\n", wlt)
+		} else {
+			printAccountDetails(ch, <-rs)
+		}
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
@@ -248,4 +303,22 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+}
+
+func createWallet(chain core.Chain, pair keypair.KeyPair) (wallet.Wallet, error) {
+	wlt := wallet.New(chain)
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter password: ")
+	pass, err := reader.ReadString('\n')
+	if err != nil {
+		return wlt, err
+	}
+
+	err = wlt.AddAccount(pair, pass)
+	if err != nil {
+		return wlt, err
+	}
+
+	return wlt, nil
 }

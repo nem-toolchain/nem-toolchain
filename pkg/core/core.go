@@ -34,3 +34,15 @@ func (ch Chain) ChainPrefix() string {
 func IsChainPrefix(str string) bool {
 	return regexp.MustCompile(`^[MNT]`).MatchString(str)
 }
+
+func (ch Chain) String() string {
+	switch ch {
+	case Mijin:
+		return "mijin"
+	case Mainnet:
+		return "mainnet"
+	case Testnet:
+		return "testnet"
+	}
+	panic("unknown chain")
+}

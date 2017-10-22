@@ -6,8 +6,14 @@ package wallet
 import (
 	"encoding/hex"
 
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"io"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"golang.org/x/crypto/sha3"
 )
 
 type Account struct {
@@ -61,16 +67,80 @@ func FromRaw(raw interface{}) (Account, error) {
 	return account, nil
 }
 
-func (a Account) Serializable() SerializableAccount {
+func (acc Account) Serializable() SerializableAccount {
 	var ser SerializableAccount
-	ser.Brain = a.brain
-	ser.Algo = a.algo
-	ser.Encrypted = hex.EncodeToString(a.encrypted)
-	ser.Iv = hex.EncodeToString(a.iv)
-	ser.Address = a.address.String()
-	ser.Label = a.label
-	ser.Network = a.network.Id
-	ser.Child = hex.EncodeToString(a.child)
+	ser.Brain = acc.brain
+	ser.Algo = acc.algo
+	ser.Encrypted = hex.EncodeToString(acc.encrypted)
+	ser.Iv = hex.EncodeToString(acc.iv)
+	ser.Address = acc.address.String()
+	ser.Label = acc.label
+	ser.Network = acc.network.Id
+	ser.Child = hex.EncodeToString(acc.child)
 
 	return ser
+}
+
+func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
+	pass, err := derive(password)
+	if err != nil {
+		return err
+	}
+
+	block, err := aes.NewCipher(pass)
+	if err != nil {
+		return err
+	}
+
+	ciphertext := make([]byte, len(key.Private))
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return err
+	}
+
+	mode := cipher.NewCBCEncrypter(block, iv)
+	mode.CryptBlocks(ciphertext, key.Private)
+
+	acc.encrypted = ciphertext
+	acc.iv = iv
+	acc.address = key.Address(acc.network)
+
+	return nil
+}
+
+func (acc *Account) Decrypt(password string) ([]byte, error) {
+	pk := make([]byte, 32)
+
+	pass, err := derive(password)
+	if err != nil {
+		return pk, err
+	}
+
+	block, err := aes.NewCipher(pass)
+	if err != nil {
+		return pk, err
+	}
+
+	mode := cipher.NewCBCDecrypter(block, acc.iv)
+	mode.CryptBlocks(pk, acc.encrypted)
+
+	return pk, nil
+}
+
+func derive(password string) ([]byte, error) {
+	pass := []byte(password)
+	hash := sha3.NewKeccak256()
+	h := pass
+
+	for i := 0; i < 20; i++ {
+		_, err := hash.Write(h)
+		if err != nil {
+			return h, err
+		}
+
+		h = hash.Sum(nil)
+		hash.Reset()
+	}
+
+	return h, nil
 }

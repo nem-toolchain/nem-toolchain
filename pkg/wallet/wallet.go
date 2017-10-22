@@ -6,15 +6,37 @@ package wallet
 import (
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
-	"log"
-	"os"
+
+	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
 type Wallet struct {
-	privateKey string
-	name       string
-	accounts   map[string]Account
+	PrivateKey string
+	Name       string
+	Accounts   map[string]Account
+}
+
+func New(chain core.Chain) Wallet {
+	wlt := Wallet{}
+	wlt.Name = chain.String()
+	wlt.PrivateKey = ""
+	wlt.Accounts = make(map[string]Account)
+
+	return wlt
+}
+
+func (wlt *Wallet) AddAccount(pair keypair.KeyPair, password string) error {
+	acc := Account{}
+	err := acc.Encrypt(pair, password)
+	if err != nil {
+		return err
+	}
+
+	i := string(len(wlt.Accounts))
+	wlt.Accounts[i] = acc
+
+	return nil
 }
 
 func (wlt *Wallet) UnmarshalJSON(b []byte) error {
@@ -25,10 +47,10 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	}
 
 	data := f.(map[string]interface{})
-	wlt.name = data["name"].(string)
-	wlt.privateKey = data["privateKey"].(string)
+	wlt.Name = data["name"].(string)
+	wlt.PrivateKey = data["privateKey"].(string)
 
-	wlt.accounts = make(map[string]Account)
+	wlt.Accounts = make(map[string]Account)
 	val := data["accounts"].(map[string]interface{})
 	for i, v := range val {
 		account, err := FromRaw(v)
@@ -36,7 +58,7 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 			return err
 		}
 
-		wlt.accounts[i] = account
+		wlt.Accounts[i] = account
 	}
 
 	return nil
@@ -44,7 +66,7 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 
 func (wlt Wallet) MarshalJSON() ([]byte, error) {
 	aux_accounts := make(map[string]SerializableAccount)
-	for i, acc := range wlt.accounts {
+	for i, acc := range wlt.Accounts {
 		aux_accounts[i] = acc.Serializable()
 	}
 
@@ -53,8 +75,8 @@ func (wlt Wallet) MarshalJSON() ([]byte, error) {
 		Name       string                         `json:"name"`
 		Accounts   map[string]SerializableAccount `json:"accounts"`
 	}{
-		PrivateKey: wlt.privateKey,
-		Name:       wlt.name,
+		PrivateKey: wlt.PrivateKey,
+		Name:       wlt.Name,
 		Accounts:   aux_accounts,
 	}
 
@@ -66,45 +88,45 @@ func (wlt Wallet) MarshalJSON() ([]byte, error) {
 	return enc, nil
 }
 
-func ReadWallet(path string) (Wallet, error) {
-	var wlt Wallet
-
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return wlt, err
-	}
-
-	wlt, err = Deserialize(string(data))
-
-	return wlt, err
-}
-
-func WriteWallet(path string, wlt Wallet) error {
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		e := f.Close()
-		if e != nil {
-			log.Fatal(e)
-		}
-	}()
-
-	ser, err := Serialize(wlt)
-	if err != nil {
-		return err
-	}
-
-	_, err = f.WriteString(ser)
-	if err != nil {
-		return err
-	}
-	err = f.Sync()
-
-	return err
-}
+//func ReadWallet(path string) (Wallet, error) {
+//	var wlt Wallet
+//
+//	data, err := ioutil.ReadFile(path)
+//	if err != nil {
+//		return wlt, err
+//	}
+//
+//	wlt, err = Deserialize(string(data))
+//
+//	return wlt, err
+//}
+//
+//func WriteWallet(path string, wlt Wallet) error {
+//	f, err := os.Create(path)
+//	if err != nil {
+//		return err
+//	}
+//
+//	defer func() {
+//		e := f.Close()
+//		if e != nil {
+//			log.Fatal(e)
+//		}
+//	}()
+//
+//	ser, err := Serialize(wlt)
+//	if err != nil {
+//		return err
+//	}
+//
+//	_, err = f.WriteString(ser)
+//	if err != nil {
+//		return err
+//	}
+//	err = f.Sync()
+//
+//	return err
+//}
 
 func Serialize(w Wallet) (string, error) {
 	var encoded string
