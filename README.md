@@ -47,7 +47,7 @@ If you look for releases instead, there are already prepared
 ## How to contribute
 
 You are always welcome to fix
-[not yet assigned bugs](https://github.com/nem-toolchain/nem-toolchain/issues?q=is%3Aopen+label%3Abug+no%3Aassignee)
+[not yet assigned bugs](https://github.com/nem-toolchain/nem-toolchain/issues?q=is%3Aopen+label%3A%22non-critical%20bug%22+no%3Aassignee)
 or can help us with [extraordinary issues](https://github.com/nem-toolchain/nem-toolchain/labels/help%20wanted).
 
 Check out the [technical documentation](https://github.com/nem-toolchain/nem-toolchain/wiki),
