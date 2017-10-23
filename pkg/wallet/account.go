@@ -16,17 +16,19 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// Account used to encrypt private key
 type Account struct {
-	brain     bool
-	algo      string
-	encrypted []byte
-	iv        []byte
-	address   keypair.Address
-	label     string
-	network   core.Chain
-	child     []byte
+	Brain     bool
+	Algo      string
+	Encrypted []byte
+	Iv        []byte
+	Address   keypair.Address
+	Label     string
+	Network   core.Chain
+	Child     []byte
 }
 
+// Json-serializable form for Account
 type SerializableAccount struct {
 	Brain     bool   `json:"brain"`
 	Algo      string `json:"algo"`
@@ -45,42 +47,63 @@ func FromRaw(raw interface{}) (Account, error) {
 		switch k {
 		case "network":
 			val := v.(float64)
-			account.network = core.Chain{byte(val)}
+			ch, err := core.NewChain(byte(val))
+			if err != nil {
+				return account, err
+			}
+			account.Network = ch
 		case "label":
-			account.label = v.(string)
+			account.Label = v.(string)
 		case "encrypted":
-			account.encrypted, _ = hex.DecodeString(v.(string))
+			encrypted, err := hex.DecodeString(v.(string))
+			if err != nil {
+				return account, err
+			}
+			account.Encrypted = encrypted
 		case "iv":
-			account.iv, _ = hex.DecodeString(v.(string))
+			iv, err := hex.DecodeString(v.(string))
+			if err != nil {
+				return account, err
+			}
+			account.Iv = iv
 		case "address":
-			addr, _ := keypair.ParseAddress(v.(string))
-			account.address = addr
+			addr, err := keypair.ParseAddress(v.(string))
+			if err != nil {
+				return account, err
+			}
+			account.Address = addr
 		case "child":
-			account.child, _ = hex.DecodeString(v.(string))
+			child, err := hex.DecodeString(v.(string))
+			if err != nil {
+				return account, err
+			}
+			account.Child = child
 		case "algo":
-			account.algo = v.(string)
+			account.Algo = v.(string)
 		case "brain":
-			account.brain = v.(bool)
+			account.Brain = v.(bool)
 		}
 	}
 
 	return account, nil
 }
 
+// Convert account into json-serializable form
 func (acc Account) Serializable() SerializableAccount {
 	var ser SerializableAccount
-	ser.Brain = acc.brain
-	ser.Algo = acc.algo
-	ser.Encrypted = hex.EncodeToString(acc.encrypted)
-	ser.Iv = hex.EncodeToString(acc.iv)
-	ser.Address = acc.address.String()
-	ser.Label = acc.label
-	ser.Network = acc.network.Id
-	ser.Child = hex.EncodeToString(acc.child)
+	ser.Brain = acc.Brain
+	ser.Algo = acc.Algo
+	ser.Encrypted = hex.EncodeToString(acc.Encrypted)
+	ser.Iv = hex.EncodeToString(acc.Iv)
+	ser.Address = acc.Address.String()
+	ser.Label = acc.Label
+	ser.Network = acc.Network.Id
+	ser.Child = hex.EncodeToString(acc.Child)
 
 	return ser
 }
 
+// Encrypt KeyPair into account
 func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
 	pass, err := derive(password)
 	if err != nil {
@@ -101,30 +124,32 @@ func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(ciphertext, key.Private)
 
-	acc.encrypted = ciphertext
-	acc.iv = iv
-	acc.address = key.Address(acc.network)
+	acc.Encrypted = ciphertext
+	acc.Iv = iv
+	acc.Address = key.Address(acc.Network)
 
 	return nil
 }
 
-func (acc *Account) Decrypt(password string) ([]byte, error) {
-	pk := make([]byte, 32)
-
+// Decrypt KeyPair from account
+func (acc *Account) Decrypt(password string) (keypair.KeyPair, error) {
+	var key keypair.KeyPair
 	pass, err := derive(password)
 	if err != nil {
-		return pk, err
+		return key, err
 	}
 
 	block, err := aes.NewCipher(pass)
 	if err != nil {
-		return pk, err
+		return key, err
 	}
 
-	mode := cipher.NewCBCDecrypter(block, acc.iv)
-	mode.CryptBlocks(pk, acc.encrypted)
+	pk := make([]byte, 32)
+	mode := cipher.NewCBCDecrypter(block, acc.Iv)
+	mode.CryptBlocks(pk, acc.Encrypted)
+	key.Private = pk
 
-	return pk, nil
+	return key, nil
 }
 
 func derive(password string) ([]byte, error) {

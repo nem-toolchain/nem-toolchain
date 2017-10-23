@@ -88,46 +88,6 @@ func (wlt Wallet) MarshalJSON() ([]byte, error) {
 	return enc, nil
 }
 
-//func ReadWallet(path string) (Wallet, error) {
-//	var wlt Wallet
-//
-//	data, err := ioutil.ReadFile(path)
-//	if err != nil {
-//		return wlt, err
-//	}
-//
-//	wlt, err = Deserialize(string(data))
-//
-//	return wlt, err
-//}
-//
-//func WriteWallet(path string, wlt Wallet) error {
-//	f, err := os.Create(path)
-//	if err != nil {
-//		return err
-//	}
-//
-//	defer func() {
-//		e := f.Close()
-//		if e != nil {
-//			log.Fatal(e)
-//		}
-//	}()
-//
-//	ser, err := Serialize(wlt)
-//	if err != nil {
-//		return err
-//	}
-//
-//	_, err = f.WriteString(ser)
-//	if err != nil {
-//		return err
-//	}
-//	err = f.Sync()
-//
-//	return err
-//}
-
 func Serialize(w Wallet) (string, error) {
 	var encoded string
 

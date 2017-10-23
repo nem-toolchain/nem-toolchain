@@ -4,7 +4,10 @@
 // Package core contains core domain model.
 package core
 
-import "regexp"
+import (
+	"errors"
+	"regexp"
+)
 
 // Chain is the type of NEM chain.
 type Chain struct {
@@ -17,6 +20,25 @@ var (
 	Mainnet = Chain{byte(0x68)}
 	Testnet = Chain{byte(0x98)}
 )
+
+// Parse byte value into Chain
+func NewChain(val byte) (Chain, error) {
+	var ch Chain
+	var err error
+
+	switch val {
+	case byte(0x68):
+		ch = Mainnet
+	case byte(0x98):
+		ch = Testnet
+	case byte(0x60):
+		ch = Mijin
+	default:
+		err = errors.New("invalid chain id")
+	}
+
+	return ch, err
+}
 
 // ChainPrefix returns unique chain prefix
 func (ch Chain) ChainPrefix() string {

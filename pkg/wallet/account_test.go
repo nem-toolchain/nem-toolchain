@@ -7,17 +7,23 @@ import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPrivateKey_EncryptDecrypt(t *testing.T) {
-	pr, _ := hex.DecodeString("2a91e1d5c110a8d0105aad4683f962c2a56663a3cad46666b16d243174673d90")
-	exp, _ := hex.DecodeString("8cd87bc513857a7079d182a6e19b370e907107d97bd3f81a85bcebcc4b5bd3b5")
+	pr, _ := hex.DecodeString("e3da763bde538be99e748733e24540379569d878d5678d0ff647dc4edf72cf0b")
+	enc, _ := hex.DecodeString("e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
+	pass := "12345"
 
-	pass, err := derive([]byte("TestTest"))
-	assert.Equal(t, pass, exp)
+	acc := Account{}
+	kp := keypair.KeyPair{}
+	kp.Private = pr
 
-	enc, _ := encrypt(pr, pass)
-	dec, _ := decrypt(enc, pass)
-	assert.Equal(t, dec, pr)
+	assert.NoError(t, acc.Encrypt(kp, pass))
+	assert.Equal(t, acc.Encrypted, enc)
+
+	decr, _ := acc.Decrypt(pass)
+	assert.Equal(t, kp.Private, decr.Private)
+
 }

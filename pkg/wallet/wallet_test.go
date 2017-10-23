@@ -41,57 +41,23 @@ func TestWalletDeserialize(t *testing.T) {
 		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
 	wlt, _ := Deserialize(exp)
 
-	assert.Equal(t, wlt.name, "mainnet")
-	assert.Equal(t, wlt.privateKey, "")
+	assert.Equal(t, wlt.Name, "mainnet")
+	assert.Equal(t, wlt.PrivateKey, "")
 
-	account := wlt.accounts["0"]
+	account := wlt.Accounts["0"]
 	exp_address, _ := keypair.ParseAddress("NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM")
-	assert.Equal(t, account.address, exp_address)
-	assert.Equal(t, account.label, "Primary")
+	assert.Equal(t, account.Address, exp_address)
+	assert.Equal(t, account.Label, "Primary")
 
 	exp_child, _ := hex.DecodeString("613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f")
-	assert.Equal(t, account.child, exp_child)
+	assert.Equal(t, account.Child, exp_child)
 
 	exp_encrypted, _ := hex.DecodeString("e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
-	assert.Equal(t, account.encrypted, exp_encrypted)
+	assert.Equal(t, account.Encrypted, exp_encrypted)
 
 	exp_iv, _ := hex.DecodeString("190c85ff1e4a15262ff917b82d5e9d8c")
-	assert.Equal(t, account.iv, exp_iv)
-	assert.Equal(t, account.network, core.Mainnet)
-	assert.Equal(t, account.algo, "pass:enc")
-	assert.Equal(t, account.brain, false)
+	assert.Equal(t, account.Iv, exp_iv)
+	assert.Equal(t, account.Network, core.Mainnet)
+	assert.Equal(t, account.Algo, "pass:enc")
+	assert.Equal(t, account.Brain, false)
 }
-
-//func TestReadWalletFile(t *testing.T) {
-//	raw := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
-//		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
-//		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
-//		"Y2Q1ODM2ZGY5M2NjZDYwZGMxMTZjOGVjMGI1M2Y0NGQwZTRiZDg0NzJiYWEyM" +
-//		"jcyOTcyNjFmNzM4YzY1NjNlNDNkIiwiaXYiOiIxOTBjODVmZjFlNGExNTI2MmZ" +
-//		"mOTE3YjgyZDVlOWQ4YyIsImFkZHJlc3MiOiJORExYUzJYSUFWT1BPVkhTVVpJ" +
-//		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
-//		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
-//		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
-//	exp, _ := Deserialize(raw)
-//	wlt, _ := ReadWallet("./test_data/mainnet.wlt")
-//
-//	assert.Equal(t, exp, wlt)
-//}
-//
-//func TestWriteWalletFile(t *testing.T) {
-//	exp, _ := ReadWallet("./test_data/mainnet.wlt")
-//
-//	file, _ := ioutil.TempFile(os.TempDir(), "prefix")
-//	defer func() {
-//		e := os.Remove(file.Name())
-//		if e != nil {
-//			log.Fatal(e)
-//		}
-//	}()
-//
-//	err := WriteWallet(file.Name(), exp)
-//	assert.NoError(t, err)
-//
-//	wlt, _ := ReadWallet(file.Name())
-//	assert.Equal(t, wlt, exp)
-//}

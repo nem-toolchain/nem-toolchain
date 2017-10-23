@@ -19,11 +19,15 @@ import (
 
 	"bufio"
 
+	"io/ioutil"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
 	"github.com/nem-toolchain/nem-toolchain/pkg/wallet"
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -121,22 +125,33 @@ func main() {
 }
 
 func importAction(c *cli.Context) error {
-	reader := bufio.NewReader(os.Stdin)
-	raw, err := reader.ReadString('\n')
-	if err != nil {
-		return err
+	if len(c.Args()) > 1 {
+		return cli.NewExitError(errors.New("invalid path to wallet file"), 1)
 	}
 
-	wlt, err := wallet.Deserialize(raw)
+	raw, err := ioutil.ReadFile(c.Args().First())
 	if err != nil {
-		return err
+		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Print("Enter password: ")
-	pass, err := reader.ReadString('\n')
+	fmt.Println("Enter password:")
+	pass, err := terminal.ReadPassword(0)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	wlt, err := wallet.Deserialize(string(raw))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
 
 	for _, acc := range wlt.Accounts {
-		acc.Decrypt(pass)
+		kp, err_dec := acc.Decrypt(string(pass))
+		if err_dec != nil {
+			return cli.NewExitError(err_dec.Error(), 1)
+		}
+		fmt.Println("Address:", acc.Address)
+		fmt.Println("Private key:", hex.EncodeToString(kp.Private))
 	}
 
 	return err
@@ -316,9 +331,6 @@ func createWallet(chain core.Chain, pair keypair.KeyPair) (wallet.Wallet, error)
 	}
 
 	err = wlt.AddAccount(pair, pass)
-	if err != nil {
-		return wlt, err
-	}
 
-	return wlt, nil
+	return wlt, err
 }
