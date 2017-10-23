@@ -11,6 +11,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewExcludeSelector(t *testing.T) {
+	for _, s := range [][2]string{
+		{"", ""},
+		{"A", "A"},
+		{"ABC", "ABC"},
+		{"ABBCCC", "ABC"},
+		{"BCACBC", "ABC"},
+		{"6D75234653BDACBCCDD", "234567ABCD"},
+	} {
+		t.Run(s[0], func(t *testing.T) {
+			sel, err := NewExcludeSelector(s[0])
+			assert.NoError(t, err)
+			assert.Equal(t, s[1], sel.(excludeSelector).chars)
+		})
+	}
+}
+
+func TestNewExcludeSelector_fail(t *testing.T) {
+	for _, s := range []string{
+		"_",
+		"123",
+	} {
+		t.Run(s, func(t *testing.T) {
+			_, err := NewExcludeSelector(s)
+			assert.Error(t, err)
+		})
+	}
+}
+
 func TestNewPrefixSelector(t *testing.T) {
 	for k, v := range map[core.Chain]string{
 		core.Mijin:   "MA",
@@ -25,12 +54,12 @@ func TestNewPrefixSelector(t *testing.T) {
 }
 
 func TestNewPrefixSelector_fail(t *testing.T) {
-	for _, p := range []string{
-		"MA123",
-		"NABC",
+	for k, v := range map[core.Chain]string{
+		core.Mijin:   "MA123",
+		core.Testnet: "NABC",
 	} {
-		t.Run(p, func(t *testing.T) {
-			_, err := NewPrefixSelector(core.Mijin, p)
+		t.Run(k.ChainPrefix(), func(t *testing.T) {
+			_, err := NewPrefixSelector(k, v)
 			assert.Error(t, err)
 		})
 	}

@@ -18,3 +18,13 @@ func TestIsChainPrefix(t *testing.T) {
 	assert.False(t, IsChainPrefix("123"))
 	assert.False(t, IsChainPrefix("ABC"))
 }
+
+func TestChain_ChainPrefix(t *testing.T) {
+	assert.Equal(t, "M", Mijin.ChainPrefix())
+	assert.Equal(t, "N", Mainnet.ChainPrefix())
+	assert.Equal(t, "T", Testnet.ChainPrefix())
+}
+
+func TestChain_ChainPrefix_panic(t *testing.T) {
+	assert.Panics(t, func() { Chain{byte(0x00)}.ChainPrefix() })
+}

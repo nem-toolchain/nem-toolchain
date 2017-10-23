@@ -12,6 +12,7 @@ import (
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
+	"github.com/nem-toolchain/nem-toolchain/pkg/util"
 )
 
 // NewExcludeSelector creates a new exclude selector from given string
@@ -21,7 +22,7 @@ func NewExcludeSelector(chars string) (Selector, error) {
 	}
 	arr := strings.Split(chars, "")
 	sort.Strings(arr)
-	return excludeSelector{strings.Join(arr, "")}, nil
+	return excludeSelector{strings.Join(util.DistinctStrings(arr), "")}, nil
 }
 
 // NewPrefixSelector creates a new prefix selector from given string
