@@ -8,9 +8,6 @@ go:
   - tip
 before_install: make setup
 script: make ci
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-  - test -n "$TRAVIS_TAG" && curl -sL http://git.io/goreleaser | bash
 notifications:
   email:
     on_success: never
