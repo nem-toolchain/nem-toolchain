@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSeqMultiSelector_Pass(t *testing.T) {
+func TestSeqMultiSelector_Pass_true(t *testing.T) {
 	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
 	assert.True(t, seqSelector{}.Pass(addr))
@@ -21,7 +21,7 @@ func TestSeqMultiSelector_Pass(t *testing.T) {
 	assert.True(t, seqSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.Pass(addr))
 }
 
-func TestSeqMultiSelector_Pass_fail(t *testing.T) {
+func TestSeqMultiSelector_Pass_false(t *testing.T) {
 	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
 	assert.False(t, seqSelector{[]Selector{FalseSelector{}}}.Pass(addr))
@@ -33,10 +33,14 @@ func TestSeqMultiSelector_Pass_fail(t *testing.T) {
 }
 
 func TestSeqMultiSelector_rules(t *testing.T) {
-	assert.Equal(t, []searchRule{{}}, seqSelector{}.rules())
-	assert.Equal(t, []searchRule{}, seqSelector{[]Selector{FalseSelector{}}}.rules())
-	assert.Equal(t, []searchRule{}, seqSelector{[]Selector{FalseSelector{}, excludeSelector{}}}.rules())
-	assert.Equal(t, []searchRule{{}}, seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}.rules())
+	assert.Equal(t, []searchRule{{}},
+		seqSelector{}.rules())
+	assert.Equal(t, []searchRule{},
+		seqSelector{[]Selector{FalseSelector{}}}.rules())
+	assert.Equal(t, []searchRule{},
+		seqSelector{[]Selector{FalseSelector{}, excludeSelector{}}}.rules())
+	assert.Equal(t, []searchRule{{}},
+		seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}.rules())
 	assert.Equal(t,
 		[]searchRule{{exclude: &excludeSelector{}}},
 		seqSelector{[]Selector{TrueSelector{}, excludeSelector{}}}.rules())
@@ -53,7 +57,7 @@ func TestSeqMultiSelector_rules(t *testing.T) {
 		seqSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.rules())
 }
 
-func TestParMultiSelector_Pass(t *testing.T) {
+func TestParMultiSelector_Pass_true(t *testing.T) {
 	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
 	assert.True(t, parSelector{}.Pass(addr))
@@ -64,7 +68,7 @@ func TestParMultiSelector_Pass(t *testing.T) {
 	assert.True(t, parSelector{[]Selector{excludeSelector{"ABC"}, prefixSelector{"TA"}}}.Pass(addr))
 }
 
-func TestParMultiSelector_Pass_fail(t *testing.T) {
+func TestParMultiSelector_Pass_false(t *testing.T) {
 	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
 	assert.False(t, parSelector{[]Selector{FalseSelector{}}}.Pass(addr))
@@ -74,10 +78,16 @@ func TestParMultiSelector_Pass_fail(t *testing.T) {
 }
 
 func TestParMultiSelector_rules(t *testing.T) {
-	assert.Equal(t, []searchRule{{}}, parSelector{}.rules())
-	assert.Equal(t, []searchRule{}, parSelector{[]Selector{FalseSelector{}}}.rules())
-	assert.Equal(t, []searchRule{{}}, parSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.rules())
-	assert.Equal(t, []searchRule{{}}, parSelector{[]Selector{TrueSelector{}, excludeSelector{}}}.rules())
+	assert.Equal(t, []searchRule{{}},
+		parSelector{}.rules())
+	assert.Equal(t, []searchRule{},
+		parSelector{[]Selector{FalseSelector{}}}.rules())
+	assert.Equal(t, []searchRule{},
+		parSelector{[]Selector{FalseSelector{}, FalseSelector{}}}.rules())
+	assert.Equal(t, []searchRule{{}},
+		parSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.rules())
+	assert.Equal(t, []searchRule{{}},
+		parSelector{[]Selector{TrueSelector{}, excludeSelector{}}}.rules())
 	assert.Equal(t,
 		[]searchRule{{exclude: &excludeSelector{}}},
 		parSelector{[]Selector{excludeSelector{}, excludeSelector{}}}.rules())

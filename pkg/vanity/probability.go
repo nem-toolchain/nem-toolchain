@@ -19,9 +19,9 @@ const (
 )
 
 // NumberOfAttempts calculates number of keypairs to be generated to find account
-// with pre-calculated probability `pb` and with specified precision `pr`
-func NumberOfAttempts(pb, pr float64) float64 {
-	return math.Log2(1.-pr) / math.Log2(1.-pb)
+// with pre-calculated probability `pbty` and with specified precision `prec`
+func NumberOfAttempts(pbty, prec float64) float64 {
+	return math.Log2(1.-prec) / math.Log2(1.-pbty)
 }
 
 // Probability determines a probability to find an address on random basis in one attempt
@@ -55,13 +55,12 @@ func (sel excludeSelector) probability(offset uint) float64 {
 	}
 	res := float64(1)
 	if offset == 0 {
-		offset += 1
-		res *= base32FirstPosProbability
+		offset, res = 1, res*base32FirstPosProbability
 	}
 	if offset == 1 {
-		offset += 1
-		res *= 1. - (float64(len(util.IntersectStrings(strings.Split(sel.chars, ""),
-			[]string{"A", "B", "C", "D"}))) * base32SecondPosProbability)
+		offset, res = 2, res*(1.-
+			(float64(len(util.IntersectStrings([]string{"A", "B", "C", "D"},
+				strings.Split(sel.chars, ""))))*base32SecondPosProbability))
 	}
 	return res *
 		math.Pow(1.-float64(len(sel.chars))*base32OtherPosProbability,
