@@ -12,7 +12,7 @@ import (
 )
 
 func TestNewExcludeSelector(t *testing.T) {
-	for _, s := range [][2]string{
+	for _, a := range [][2]string{
 		{"", ""},
 		{"A", "A"},
 		{"ABC", "ABC"},
@@ -20,10 +20,10 @@ func TestNewExcludeSelector(t *testing.T) {
 		{"BCACBC", "ABC"},
 		{"6D75234653BDACBCCDD", "234567ABCD"},
 	} {
-		t.Run(s[0], func(t *testing.T) {
-			sel, err := NewExcludeSelector(s[0])
+		t.Run(a[0], func(t *testing.T) {
+			sel, err := NewExcludeSelector(a[0])
 			assert.NoError(t, err)
-			assert.Equal(t, s[1], sel.(excludeSelector).chars)
+			assert.Equal(t, a[1], sel.(excludeSelector).chars)
 		})
 	}
 }
@@ -41,25 +41,31 @@ func TestNewExcludeSelector_fail(t *testing.T) {
 }
 
 func TestNewPrefixSelector(t *testing.T) {
-	for k, v := range map[core.Chain]string{
-		core.Mijin:   "MA",
-		core.Mainnet: "NAB",
-		core.Testnet: "TD234",
+	for k, v := range map[string]struct {
+		ch core.Chain
+		pr string
+	}{
+		"MA":                            {core.Mijin, "MA"},
+		"NAB":                           {core.Mainnet, "NAB"},
+		"-T-D-2-3-4---":                 {core.Testnet, "TD234"},
+		"TA____-BB____-C_CC___-D__D_DD": {core.Testnet, "TA____BB____C_CC___D__D_DD"},
 	} {
-		t.Run(k.ChainPrefix(), func(t *testing.T) {
-			_, err := NewPrefixSelector(k, v)
+		t.Run(k, func(t *testing.T) {
+			sel, err := NewPrefixSelector(v.ch, k)
 			assert.NoError(t, err)
+			assert.Equal(t, v.pr, sel.(prefixSelector).prefix)
 		})
 	}
 }
 
 func TestNewPrefixSelector_fail(t *testing.T) {
-	for k, v := range map[core.Chain]string{
-		core.Mijin:   "MA123",
-		core.Testnet: "NABC",
+	for k, v := range map[string]core.Chain{
+		"MA123": core.Mijin,
+		"TABC":  core.Mainnet,
+		"T#__":  core.Testnet,
 	} {
-		t.Run(k.ChainPrefix(), func(t *testing.T) {
-			_, err := NewPrefixSelector(k, v)
+		t.Run(k, func(t *testing.T) {
+			_, err := NewPrefixSelector(v, k)
 			assert.Error(t, err)
 		})
 	}
@@ -74,42 +80,56 @@ func TestTrueSelector_Pass(t *testing.T) {
 }
 
 func TestExcludeSelector_Pass_true(t *testing.T) {
-	sel := excludeSelector{"BCD234"}
-	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	assert.True(t, sel.Pass(addr))
+	for k, v := range map[string]string{
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.True(t, excludeSelector{v}.Pass(addr))
+		})
+	}
 }
 
 func TestExcludeSelector_Pass_false(t *testing.T) {
-	sel := excludeSelector{"BCD234"}
-	for _, s := range []string{
-		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2",
-		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA",
-		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA",
+	for k, v := range map[string]string{
+		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA": "BCD234",
 	} {
-		t.Run(s, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(s)
-			assert.False(t, sel.Pass(addr))
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.False(t, excludeSelector{v}.Pass(addr))
 		})
 	}
 }
 
 func TestPrefixSelector_Pass_true(t *testing.T) {
-	sel := prefixSelector{"TABC"}
-	addr, _ := keypair.ParseAddress("TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	assert.True(t, sel.Pass(addr))
+	for k, v := range map[string]string{
+		"TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "TABC",
+
+		"TAAAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": "TA____BB____C_CC___D__D_DD",
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.True(t, prefixSelector{v}.Pass(addr))
+		})
+	}
 }
 
 func TestPrefixSelector_Pass_false(t *testing.T) {
-	sel := prefixSelector{"TABC"}
-	for _, s := range []string{
-		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+	for k, v := range map[string]string{
+		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "TABC",
+		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "TABC",
+		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "TABC",
+
+		"TAAAAA2BBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": "TA____BB____C_CC___D__D_DD",
+		"TAAAAABBBBBBCC33CCDDDDDDEEEEEEFFFFFF2345": "TA____BB____C_CC___D__D_DD",
+		"TAAAAABBBBBBCCCCCCDDDDD4EEEEEEFFFFFF2345": "TA____BB____C_CC___D__D_DD",
 	} {
-		t.Run(s, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(s)
-			assert.False(t, sel.Pass(addr))
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.False(t, prefixSelector{v}.Pass(addr))
 		})
 	}
 }
