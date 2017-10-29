@@ -43,6 +43,8 @@ func TestProbability(t *testing.T) {
 		Probability(AndSelector(
 			OrSelector(excludeSelector{"2"}, excludeSelector{"4"}, excludeSelector{"6"}),
 			excludeSelector{"BCD"}, prefixSelector{"TA"})), 1e-5)
+	assert.Equal(t, 1.,
+		Probability(OrSelector(excludeSelector{""}, prefixSelector{""})))
 }
 
 func TestSearchRule_probability(t *testing.T) {
