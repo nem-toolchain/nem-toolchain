@@ -39,34 +39,34 @@ func TestProbability(t *testing.T) {
 
 	assert.InDelta(t, 0.00593, Probability(excludeSelector{"ABC"}), 1e-5)
 	assert.InDelta(t, 0.02374, Probability(excludeSelector{"246"}), 1e-5)
-	assert.InDelta(t, 0.00024, Probability(prefixSelector{"TABC"}), 1e-5)
+	assert.InDelta(t, 0.00024, Probability(prefixSelector{prefix: "TABC"}), 1e-5)
 
 	assert.Equal(t, 1.,
-		Probability(OrSelector(excludeSelector{""}, prefixSelector{""})))
+		Probability(OrSelector(excludeSelector{""}, prefixSelector{prefix: ""})))
 
 	assert.InDelta(t, 0.00469,
 		Probability(AndSelector(
 			OrSelector(excludeSelector{"2"}, excludeSelector{"4"}, excludeSelector{"6"}),
-			excludeSelector{"BCD"}, prefixSelector{"TA"})), 1e-5)
+			excludeSelector{"BCD"}, prefixSelector{prefix: "TA"})), 1e-5)
 }
 
 func TestSearchRule_probability(t *testing.T) {
 	assert.Equal(t, 1., searchRule{}.probability())
 
 	assert.InDelta(t, 0.00593, searchRule{exclude: &excludeSelector{"ABC"}}.probability(), 1e-5)
-	assert.InDelta(t, 0.00024, searchRule{prefix: &prefixSelector{"TABC"}}.probability(), 1e-5)
+	assert.InDelta(t, 0.00024, searchRule{prefix: &prefixSelector{prefix: "TABC"}}.probability(), 1e-5)
 
 	assert.InDelta(t, 0.0000071,
-		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{"TABC"}}.probability(),
+		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{prefix: "TABC"}}.probability(),
 		1e-7)
 	assert.InDelta(t, 0.0000071,
-		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{"TA_B__C"}}.probability(),
+		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{prefix: "TA_B__C"}}.probability(),
 		1e-7)
 	assert.InDelta(t, 0.00000024,
-		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{"T_A__B___C"}}.probability(),
+		searchRule{exclude: &excludeSelector{"ABC"}, prefix: &prefixSelector{prefix: "T_A__B___C"}}.probability(),
 		1e-8)
 	assert.InDelta(t, 0.00000073,
-		searchRule{exclude: &excludeSelector{"A234"}, prefix: &prefixSelector{"T_A__B___C"}}.probability(),
+		searchRule{exclude: &excludeSelector{"A234"}, prefix: &prefixSelector{prefix: "T_A__B___C"}}.probability(),
 		1e-8)
 }
 
@@ -99,10 +99,10 @@ func TestExcludePrefix_probability_panic(t *testing.T) {
 
 func TestPrefixPrefix_probability(t *testing.T) {
 	assert.Equal(t, 1., prefixSelector{}.probability())
-	assert.Equal(t, 1., prefixSelector{"T"}.probability())
-	assert.Equal(t, .25, prefixSelector{"TA"}.probability())
+	assert.Equal(t, 1., prefixSelector{prefix: "T"}.probability())
+	assert.Equal(t, .25, prefixSelector{prefix: "TA"}.probability())
 
-	assert.InDelta(t, 0.00781, prefixSelector{"TAB"}.probability(), 1e-5)
-	assert.InDelta(t, 0.00024, prefixSelector{"TABC"}.probability(), 1e-5)
-	assert.InDelta(t, 0.00024, prefixSelector{"T_A__B___C"}.probability(), 1e-5)
+	assert.InDelta(t, 0.00781, prefixSelector{prefix: "TAB"}.probability(), 1e-5)
+	assert.InDelta(t, 0.00024, prefixSelector{prefix: "TABC"}.probability(), 1e-5)
+	assert.InDelta(t, 0.00024, prefixSelector{prefix: "T_A__B___C"}.probability(), 1e-5)
 }

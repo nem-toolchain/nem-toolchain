@@ -6,6 +6,8 @@ package vanity
 import (
 	"testing"
 
+	"regexp"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,8 +19,13 @@ func TestSeqMultiSelector_Pass_true(t *testing.T) {
 	assert.True(t, seqSelector{[]Selector{TrueSelector{}}}.Pass(addr))
 	assert.True(t, seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}.Pass(addr))
 	assert.True(t, seqSelector{[]Selector{excludeSelector{"234567"}}}.Pass(addr))
-	assert.True(t, seqSelector{[]Selector{prefixSelector{"TAA"}}}.Pass(addr))
-	assert.True(t, seqSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.Pass(addr))
+	assert.True(t, seqSelector{[]Selector{
+		prefixSelector{re: regexp.MustCompile("^TAA")},
+	}}.Pass(addr))
+	assert.True(t, seqSelector{[]Selector{
+		excludeSelector{"BCD"},
+		prefixSelector{re: regexp.MustCompile("^TA")},
+	}}.Pass(addr))
 }
 
 func TestSeqMultiSelector_Pass_false(t *testing.T) {
@@ -27,9 +34,17 @@ func TestSeqMultiSelector_Pass_false(t *testing.T) {
 	assert.False(t, seqSelector{[]Selector{FalseSelector{}}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{excludeSelector{"ABC"}}}.Pass(addr))
-	assert.False(t, seqSelector{[]Selector{prefixSelector{"TB"}}}.Pass(addr))
-	assert.False(t, seqSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TB"}}}.Pass(addr))
-	assert.False(t, seqSelector{[]Selector{excludeSelector{"ABC"}, prefixSelector{"TA"}}}.Pass(addr))
+	assert.False(t, seqSelector{[]Selector{
+		prefixSelector{re: regexp.MustCompile("^TB")},
+	}}.Pass(addr))
+	assert.False(t, seqSelector{[]Selector{
+		excludeSelector{"BCD"},
+		prefixSelector{re: regexp.MustCompile("^TB")},
+	}}.Pass(addr))
+	assert.False(t, seqSelector{[]Selector{
+		excludeSelector{"ABC"},
+		prefixSelector{re: regexp.MustCompile("^TA")},
+	}}.Pass(addr))
 }
 
 func TestSeqMultiSelector_rules(t *testing.T) {
@@ -48,13 +63,19 @@ func TestSeqMultiSelector_rules(t *testing.T) {
 		[]searchRule{{exclude: &excludeSelector{}}},
 		seqSelector{[]Selector{excludeSelector{}, excludeSelector{}}}.rules())
 	assert.Equal(t,
-		[]searchRule{{prefix: &prefixSelector{"TA"}}},
+		[]searchRule{{prefix: &prefixSelector{prefix: "TA"}}},
 		seqSelector{[]Selector{
-			seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}, prefixSelector{"TA"},
+			seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}},
+			prefixSelector{prefix: "TA"},
 		}}.rules())
 	assert.Equal(t,
-		[]searchRule{{&excludeSelector{"BCD"}, &prefixSelector{"TA"}}},
-		seqSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.rules())
+		[]searchRule{{
+			&excludeSelector{"BCD"},
+			&prefixSelector{prefix: "TA"},
+		}},
+		seqSelector{[]Selector{
+			excludeSelector{"BCD"}, prefixSelector{prefix: "TA"},
+		}}.rules())
 }
 
 func TestParMultiSelector_Pass_true(t *testing.T) {
@@ -64,8 +85,14 @@ func TestParMultiSelector_Pass_true(t *testing.T) {
 	assert.True(t, parSelector{[]Selector{TrueSelector{}}}.Pass(addr))
 	assert.True(t, parSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.Pass(addr))
 	assert.True(t, parSelector{[]Selector{excludeSelector{"234567"}}}.Pass(addr))
-	assert.True(t, parSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TB"}}}.Pass(addr))
-	assert.True(t, parSelector{[]Selector{excludeSelector{"ABC"}, prefixSelector{"TA"}}}.Pass(addr))
+	assert.True(t, parSelector{[]Selector{
+		excludeSelector{"BCD"},
+		prefixSelector{re: regexp.MustCompile("^TB")},
+	}}.Pass(addr))
+	assert.True(t, parSelector{[]Selector{
+		excludeSelector{"ABC"},
+		prefixSelector{re: regexp.MustCompile("^TA")},
+	}}.Pass(addr))
 }
 
 func TestParMultiSelector_Pass_false(t *testing.T) {
@@ -73,8 +100,13 @@ func TestParMultiSelector_Pass_false(t *testing.T) {
 
 	assert.False(t, parSelector{[]Selector{FalseSelector{}}}.Pass(addr))
 	assert.False(t, parSelector{[]Selector{excludeSelector{"ABC"}}}.Pass(addr))
-	assert.False(t, parSelector{[]Selector{prefixSelector{"TB"}}}.Pass(addr))
-	assert.False(t, parSelector{[]Selector{excludeSelector{"ABC"}, prefixSelector{"TB"}}}.Pass(addr))
+	assert.False(t, parSelector{[]Selector{
+		prefixSelector{re: regexp.MustCompile("^TB")},
+	}}.Pass(addr))
+	assert.False(t, parSelector{[]Selector{
+		excludeSelector{"ABC"},
+		prefixSelector{re: regexp.MustCompile("^TB")},
+	}}.Pass(addr))
 }
 
 func TestParMultiSelector_rules(t *testing.T) {
@@ -92,13 +124,19 @@ func TestParMultiSelector_rules(t *testing.T) {
 		[]searchRule{{exclude: &excludeSelector{}}},
 		parSelector{[]Selector{excludeSelector{}, excludeSelector{}}}.rules())
 	assert.Equal(t,
-		[]searchRule{{exclude: &excludeSelector{"BCD"}}, {prefix: &prefixSelector{"TA"}}},
-		parSelector{[]Selector{excludeSelector{"BCD"}, prefixSelector{"TA"}}}.rules())
+		[]searchRule{
+			{exclude: &excludeSelector{"BCD"}},
+			{prefix: &prefixSelector{prefix: "TA"}},
+		},
+		parSelector{[]Selector{
+			excludeSelector{"BCD"},
+			prefixSelector{prefix: "TA"},
+		}}.rules())
 	assert.Equal(t,
 		[]searchRule{
-			{&excludeSelector{"2BCD"}, &prefixSelector{"TA"}},
-			{&excludeSelector{"4BCD"}, &prefixSelector{"TA"}},
-			{&excludeSelector{"6BCD"}, &prefixSelector{"TA"}},
+			{&excludeSelector{"2BCD"}, &prefixSelector{prefix: "TA"}},
+			{&excludeSelector{"4BCD"}, &prefixSelector{prefix: "TA"}},
+			{&excludeSelector{"6BCD"}, &prefixSelector{prefix: "TA"}},
 		},
 		seqSelector{[]Selector{
 			parSelector{[]Selector{
@@ -110,7 +148,7 @@ func TestParMultiSelector_rules(t *testing.T) {
 				excludeSelector{"B"},
 				excludeSelector{"C"},
 				excludeSelector{"D"},
-				prefixSelector{"TA"},
+				prefixSelector{prefix: "TA"},
 			}},
 			seqSelector{[]Selector{
 				seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}},
