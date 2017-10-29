@@ -163,11 +163,19 @@ func generateAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	var pass string
+	if c.Bool("save-wallet") {
+		pass, err = requestPassword()
+		if err != nil {
+			return err
+		}
+	}
+
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		kp := keypair.Gen()
 		if c.Bool("save-wallet") {
-			wlt, err := createWallet(ch, kp)
+			wlt, err := createWallet(ch, kp, pass)
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
 			}
@@ -209,9 +217,9 @@ func vanityAction(c *cli.Context) error {
 	if len(c.Args()) != 0 {
 		prefixes := make([]vanity.Selector, len(c.Args()))
 		for i, pr := range c.Args() {
-			sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
-			if err != nil {
-				return cli.NewExitError(err.Error(), 1)
+			sel, err_pr := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
+			if err_pr != nil {
+				return cli.NewExitError(err_pr.Error(), 1)
 			}
 			prefixes[i] = sel
 		}
@@ -241,12 +249,20 @@ func vanityAction(c *cli.Context) error {
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
+	var pass string
+	if c.Bool("save-wallet") {
+		pass, err = requestPassword()
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+	}
+
 	for i := uint(0); i < num; i++ {
 		if i != 0 {
 			fmt.Println("----")
 		}
 		if c.Bool("save-wallet") {
-			wlt, err := createWallet(ch, <-rs)
+			wlt, err := createWallet(ch, <-rs, pass)
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
 			}
@@ -330,17 +346,15 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 }
 
-func createWallet(chain core.Chain, pair keypair.KeyPair) (wallet.Wallet, error) {
+func createWallet(chain core.Chain, pair keypair.KeyPair, pass string) (wallet.Wallet, error) {
 	wlt := wallet.New(chain)
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter password: ")
-	pass, err := reader.ReadString('\n')
-	if err != nil {
-		return wlt, err
-	}
-
-	err = wlt.AddAccount(pair, pass)
+	err := wlt.AddAccount(pair, pass)
 
 	return wlt, err
+}
+
+func requestPassword() (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter password: ")
+	return reader.ReadString('\n')
 }
