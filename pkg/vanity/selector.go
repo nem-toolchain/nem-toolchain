@@ -15,6 +15,10 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/util"
 )
 
+const (
+	PrefixPlaceholder = '_'
+)
+
 // NewExcludeSelector creates a new exclude selector from given string
 func NewExcludeSelector(chars string) (Selector, error) {
 	if !regexp.MustCompile(`^[A-Z2-7]*$`).MatchString(chars) {

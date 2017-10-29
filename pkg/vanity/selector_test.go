@@ -48,23 +48,23 @@ func TestNewPrefixSelector(t *testing.T) {
 		pr string
 		re *regexp.Regexp
 	}{
-		"":  {core.Mijin, "", regexp.MustCompile("^\\w*")},
-		"M": {core.Mijin, "M", regexp.MustCompile("^M\\w*")},
-		"_": {core.Mijin, "_", regexp.MustCompile("^\\w\\w*")},
+		"":  {core.Mijin, "", regexp.MustCompile(`^\w*`)},
+		"M": {core.Mijin, "M", regexp.MustCompile(`^M\w*`)},
+		"_": {core.Mijin, "_", regexp.MustCompile(`^\w\w*`)},
 
-		"NA":   {core.Mainnet, "NA", regexp.MustCompile("^NA\\w*")},
-		"NABC": {core.Mainnet, "NABC", regexp.MustCompile("^NABC\\w*")},
-		"_ABC": {core.Mainnet, "_ABC", regexp.MustCompile("^\\wABC\\w*")},
+		"NA":   {core.Mainnet, "NA", regexp.MustCompile(`^NA\w*`)},
+		"NABC": {core.Mainnet, "NABC", regexp.MustCompile(`^NABC\w*`)},
+		"_ABC": {core.Mainnet, "_ABC", regexp.MustCompile(`^\wABC\w*`)},
 
 		"-T-D-2-3-4---": {
 			core.Testnet,
 			"TD234",
-			regexp.MustCompile("^TD234\\w*"),
+			regexp.MustCompile(`^TD234\w*`),
 		},
 		"TA____-BB____-C_CC___-D__D_D": {
 			core.Testnet,
 			"TA____BB____C_CC___D__D_D",
-			regexp.MustCompile("^TA\\w\\w\\w\\wBB\\w\\w\\w\\wC\\wCC\\w\\w\\wD\\w\\wD\\wD\\w*"),
+			regexp.MustCompile(`^TA\w\w\w\wBB\w\w\w\wC\wCC\w\w\wD\w\wD\wD\w*`),
 		},
 	} {
 		t.Run(k, func(t *testing.T) {
@@ -124,8 +124,8 @@ func TestExcludeSelector_Pass_false(t *testing.T) {
 
 func TestPrefixSelector_Pass_true(t *testing.T) {
 	for k, v := range map[string](*regexp.Regexp){
-		"TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile("^TABC\\w*"),
-		"TAAAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile("^TA\\wAA\\wBB\\w*"),
+		"TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TAAAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
 	} {
 		t.Run(k, func(t *testing.T) {
 			addr, _ := keypair.ParseAddress(k)
@@ -136,13 +136,13 @@ func TestPrefixSelector_Pass_true(t *testing.T) {
 
 func TestPrefixSelector_Pass_false(t *testing.T) {
 	for k, v := range map[string](*regexp.Regexp){
-		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile("^TABC\\w*"),
-		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile("^TABC\\w*"),
-		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile("^TABC\\w*"),
+		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
 
-		"T2AAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile("^TA\\wAA\\wBB\\w*"),
-		"TAAA3ABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile("^TA\\wAA\\wBB\\w*"),
-		"TAAAAAB4BBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile("^TA\\wAA\\wBB\\w*"),
+		"T2AAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
+		"TAAA3ABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
+		"TAAAAAB4BBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
 	} {
 		t.Run(k, func(t *testing.T) {
 			addr, _ := keypair.ParseAddress(k)

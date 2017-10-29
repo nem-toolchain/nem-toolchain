@@ -20,11 +20,11 @@ func TestSeqMultiSelector_Pass_true(t *testing.T) {
 	assert.True(t, seqSelector{[]Selector{TrueSelector{}, TrueSelector{}}}.Pass(addr))
 	assert.True(t, seqSelector{[]Selector{excludeSelector{"234567"}}}.Pass(addr))
 	assert.True(t, seqSelector{[]Selector{
-		prefixSelector{re: regexp.MustCompile("^TAA")},
+		prefixSelector{re: regexp.MustCompile(`^TAA`)},
 	}}.Pass(addr))
 	assert.True(t, seqSelector{[]Selector{
 		excludeSelector{"BCD"},
-		prefixSelector{re: regexp.MustCompile("^TA")},
+		prefixSelector{re: regexp.MustCompile(`^TA`)},
 	}}.Pass(addr))
 }
 
@@ -35,15 +35,15 @@ func TestSeqMultiSelector_Pass_false(t *testing.T) {
 	assert.False(t, seqSelector{[]Selector{TrueSelector{}, FalseSelector{}}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{excludeSelector{"ABC"}}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{
-		prefixSelector{re: regexp.MustCompile("^TB")},
+		prefixSelector{re: regexp.MustCompile(`^TB`)},
 	}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{
 		excludeSelector{"BCD"},
-		prefixSelector{re: regexp.MustCompile("^TB")},
+		prefixSelector{re: regexp.MustCompile(`^TB`)},
 	}}.Pass(addr))
 	assert.False(t, seqSelector{[]Selector{
 		excludeSelector{"ABC"},
-		prefixSelector{re: regexp.MustCompile("^TA")},
+		prefixSelector{re: regexp.MustCompile(`^TA`)},
 	}}.Pass(addr))
 }
 
@@ -87,11 +87,11 @@ func TestParMultiSelector_Pass_true(t *testing.T) {
 	assert.True(t, parSelector{[]Selector{excludeSelector{"234567"}}}.Pass(addr))
 	assert.True(t, parSelector{[]Selector{
 		excludeSelector{"BCD"},
-		prefixSelector{re: regexp.MustCompile("^TB")},
+		prefixSelector{re: regexp.MustCompile(`^TB`)},
 	}}.Pass(addr))
 	assert.True(t, parSelector{[]Selector{
 		excludeSelector{"ABC"},
-		prefixSelector{re: regexp.MustCompile("^TA")},
+		prefixSelector{re: regexp.MustCompile(`^TA`)},
 	}}.Pass(addr))
 }
 
@@ -101,11 +101,11 @@ func TestParMultiSelector_Pass_false(t *testing.T) {
 	assert.False(t, parSelector{[]Selector{FalseSelector{}}}.Pass(addr))
 	assert.False(t, parSelector{[]Selector{excludeSelector{"ABC"}}}.Pass(addr))
 	assert.False(t, parSelector{[]Selector{
-		prefixSelector{re: regexp.MustCompile("^TB")},
+		prefixSelector{re: regexp.MustCompile(`^TB`)},
 	}}.Pass(addr))
 	assert.False(t, parSelector{[]Selector{
 		excludeSelector{"ABC"},
-		prefixSelector{re: regexp.MustCompile("^TB")},
+		prefixSelector{re: regexp.MustCompile(`^TB`)},
 	}}.Pass(addr))
 }
 
