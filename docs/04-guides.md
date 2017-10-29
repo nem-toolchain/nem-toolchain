@@ -35,10 +35,11 @@ Private key: 3caf6c68dbda89f3c760261d76f83d75bf440509f8615395071f11721e498f3e
 
 ## Vanity address
 
-How to find vanity address with predefined prefix `TCGQQK` for `testnet`:
+How to find vanity address with predefined prefix `TCGQQK` for `testnet`
+using a placeholder character `_` and a non-significant delimiter character `-`:
 
 ```console
-$ nem --chain testnet account vanity --skip-estimate TCGQQK
+$ nem --chain testnet account vanity --skip-estimate TCGQQK-______
 Address: TCGQQK-N5HED6-6OQ67Z-2F7GGW-Z66DWV-BFJUW6-F5WC
 Public key: c342dbf7cdd3096c4c3910c511a57049e62847dd5030c7e644bc855acc1fd626
 Private key: 4e017065d62f10223b989ff3f75a845fbe3df73d6c0e6d67cc4c59bea3213002

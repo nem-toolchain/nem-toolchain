@@ -79,6 +79,7 @@ func TestExcludePrefix_probability(t *testing.T) {
 	assert.Equal(t, 0.75, excludeSelector{"246A"}.probability(0, 2))
 	assert.Equal(t, 0.75, excludeSelector{"246A"}.probability(1, 1))
 	assert.Equal(t, 0.65625, excludeSelector{"246A"}.probability(1, 2))
+	assert.Equal(t, 0.875, excludeSelector{"246A"}.probability(39, 10))
 
 	assert.InDelta(t, 0.22444,
 		excludeSelector{"A"}.probability(0, keypair.AddressLength), 1e-5)
