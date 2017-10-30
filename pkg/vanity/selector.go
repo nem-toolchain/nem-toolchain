@@ -16,7 +16,10 @@ import (
 )
 
 const (
+	// PrefixPlaceholder declares a placeholder (skipped) rune for prefix selector
 	PrefixPlaceholder = '_'
+	// PrefixSeparator declares a separator (ignored) rune for prefix selector
+	PrefixSeparator = '-'
 )
 
 // NewExcludeSelector creates a new exclude selector from given string
@@ -31,13 +34,13 @@ func NewExcludeSelector(chars string) (Selector, error) {
 
 // NewPrefixSelector creates a new prefix selector from given string
 func NewPrefixSelector(ch core.Chain, prefix string) (Selector, error) {
-	prefix = strings.Replace(prefix, "-", "", -1)
+	prefix = strings.Replace(prefix, string(PrefixSeparator), "", -1)
 	str := fmt.Sprintf(`^[_%v]?([_A-D][_A-Z2-7]*)?$`, ch.ChainPrefix())
 	if !regexp.MustCompile(str).MatchString(prefix) {
 		return prefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
 	}
 	regex := regexp.MustCompile(fmt.Sprintf("^%v\\w*",
-		strings.Replace(prefix, "_", "\\w", -1)))
+		strings.Replace(prefix, string(PrefixPlaceholder), "\\w", -1)))
 	return prefixSelector{prefix, regex}, nil
 }
 

@@ -70,47 +70,49 @@ func TestSearchRule_probability(t *testing.T) {
 
 func TestExcludePrefix_probability(t *testing.T) {
 	assert.Equal(t, 1., excludeSelector{}.probability(0, keypair.AddressLength))
-	assert.Equal(t, 1., excludeSelector{}.probability(1, keypair.AddressLength-1))
-	assert.Equal(t, 1., excludeSelector{}.probability(2, keypair.AddressLength-2))
-	assert.Equal(t, 1., excludeSelector{}.probability(39, keypair.AddressLength-39))
-	assert.Equal(t, 1., excludeSelector{}.probability(keypair.AddressLength, 0))
+	assert.Equal(t, 1., excludeSelector{}.probability(1, keypair.AddressLength))
+	assert.Equal(t, 1., excludeSelector{}.probability(2, keypair.AddressLength))
+	assert.Equal(t, 1., excludeSelector{}.probability(39, keypair.AddressLength))
 
 	assert.Equal(t, 1., excludeSelector{"246A"}.probability(0, 1))
 	assert.Equal(t, 0.75, excludeSelector{"246A"}.probability(0, 2))
-	assert.Equal(t, 0.75, excludeSelector{"246A"}.probability(1, 1))
-	assert.Equal(t, 0.65625, excludeSelector{"246A"}.probability(1, 2))
-	assert.Equal(t, 0.875, excludeSelector{"246A"}.probability(39, 10))
+	assert.Equal(t, 0.75, excludeSelector{"246A"}.probability(1, 2))
+	assert.Equal(t, 0.65625, excludeSelector{"246A"}.probability(1, 3))
+	assert.Equal(t, 0.875, excludeSelector{"246A"}.probability(2, 3))
+	assert.Equal(t, 0.875, excludeSelector{"246A"}.probability(39, keypair.AddressLength))
 
 	assert.InDelta(t, 0.22444,
 		excludeSelector{"A"}.probability(0, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.22444,
-		excludeSelector{"A"}.probability(1, keypair.AddressLength-1), 1e-5)
+		excludeSelector{"A"}.probability(1, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.29926,
-		excludeSelector{"A"}.probability(2, keypair.AddressLength-2), 1e-5)
+		excludeSelector{"A"}.probability(2, keypair.AddressLength), 1e-5)
 	assert.Equal(t, 0.96875,
-		excludeSelector{"A"}.probability(39, keypair.AddressLength-39))
+		excludeSelector{"A"}.probability(39, keypair.AddressLength))
 
 	assert.InDelta(t, 0.00593,
 		excludeSelector{"ABC"}.probability(0, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.00593,
-		excludeSelector{"ABC"}.probability(1, keypair.AddressLength-1), 1e-5)
+		excludeSelector{"ABC"}.probability(1, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.02374,
-		excludeSelector{"ABC"}.probability(2, keypair.AddressLength-2), 1e-5)
+		excludeSelector{"ABC"}.probability(2, keypair.AddressLength), 1e-5)
 	assert.Equal(t, 0.90625,
-		excludeSelector{"ABC"}.probability(39, keypair.AddressLength-39))
+		excludeSelector{"ABC"}.probability(39, keypair.AddressLength))
 
 	assert.InDelta(t, 0.02374,
 		excludeSelector{"246"}.probability(0, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.02374,
-		excludeSelector{"246"}.probability(1, keypair.AddressLength-1), 1e-5)
+		excludeSelector{"246"}.probability(1, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.02374,
-		excludeSelector{"246"}.probability(2, keypair.AddressLength-2), 1e-5)
+		excludeSelector{"246"}.probability(2, keypair.AddressLength), 1e-5)
 	assert.InDelta(t, 0.90625,
-		excludeSelector{"246"}.probability(39, keypair.AddressLength-39), 1e-5)
+		excludeSelector{"246"}.probability(39, keypair.AddressLength), 1e-5)
 }
 
 func TestExcludePrefix_probability_panic(t *testing.T) {
-	assert.Panics(t, func() { excludeSelector{}.probability(keypair.AddressLength+1, 0) })
+	assert.Panics(t, func() { excludeSelector{}.probability(0, keypair.AddressLength+1) })
+	assert.Panics(t, func() { excludeSelector{}.probability(keypair.AddressLength, 0) })
+
 	assert.Panics(t, func() { excludeSelector{}.probability(1000, 123) })
 }
 
