@@ -34,27 +34,27 @@ func TestKeyPair_Address_testnet(t *testing.T) {
 }
 
 func TestParseAddress_length(t *testing.T) {
-	for _, str := range []string{
+	for _, s := range []string{
 		"",
 		"TABC",
 		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",   // not enough (-1)
 		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABC", // to much (+1)
 	} {
-		t.Run(str, func(t *testing.T) {
-			_, err := ParseAddress(str)
+		t.Run(s, func(t *testing.T) {
+			_, err := ParseAddress(s)
 			assert.Error(t, err)
 		})
 	}
 }
 
 func TestParseAddress_encoding(t *testing.T) {
-	for _, str := range []string{
+	for _, s := range []string{
 		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1",
 		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA_",
 	} {
-		t.Run(str, func(t *testing.T) {
-			_, err := ParseAddress(str)
+		t.Run(s, func(t *testing.T) {
+			_, err := ParseAddress(s)
 			assert.Error(t, err)
 		})
 	}

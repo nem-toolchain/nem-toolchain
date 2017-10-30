@@ -15,8 +15,8 @@ import (
 
 func TestStartSearch(t *testing.T) {
 	rs := make(chan keypair.KeyPair)
-	s, _ := NewPrefixSelector(core.Testnet, "TA")
-	go StartSearch(core.Testnet, s, rs)
-	p := <-rs
-	assert.True(t, strings.HasPrefix(p.Address(core.Testnet).String(), "TA"))
+	sel, _ := NewPrefixSelector(core.Testnet, "TA")
+	go StartSearch(core.Testnet, sel, rs)
+	pr := <-rs
+	assert.True(t, strings.HasPrefix(pr.Address(core.Testnet).String(), "TA"))
 }

@@ -15,6 +15,10 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/util"
 )
 
+const (
+	PrefixPlaceholder = '_'
+)
+
 // NewExcludeSelector creates a new exclude selector from given string
 func NewExcludeSelector(chars string) (Selector, error) {
 	if !regexp.MustCompile(`^[A-Z2-7]*$`).MatchString(chars) {
@@ -27,11 +31,14 @@ func NewExcludeSelector(chars string) (Selector, error) {
 
 // NewPrefixSelector creates a new prefix selector from given string
 func NewPrefixSelector(ch core.Chain, prefix string) (Selector, error) {
-	str := fmt.Sprintf(`^%v[A-D][A-Z2-7]*$`, ch.ChainPrefix())
+	prefix = strings.Replace(prefix, "-", "", -1)
+	str := fmt.Sprintf(`^[_%v]?([_A-D][_A-Z2-7]*)?$`, ch.ChainPrefix())
 	if !regexp.MustCompile(str).MatchString(prefix) {
 		return prefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
 	}
-	return prefixSelector{prefix}, nil
+	regex := regexp.MustCompile(fmt.Sprintf("^%v\\w*",
+		strings.Replace(prefix, "_", "\\w", -1)))
+	return prefixSelector{prefix, regex}, nil
 }
 
 // Selector defines generic search strategy
@@ -58,6 +65,8 @@ type excludeSelector struct {
 type prefixSelector struct {
 	// prefix determines a required address prefix to search
 	prefix string
+	// re caches a regexp.Regexp object for given prefix
+	re *regexp.Regexp
 }
 
 // Pass returns always false
@@ -82,7 +91,7 @@ func (TrueSelector) rules() []searchRule {
 
 // Pass returns true only if address doesn't contain any digits
 func (sel excludeSelector) Pass(addr keypair.Address) bool {
-	return !strings.ContainsAny(addr.String()[1:], sel.chars)
+	return !strings.ContainsAny(addr.String(), sel.chars)
 }
 
 func (sel excludeSelector) rules() []searchRule {
@@ -91,7 +100,7 @@ func (sel excludeSelector) rules() []searchRule {
 
 // Pass returns true only if address has a given prefix
 func (sel prefixSelector) Pass(addr keypair.Address) bool {
-	return strings.HasPrefix(addr.String(), sel.prefix)
+	return sel.re.MatchString(addr.String())
 }
 
 func (sel prefixSelector) rules() []searchRule {
