@@ -53,24 +53,24 @@ func (rule searchRule) probability() float64 {
 	return res
 }
 
-func (sel excludeSelector) probability(low, high uint) float64 {
-	if low >= high || high > keypair.AddressLength {
+func (sel excludeSelector) probability(lo, hi uint) float64 {
+	if lo >= hi || hi > keypair.AddressLength {
 		panic("vanity selector probability incorrect arguments")
 	}
 	res := 1.
-	if low == 0 {
-		low, res = 1, res*base32FirstPosProbability
-		if high == 1 {
+	if lo == 0 {
+		lo, res = 1, res*base32FirstPosProbability
+		if hi == 1 {
 			return res
 		}
 	}
-	if low == 1 {
-		low, res = 2, res*(1.-
+	if lo == 1 {
+		lo, res = 2, res*(1.-
 			(float64(len(util.IntersectStrings([]string{"A", "B", "C", "D"},
 				strings.Split(sel.chars, ""))))*base32SecondPosProbability))
 	}
 	return res *
-		math.Pow(1.-float64(len(sel.chars))*base32OtherPosProbability, float64(high-low))
+		math.Pow(1.-float64(len(sel.chars))*base32OtherPosProbability, float64(hi-lo))
 }
 
 func (sel prefixSelector) probability() float64 {
