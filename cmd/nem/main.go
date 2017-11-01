@@ -81,7 +81,7 @@ func main() {
 						},
 						cli.UintFlag{
 							Name:  "workers, w",
-							Usage: "Number fo workers for generation",
+							Usage: "Number of workers for generation",
 							Value: uint(runtime.NumCPU()),
 						},
 						cli.BoolFlag{
