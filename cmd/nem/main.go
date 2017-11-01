@@ -164,8 +164,8 @@ func vanityAction(c *cli.Context) error {
 	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
 
 	workers := c.Uint("workers")
-	if workers > uint(runtime.NumCPU()) || workers == 0 {
-		workers = uint(runtime.NumCPU())
+	if m := uint(runtime.NumCPU()); workers == 0 || workers > m {
+		workers = m
 	}
 
 	if !c.Bool("skip-estimate") {
