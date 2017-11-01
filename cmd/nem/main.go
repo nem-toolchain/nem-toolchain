@@ -79,6 +79,11 @@ func main() {
 							Usage: "Number of generated accounts",
 							Value: 1,
 						},
+						cli.UintFlag{
+							Name:  "workers, w",
+							Usage: "Number fo workers for generation",
+							Value: uint(runtime.NumCPU()),
+						},
 						cli.BoolFlag{
 							Name:  "no-digits",
 							Usage: "Digits in address are disallow",
@@ -154,7 +159,13 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		res := make(chan int, runtime.NumCPU())
+
+		workers := c.Uint("workers")
+		if workers > uint(runtime.NumCPU()) || workers == 0 {
+			workers = uint(runtime.NumCPU())
+		}
+
+		res := make(chan int, workers)
 		for i := 0; i < cap(res); i++ {
 			go countKeyPairs(3200, res)
 		}
