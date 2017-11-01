@@ -6,15 +6,17 @@ package vanity
 import (
 	"testing"
 
+	"strings"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
+	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsPrefixCorrect(t *testing.T) {
-	assert.True(t, isPrefixCorrect(core.Mijin, "MA"))
-	assert.True(t, isPrefixCorrect(core.Mainnet, "NAB"))
-	assert.True(t, isPrefixCorrect(core.Testnet, "TD234"))
-
-	assert.False(t, isPrefixCorrect(core.Mijin, "MA123"))
-	assert.False(t, isPrefixCorrect(core.Mijin, "NABC"))
+func TestStartSearch(t *testing.T) {
+	rs := make(chan keypair.KeyPair)
+	sel, _ := NewPrefixSelector(core.Testnet, "TA")
+	go StartSearch(core.Testnet, sel, rs)
+	pr := <-rs
+	assert.True(t, strings.HasPrefix(pr.Address(core.Testnet).String(), "TA"))
 }

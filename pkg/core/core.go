@@ -4,10 +4,7 @@
 // Package core contains core domain model.
 package core
 
-// Chain is the type of NEM chain.
-type Chain struct {
-	Id byte
-}
+import "regexp"
 
 // Supported predefined chains.
 var (
@@ -15,6 +12,16 @@ var (
 	Mainnet = Chain{byte(0x68)}
 	Testnet = Chain{byte(0x98)}
 )
+
+// IsChainPrefix checks for existing chain prefixes
+func IsChainPrefix(str string) bool {
+	return regexp.MustCompile(`^[MNT]`).MatchString(str)
+}
+
+// Chain is the type of NEM chain.
+type Chain struct {
+	Id byte
+}
 
 // ChainPrefix returns unique chain prefix
 func (ch Chain) ChainPrefix() string {
