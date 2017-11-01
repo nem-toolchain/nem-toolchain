@@ -151,6 +151,11 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndMultiSelector(noDigitsSel, prMultiSel)
 
+	workers := c.Uint("workers")
+	if workers > uint(runtime.NumCPU()) || workers == 0 {
+		workers = uint(runtime.NumCPU())
+	}
+
 	if !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
 		ticker := time.NewTicker(time.Second)
@@ -159,11 +164,6 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-
-		workers := c.Uint("workers")
-		if workers > uint(runtime.NumCPU()) || workers == 0 {
-			workers = uint(runtime.NumCPU())
-		}
 
 		res := make(chan int, workers)
 		for i := 0; i < cap(res); i++ {
@@ -188,7 +188,7 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	rs := make(chan keypair.KeyPair)
-	for i := 0; i < runtime.NumCPU(); i++ {
+	for i := uint(0); i < workers; i++ {
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
