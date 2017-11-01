@@ -79,6 +79,11 @@ func main() {
 							Usage: "Number of generated accounts",
 							Value: 1,
 						},
+						cli.UintFlag{
+							Name:  "workers, w",
+							Usage: "Number of workers for generation",
+							Value: uint(runtime.NumCPU()),
+						},
 						cli.StringFlag{
 							Name:  "exclude",
 							Usage: "Characters that must not be in the address",
@@ -158,6 +163,11 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
 
+	workers := c.Uint("workers")
+	if m := uint(runtime.NumCPU()); workers == 0 || workers > m {
+		workers = m
+	}
+
 	if !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
 		ticker := time.NewTicker(time.Second)
@@ -166,7 +176,7 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		rate := countActualRate()
+		rate := countActualRate(workers)
 		ticker.Stop()
 		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 		printEstimateDetails(
@@ -175,7 +185,7 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	rs := make(chan keypair.KeyPair)
-	for i := 0; i < runtime.NumCPU(); i++ {
+	for i := uint(0); i < workers; i++ {
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
@@ -206,8 +216,8 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 }
 
 // countActualRate counts total number of generated keypairs per second
-func countActualRate() float64 {
-	res := make(chan int, runtime.NumCPU())
+func countActualRate(workers uint) float64 {
+	res := make(chan int, workers)
 	for i := 0; i < cap(res); i++ {
 		go countKeyPairs(3200, res)
 	}
