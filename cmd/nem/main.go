@@ -17,6 +17,8 @@ import (
 
 	"encoding/hex"
 
+	"bufio"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
@@ -90,6 +92,21 @@ func main() {
 						cli.BoolFlag{
 							Name:  "show-complexity",
 							Usage: "Show additionally the specified search complexity",
+						},
+					},
+				},
+				{
+					Name:   "info",
+					Usage:  "extract info from account",
+					Action: info,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "address-only, a",
+							Usage: "Show address for supplied private key",
+						},
+						cli.BoolFlag{
+							Name:  "public-only, p",
+							Usage: "Show public key for supplied private key",
 						},
 					},
 				},
@@ -187,6 +204,39 @@ func vanityAction(c *cli.Context) error {
 		}
 		printAccountDetails(ch, <-rs)
 		go vanity.StartSearch(ch, sel, rs)
+	}
+
+	return nil
+}
+
+func info(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	pk, err := reader.ReadString('\n')
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	arr, err := hex.DecodeString(strings.TrimSpace(pk))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	kp := keypair.KeyPair{Private: arr}
+	if c.Bool("address-only") {
+		fmt.Println("Address:", kp.Address(ch))
+	}
+
+	if c.Bool("public-only") {
+		fmt.Println("Public:")
+	}
+
+	if !c.Bool("address-only") && !c.Bool("public-only") {
+		printAccountDetails(ch, kp)
 	}
 
 	return nil
