@@ -12,7 +12,7 @@ import (
 // StartSearch starts search process for vanity account address that satisfies a given selector
 func StartSearch(chain core.Chain, selector Selector, ch chan<- keypair.KeyPair) {
 	for {
-		pr := keypair.Gen()
+		pr := keypair.Gen(nil)
 		if !selector.Pass(pr.Address(chain)) {
 			continue
 		}
