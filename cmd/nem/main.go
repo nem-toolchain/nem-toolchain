@@ -110,11 +110,11 @@ func main() {
 					Action: info,
 					Flags: []cli.Flag{
 						cli.BoolFlag{
-							Name:  "address-only, a",
+							Name:  "address",
 							Usage: "Show address for supplied private key",
 						},
 						cli.BoolFlag{
-							Name:  "public-only, p",
+							Name:  "public",
 							Usage: "Show public key for supplied private key",
 						},
 					},
