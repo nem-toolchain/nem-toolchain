@@ -19,8 +19,6 @@ import (
 
 	"bufio"
 
-	"bytes"
-
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
@@ -136,7 +134,7 @@ func generateAction(c *cli.Context) error {
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
-		printAccountDetails(ch, keypair.Gen(nil))
+		printAccountDetails(ch, keypair.Gen())
 		fmt.Println("----")
 	}
 
@@ -236,7 +234,7 @@ func info(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	pair := keypair.Gen(bytes.NewReader(pkBytes))
+	pair := keypair.FromSeed(pkBytes)
 	if c.Bool("address-only") {
 		printAddress(ch, pair)
 	}
@@ -284,7 +282,7 @@ func countActualRate(workers uint) float64 {
 func countKeyPairs(milliseconds time.Duration, res chan int) {
 	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
-		keypair.Gen(nil).Address(core.Mainnet)
+		keypair.Gen().Address(core.Mainnet)
 		select {
 		case <-timeout:
 			res <- count
@@ -319,7 +317,7 @@ func timeInSeconds(val float64) string {
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	printAddress(chain, pair)
 	printPublicKey(pair)
-	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+	printPrivateKey(pair)
 }
 
 func printAddress(chain core.Chain, pair keypair.KeyPair) {
@@ -328,4 +326,8 @@ func printAddress(chain core.Chain, pair keypair.KeyPair) {
 
 func printPublicKey(pair keypair.KeyPair) {
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+}
+
+func printPrivateKey(pair keypair.KeyPair) {
+	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 }
