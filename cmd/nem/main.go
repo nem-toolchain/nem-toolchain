@@ -223,6 +223,7 @@ func info(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	fmt.Println("Enter private key: ")
 	reader := bufio.NewReader(os.Stdin)
 	privateKeyStr, err := reader.ReadString('\n')
 	if err != nil {
@@ -235,15 +236,15 @@ func info(c *cli.Context) error {
 	}
 
 	pair := keypair.FromSeed(pkBytes)
-	if c.Bool("address-only") {
+	if c.Bool("address") {
 		printAddress(ch, pair)
 	}
 
-	if c.Bool("public-only") {
+	if c.Bool("public") {
 		printPublicKey(pair)
 	}
 
-	if !c.Bool("address-only") && !c.Bool("public-only") {
+	if !c.Bool("address") && !c.Bool("public") {
 		printAccountDetails(ch, pair)
 	}
 
