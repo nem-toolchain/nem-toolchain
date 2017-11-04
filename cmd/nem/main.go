@@ -17,6 +17,8 @@ import (
 
 	"encoding/hex"
 
+	"bufio"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
@@ -99,6 +101,21 @@ func main() {
 						cli.BoolFlag{
 							Name:  "show-complexity",
 							Usage: "Show additionally the specified search complexity",
+						},
+					},
+				},
+				{
+					Name:   "info",
+					Usage:  "extract info from account",
+					Action: info,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "address",
+							Usage: "Show address for supplied private key",
+						},
+						cli.BoolFlag{
+							Name:  "public",
+							Usage: "Show public key for supplied private key",
 						},
 					},
 				},
@@ -200,6 +217,40 @@ func vanityAction(c *cli.Context) error {
 	return nil
 }
 
+func info(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	fmt.Println("Enter private key: ")
+	reader := bufio.NewReader(os.Stdin)
+	privateKeyStr, err := reader.ReadString('\n')
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pkBytes, err := hex.DecodeString(strings.TrimSpace(privateKeyStr))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pair := keypair.FromSeed(pkBytes)
+	if c.Bool("address") {
+		printAddress(ch, pair)
+	}
+
+	if c.Bool("public") {
+		printPublicKey(pair)
+	}
+
+	if !c.Bool("address") && !c.Bool("public") {
+		printAccountDetails(ch, pair)
+	}
+
+	return nil
+}
+
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	var ch core.Chain
 	switch c.GlobalString("chain") {
@@ -265,7 +316,19 @@ func timeInSeconds(val float64) string {
 
 // printAccountDetails prints account details in pretty user-oriented multi-line format
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
+	printAddress(chain, pair)
+	printPublicKey(pair)
+	printPrivateKey(pair)
+}
+
+func printAddress(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
+}
+
+func printPublicKey(pair keypair.KeyPair) {
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+}
+
+func printPrivateKey(pair keypair.KeyPair) {
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 }
