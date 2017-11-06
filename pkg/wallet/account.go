@@ -144,10 +144,10 @@ func (acc *Account) Decrypt(password string) (keypair.KeyPair, error) {
 		return key, err
 	}
 
-	pk := make([]byte, 32)
+	privKeyBytes := make([]byte, 32)
 	mode := cipher.NewCBCDecrypter(block, acc.Iv)
-	mode.CryptBlocks(pk, acc.Encrypted)
-	key.Private = pk
+	mode.CryptBlocks(privKeyBytes, acc.Encrypted)
+	key = keypair.FromSeed(privKeyBytes)
 
 	return key, nil
 }

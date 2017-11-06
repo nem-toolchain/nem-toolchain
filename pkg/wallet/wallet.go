@@ -11,12 +11,6 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-type Wallet struct {
-	PrivateKey string
-	Name       string
-	Accounts   map[string]Account
-}
-
 func New(chain core.Chain) Wallet {
 	wlt := Wallet{}
 	wlt.Name = chain.String()
@@ -24,6 +18,37 @@ func New(chain core.Chain) Wallet {
 	wlt.Accounts = make(map[string]Account)
 
 	return wlt
+}
+
+func Encode(w Wallet) (string, error) {
+	var encoded string
+
+	ser, err := json.Marshal(w)
+	if err != nil {
+		return encoded, err
+	}
+	encoded = base64.StdEncoding.EncodeToString(ser)
+
+	return encoded, nil
+}
+
+func Decode(data string) (Wallet, error) {
+	var wlt Wallet
+
+	decoded, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return wlt, err
+	}
+
+	err = json.Unmarshal(decoded, &wlt)
+
+	return wlt, err
+}
+
+type Wallet struct {
+	PrivateKey string
+	Name       string
+	Accounts   map[string]Account
 }
 
 func (wlt *Wallet) AddAccount(pair keypair.KeyPair, password string) error {
@@ -86,29 +111,4 @@ func (wlt Wallet) MarshalJSON() ([]byte, error) {
 	}
 
 	return enc, nil
-}
-
-func Serialize(w Wallet) (string, error) {
-	var encoded string
-
-	ser, err := json.Marshal(w)
-	if err != nil {
-		return encoded, err
-	}
-	encoded = base64.StdEncoding.EncodeToString(ser)
-
-	return encoded, nil
-}
-
-func Deserialize(data string) (Wallet, error) {
-	var wlt Wallet
-
-	decoded, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		return wlt, err
-	}
-
-	err = json.Unmarshal(decoded, &wlt)
-
-	return wlt, err
 }

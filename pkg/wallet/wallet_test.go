@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWalletSerialize(t *testing.T) {
+func TestWalletEncode(t *testing.T) {
 	exp := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
 		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
 		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
@@ -23,13 +23,13 @@ func TestWalletSerialize(t *testing.T) {
 		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
 		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
 		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
-	wlt, _ := Deserialize(exp)
-	ser, _ := Serialize(wlt)
+	wlt, _ := Decode(exp)
+	ser, _ := Encode(wlt)
 
 	assert.Equal(t, ser, exp)
 }
 
-func TestWalletDeserialize(t *testing.T) {
+func TestWalletDecode(t *testing.T) {
 	exp := "eyJwcml2YXRlS2V5IjoiIiwibmFtZSI6Im1haW5uZXQiLCJhY2N" +
 		"vdW50cyI6eyIwIjp7ImJyYWluIjpmYWxzZSwiYWxnbyI6InBhc3M6ZW5j" +
 		"IiwiZW5jcnlwdGVkIjoiZTczZTVlZGFhYzgzOTMzODFhYTFlNWEyN2I3MWJi" +
@@ -39,7 +39,7 @@ func TestWalletDeserialize(t *testing.T) {
 		"M041VlU0SEo2RU5UMjRRVklHQVBNIiwibGFiZWwiOiJQcmltYXJ5IiwibmV0d" +
 		"29yayI6MTA0LCJjaGlsZCI6IjYxM2QwMWNlNjJlNDNjYzViZWE5Mzk1ZTBkOT" +
 		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
-	wlt, _ := Deserialize(exp)
+	wlt, _ := Decode(exp)
 
 	assert.Equal(t, wlt.Name, "mainnet")
 	assert.Equal(t, wlt.PrivateKey, "")
