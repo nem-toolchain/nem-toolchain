@@ -28,3 +28,38 @@ func TestChain_ChainPrefix(t *testing.T) {
 func TestChain_ChainPrefix_panic(t *testing.T) {
 	assert.Panics(t, func() { Chain{byte(0x00)}.ChainPrefix() })
 }
+
+func TestNewChain(t *testing.T) {
+	ch, _ := NewChain(0x68)
+	assert.Equal(t, ch, Mainnet)
+
+	ch, _ = NewChain(0x98)
+	assert.Equal(t, ch, Testnet)
+
+	ch, _ = NewChain(0x60)
+	assert.Equal(t, ch, Mijin)
+}
+
+func TestChain_String(t *testing.T) {
+	ch, _ := NewChain(0x68)
+	assert.Equal(t, ch.String(), "mainnet")
+
+	ch, _ = NewChain(0x98)
+	assert.Equal(t, ch.String(), "testnet")
+
+	ch, _ = NewChain(0x60)
+	assert.Equal(t, ch.String(), "mijin")
+}
+
+func TestFromString(t *testing.T) {
+	ch, _ := FromString("MAINnet")
+	assert.Equal(t, ch, Mainnet)
+	ch, err := FromString("_AINnet")
+	assert.Error(t, err, "expected invalid chain name error")
+
+	ch, _ = FromString("testNet")
+	assert.Equal(t, ch, Testnet)
+
+	ch, _ = FromString("MIJIN")
+	assert.Equal(t, ch, Mijin)
+}

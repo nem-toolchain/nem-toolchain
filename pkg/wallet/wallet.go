@@ -11,15 +11,17 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
+// New creates new default wallet
 func New(chain core.Chain) Wallet {
 	wlt := Wallet{}
-	wlt.Name = chain.String()
+	wlt.Chain = chain
 	wlt.PrivateKey = ""
 	wlt.Accounts = make(map[string]Account)
 
 	return wlt
 }
 
+// Encode encodes wallet into base64 string
 func Encode(w Wallet) (string, error) {
 	var encoded string
 
@@ -32,6 +34,7 @@ func Encode(w Wallet) (string, error) {
 	return encoded, nil
 }
 
+// Decode decodes wallet form a base64 string
 func Decode(data string) (Wallet, error) {
 	var wlt Wallet
 
@@ -39,18 +42,19 @@ func Decode(data string) (Wallet, error) {
 	if err != nil {
 		return wlt, err
 	}
-
 	err = json.Unmarshal(decoded, &wlt)
 
 	return wlt, err
 }
 
+// Wallet represents wallet file
 type Wallet struct {
 	PrivateKey string
-	Name       string
+	Chain      core.Chain
 	Accounts   map[string]Account
 }
 
+// AddAccount adds account into wallet
 func (wlt *Wallet) AddAccount(pair keypair.KeyPair, password string) error {
 	acc := Account{}
 	err := acc.Encrypt(pair, password)
@@ -64,6 +68,7 @@ func (wlt *Wallet) AddAccount(pair keypair.KeyPair, password string) error {
 	return nil
 }
 
+// UnmarshalJSON deserialize json into Wallet
 func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	var f interface{}
 	err := json.Unmarshal(b, &f)
@@ -72,7 +77,10 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	}
 
 	data := f.(map[string]interface{})
-	wlt.Name = data["name"].(string)
+	wlt.Chain, err = core.FromString(data["name"].(string))
+	if err != nil {
+		return err
+	}
 	wlt.PrivateKey = data["privateKey"].(string)
 
 	wlt.Accounts = make(map[string]Account)
@@ -89,10 +97,11 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// MarshalJSON serialize Wallet into JSON
 func (wlt Wallet) MarshalJSON() ([]byte, error) {
-	aux_accounts := make(map[string]SerializableAccount)
+	auxAccounts := make(map[string]SerializableAccount)
 	for i, acc := range wlt.Accounts {
-		aux_accounts[i] = acc.Serializable()
+		auxAccounts[i] = acc.Serializable()
 	}
 
 	acc := struct {
@@ -101,8 +110,8 @@ func (wlt Wallet) MarshalJSON() ([]byte, error) {
 		Accounts   map[string]SerializableAccount `json:"accounts"`
 	}{
 		PrivateKey: wlt.PrivateKey,
-		Name:       wlt.Name,
-		Accounts:   aux_accounts,
+		Name:       wlt.Chain.String(),
+		Accounts:   auxAccounts,
 	}
 
 	enc, err := json.Marshal(acc)

@@ -41,22 +41,22 @@ func TestWalletDecode(t *testing.T) {
 		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
 	wlt, _ := Decode(exp)
 
-	assert.Equal(t, wlt.Name, "mainnet")
+	assert.Equal(t, wlt.Chain, core.Mainnet)
 	assert.Equal(t, wlt.PrivateKey, "")
 
 	account := wlt.Accounts["0"]
-	exp_address, _ := keypair.ParseAddress("NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM")
-	assert.Equal(t, account.Address, exp_address)
+	expAddress, _ := keypair.ParseAddress("NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM")
+	assert.Equal(t, account.Address, expAddress)
 	assert.Equal(t, account.Label, "Primary")
 
-	exp_child, _ := hex.DecodeString("613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f")
-	assert.Equal(t, account.Child, exp_child)
+	expChild, _ := hex.DecodeString("613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f")
+	assert.Equal(t, account.Child, expChild)
 
-	exp_encrypted, _ := hex.DecodeString("e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
-	assert.Equal(t, account.Encrypted, exp_encrypted)
+	expEncrypted, _ := hex.DecodeString("e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
+	assert.Equal(t, account.Encrypted, expEncrypted)
 
-	exp_iv, _ := hex.DecodeString("190c85ff1e4a15262ff917b82d5e9d8c")
-	assert.Equal(t, account.Iv, exp_iv)
+	expIv, _ := hex.DecodeString("190c85ff1e4a15262ff917b82d5e9d8c")
+	assert.Equal(t, account.Iv, expIv)
 	assert.Equal(t, account.Network, core.Mainnet)
 	assert.Equal(t, account.Algo, "pass:enc")
 	assert.Equal(t, account.Brain, false)

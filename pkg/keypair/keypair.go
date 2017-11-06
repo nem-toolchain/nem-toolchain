@@ -50,7 +50,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 		panic("assert: Ripemd160 hash function internal error")
 	}
 
-	b := append([]byte{chain.Id}, r.Sum(nil)...)
+	b := append([]byte{chain.ID}, r.Sum(nil)...)
 
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)

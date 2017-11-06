@@ -18,17 +18,17 @@ import (
 
 // Account used to encrypt private key
 type Account struct {
-	Brain     bool
 	Algo      string
+	Label     string
 	Encrypted []byte
 	Iv        []byte
-	Address   keypair.Address
-	Label     string
-	Network   core.Chain
 	Child     []byte
+	Address   keypair.Address
+	Network   core.Chain
+	Brain     bool
 }
 
-// Json-serializable form for Account
+// SerializableAccount json-serializable form for Account
 type SerializableAccount struct {
 	Brain     bool   `json:"brain"`
 	Algo      string `json:"algo"`
@@ -40,6 +40,7 @@ type SerializableAccount struct {
 	Child     string `json:"child"`
 }
 
+// FromRaw tries to create Account from provided data
 func FromRaw(raw interface{}) (Account, error) {
 	var account Account
 	data := raw.(map[string]interface{})
@@ -88,7 +89,7 @@ func FromRaw(raw interface{}) (Account, error) {
 	return account, nil
 }
 
-// Convert account into json-serializable form
+// Serializable convert account into json-serializable form
 func (acc Account) Serializable() SerializableAccount {
 	var ser SerializableAccount
 	ser.Brain = acc.Brain
@@ -97,7 +98,7 @@ func (acc Account) Serializable() SerializableAccount {
 	ser.Iv = hex.EncodeToString(acc.Iv)
 	ser.Address = acc.Address.String()
 	ser.Label = acc.Label
-	ser.Network = acc.Network.Id
+	ser.Network = acc.Network.ID
 	ser.Child = hex.EncodeToString(acc.Child)
 
 	return ser

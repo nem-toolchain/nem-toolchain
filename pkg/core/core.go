@@ -7,6 +7,7 @@ package core
 import (
 	"errors"
 	"regexp"
+	"strings"
 )
 
 // Supported predefined chains.
@@ -16,7 +17,7 @@ var (
 	Testnet = Chain{byte(0x98)}
 )
 
-// Parse byte value into Chain
+// NewChain parse byte value into Chain
 func NewChain(val byte) (Chain, error) {
 	var ch Chain
 	var err error
@@ -35,6 +36,25 @@ func NewChain(val byte) (Chain, error) {
 	return ch, err
 }
 
+// FromString create Chain from chain name
+func FromString(name string) (Chain, error) {
+	var ch Chain
+	var err error
+
+	switch strings.ToLower(name) {
+	case "mainnet":
+		ch = Mainnet
+	case "testnet":
+		ch = Testnet
+	case "mijin":
+		ch = Mijin
+	default:
+		err = errors.New("invalid chain name")
+	}
+
+	return ch, err
+}
+
 // IsChainPrefix checks for existing chain prefixes
 func IsChainPrefix(str string) bool {
 	return regexp.MustCompile(`^[MNT]`).MatchString(str)
@@ -42,7 +62,7 @@ func IsChainPrefix(str string) bool {
 
 // Chain is the type of NEM chain.
 type Chain struct {
-	Id byte
+	ID byte
 }
 
 // ChainPrefix returns unique chain prefix
