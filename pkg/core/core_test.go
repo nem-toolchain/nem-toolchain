@@ -54,7 +54,7 @@ func TestChain_String(t *testing.T) {
 func TestFromString(t *testing.T) {
 	ch, _ := FromString("MAINnet")
 	assert.Equal(t, ch, Mainnet)
-	ch, err := FromString("_AINnet")
+	_, err := FromString("_AINnet")
 	assert.Error(t, err, "expected invalid chain name error")
 
 	ch, _ = FromString("testNet")
