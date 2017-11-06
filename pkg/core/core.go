@@ -9,11 +9,6 @@ import (
 	"regexp"
 )
 
-// Chain is the type of NEM chain.
-type Chain struct {
-	Id byte
-}
-
 // Supported predefined chains.
 var (
 	Mijin   = Chain{byte(0x60)}
@@ -40,6 +35,16 @@ func NewChain(val byte) (Chain, error) {
 	return ch, err
 }
 
+// IsChainPrefix checks for existing chain prefixes
+func IsChainPrefix(str string) bool {
+	return regexp.MustCompile(`^[MNT]`).MatchString(str)
+}
+
+// Chain is the type of NEM chain.
+type Chain struct {
+	Id byte
+}
+
 // ChainPrefix returns unique chain prefix
 func (ch Chain) ChainPrefix() string {
 	switch ch {
@@ -51,11 +56,6 @@ func (ch Chain) ChainPrefix() string {
 		return "T"
 	}
 	panic("unknown chain")
-}
-
-// IsChainPrefix checks for existing chain prefixes
-func IsChainPrefix(str string) bool {
-	return regexp.MustCompile(`^[MNT]`).MatchString(str)
 }
 
 func (ch Chain) String() string {

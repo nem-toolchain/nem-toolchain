@@ -2,5 +2,4 @@
 title: Donations
 ---
 
-Our NEM address: ~~`NDONAT-PNSHRX-WNXOWC-FLAUAT-CSOCGR-WJZDBE-ZOVT`~~
-([Why?](https://github.com/nem-toolchain/nem-toolchain/issues/127))
+Our NEM address: `NCSY3D-EVBGVX-MEPZWK-TIJWCA-OXL5NE-OLJPHX-LFLD`

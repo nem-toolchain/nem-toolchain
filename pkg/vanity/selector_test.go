@@ -6,13 +6,15 @@ package vanity
 import (
 	"testing"
 
+	"regexp"
+
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewExcludeSelector(t *testing.T) {
-	for _, s := range [][2]string{
+	for _, a := range [][2]string{
 		{"", ""},
 		{"A", "A"},
 		{"ABC", "ABC"},
@@ -20,10 +22,10 @@ func TestNewExcludeSelector(t *testing.T) {
 		{"BCACBC", "ABC"},
 		{"6D75234653BDACBCCDD", "234567ABCD"},
 	} {
-		t.Run(s[0], func(t *testing.T) {
-			sel, err := NewExcludeSelector(s[0])
+		t.Run(a[0], func(t *testing.T) {
+			sel, err := NewExcludeSelector(a[0])
 			assert.NoError(t, err)
-			assert.Equal(t, s[1], sel.(excludeSelector).chars)
+			assert.Equal(t, a[1], sel.(excludeSelector).chars)
 		})
 	}
 }
@@ -41,25 +43,47 @@ func TestNewExcludeSelector_fail(t *testing.T) {
 }
 
 func TestNewPrefixSelector(t *testing.T) {
-	for k, v := range map[core.Chain]string{
-		core.Mijin:   "MA",
-		core.Mainnet: "NAB",
-		core.Testnet: "TD234",
+	for k, v := range map[string]struct {
+		ch core.Chain
+		pr string
+		re *regexp.Regexp
+	}{
+		"":  {core.Mijin, "", regexp.MustCompile(`^\w*`)},
+		"M": {core.Mijin, "M", regexp.MustCompile(`^M\w*`)},
+		"_": {core.Mijin, "_", regexp.MustCompile(`^\w\w*`)},
+
+		"NA":   {core.Mainnet, "NA", regexp.MustCompile(`^NA\w*`)},
+		"NABC": {core.Mainnet, "NABC", regexp.MustCompile(`^NABC\w*`)},
+		"_ABC": {core.Mainnet, "_ABC", regexp.MustCompile(`^\wABC\w*`)},
+
+		"-T-D-2-3-4---": {
+			core.Testnet,
+			"TD234",
+			regexp.MustCompile(`^TD234\w*`),
+		},
+		"TA____-BB____-C_CC___-D__D_D": {
+			core.Testnet,
+			"TA____BB____C_CC___D__D_D",
+			regexp.MustCompile(`^TA\w\w\w\wBB\w\w\w\wC\wCC\w\w\wD\w\wD\wD\w*`),
+		},
 	} {
-		t.Run(k.ChainPrefix(), func(t *testing.T) {
-			_, err := NewPrefixSelector(k, v)
+		t.Run(k, func(t *testing.T) {
+			sel, err := NewPrefixSelector(v.ch, k)
 			assert.NoError(t, err)
+			assert.Equal(t, v.pr, sel.(prefixSelector).prefix)
+			assert.Equal(t, v.re, sel.(prefixSelector).re)
 		})
 	}
 }
 
 func TestNewPrefixSelector_fail(t *testing.T) {
-	for k, v := range map[core.Chain]string{
-		core.Mijin:   "MA123",
-		core.Testnet: "NABC",
+	for k, v := range map[string]core.Chain{
+		"MA123": core.Mijin,
+		"TABC":  core.Mainnet,
+		"T#__":  core.Testnet,
 	} {
-		t.Run(k.ChainPrefix(), func(t *testing.T) {
-			_, err := NewPrefixSelector(k, v)
+		t.Run(k, func(t *testing.T) {
+			_, err := NewPrefixSelector(v, k)
 			assert.Error(t, err)
 		})
 	}
@@ -74,42 +98,55 @@ func TestTrueSelector_Pass(t *testing.T) {
 }
 
 func TestExcludeSelector_Pass_true(t *testing.T) {
-	sel := excludeSelector{"BCD234"}
-	addr, _ := keypair.ParseAddress("TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	assert.True(t, sel.Pass(addr))
+	for k, v := range map[string]string{
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.True(t, excludeSelector{v}.Pass(addr))
+		})
+	}
 }
 
 func TestExcludeSelector_Pass_false(t *testing.T) {
-	sel := excludeSelector{"BCD234"}
-	for _, s := range []string{
-		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2",
-		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA",
-		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA",
+	for k, v := range map[string]string{
+		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA": "BCD234",
 	} {
-		t.Run(s, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(s)
-			assert.False(t, sel.Pass(addr))
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.False(t, excludeSelector{v}.Pass(addr))
 		})
 	}
 }
 
 func TestPrefixSelector_Pass_true(t *testing.T) {
-	sel := prefixSelector{"TABC"}
-	addr, _ := keypair.ParseAddress("TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	assert.True(t, sel.Pass(addr))
+	for k, v := range map[string](*regexp.Regexp){
+		"TABCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TAAAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.True(t, prefixSelector{re: v}.Pass(addr))
+		})
+	}
 }
 
 func TestPrefixSelector_Pass_false(t *testing.T) {
-	sel := prefixSelector{"TABC"}
-	for _, s := range []string{
-		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+	for k, v := range map[string](*regexp.Regexp){
+		"TBACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TACBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+		"TCABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": regexp.MustCompile(`^TABC\w*`),
+
+		"T2AAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
+		"TAAA3ABBBBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
+		"TAAAAAB4BBBBCCCCCCDDDDDDEEEEEEFFFFFF2345": regexp.MustCompile(`^TA\wAA\wBB\w*`),
 	} {
-		t.Run(s, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(s)
-			assert.False(t, sel.Pass(addr))
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.False(t, prefixSelector{re: v}.Pass(addr))
 		})
 	}
 }

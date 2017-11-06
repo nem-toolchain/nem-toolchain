@@ -95,6 +95,11 @@ func main() {
 							Usage: "Number of generated accounts",
 							Value: 1,
 						},
+						cli.UintFlag{
+							Name:  "workers, w",
+							Usage: "Number of workers for generation",
+							Value: uint(runtime.NumCPU()),
+						},
 						cli.StringFlag{
 							Name:  "exclude",
 							Usage: "Characters that must not be in the address",
@@ -114,6 +119,21 @@ func main() {
 						cli.BoolFlag{
 							Name:  "save-wallet, w",
 							Usage: "Save to wallet file",
+						},
+					},
+				},
+				{
+					Name:   "info",
+					Usage:  "extract info from account",
+					Action: info,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "address",
+							Usage: "Show address for supplied private key",
+						},
+						cli.BoolFlag{
+							Name:  "public",
+							Usage: "Show public key for supplied private key",
 						},
 					},
 				},
@@ -228,6 +248,11 @@ func vanityAction(c *cli.Context) error {
 
 	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
 
+	workers := c.Uint("workers")
+	if m := uint(runtime.NumCPU()); workers == 0 || workers > m {
+		workers = m
+	}
+
 	if !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
 		ticker := time.NewTicker(time.Second)
@@ -236,7 +261,7 @@ func vanityAction(c *cli.Context) error {
 				fmt.Print(".")
 			}
 		}()
-		rate := countActualRate()
+		rate := countActualRate(workers)
 		ticker.Stop()
 		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 		printEstimateDetails(
@@ -245,7 +270,7 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	rs := make(chan keypair.KeyPair)
-	for i := 0; i < runtime.NumCPU(); i++ {
+	for i := uint(0); i < workers; i++ {
 		go vanity.StartSearch(ch, sel, rs)
 	}
 
@@ -276,6 +301,40 @@ func vanityAction(c *cli.Context) error {
 	return nil
 }
 
+func info(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	fmt.Println("Enter private key: ")
+	reader := bufio.NewReader(os.Stdin)
+	privateKeyStr, err := reader.ReadString('\n')
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pkBytes, err := hex.DecodeString(strings.TrimSpace(privateKeyStr))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pair := keypair.FromSeed(pkBytes)
+	if c.Bool("address") {
+		printAddress(ch, pair)
+	}
+
+	if c.Bool("public") {
+		printPublicKey(pair)
+	}
+
+	if !c.Bool("address") && !c.Bool("public") {
+		printAccountDetails(ch, pair)
+	}
+
+	return nil
+}
+
 func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 	var ch core.Chain
 	switch c.GlobalString("chain") {
@@ -292,8 +351,8 @@ func chainGlobalOption(c *cli.Context) (core.Chain, error) {
 }
 
 // countActualRate counts total number of generated keypairs per second
-func countActualRate() float64 {
-	res := make(chan int, runtime.NumCPU())
+func countActualRate(workers uint) float64 {
+	res := make(chan int, workers)
 	for i := 0; i < cap(res); i++ {
 		go countKeyPairs(3200, res)
 	}
@@ -341,8 +400,20 @@ func timeInSeconds(val float64) string {
 
 // printAccountDetails prints account details in pretty user-oriented multi-line format
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
+	printAddress(chain, pair)
+	printPublicKey(pair)
+	printPrivateKey(pair)
+}
+
+func printAddress(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("Address:", pair.Address(chain).PrettyString())
+}
+
+func printPublicKey(pair keypair.KeyPair) {
 	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+}
+
+func printPrivateKey(pair keypair.KeyPair) {
 	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
 }
 
