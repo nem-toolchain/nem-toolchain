@@ -5,14 +5,20 @@
 package keypair
 
 import (
-	"io"
-
 	"bytes"
+	"io"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
+)
+
+const (
+	// PrivateBytes stores the private key length in bytes
+	PrivateBytes = 32
+	// PublicBytes stores the public key length in bytes
+	PublicBytes = 32
 )
 
 // Gen generates a new private/public key pair using entropy from crypto rand.
@@ -22,7 +28,7 @@ func Gen() KeyPair {
 
 // FromSeed generates a new private/public key pair using specified seed data
 func FromSeed(seed []byte) KeyPair {
-	var r io.Reader = nil
+	var r io.Reader
 	if seed != nil {
 		r = bytes.NewReader(seed)
 	}
@@ -31,7 +37,7 @@ func FromSeed(seed []byte) KeyPair {
 	if err != nil {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
-	return KeyPair{pr[:32], pub}
+	return KeyPair{pr[:PrivateBytes], pub}
 }
 
 // KeyPair is a private/public crypto key pair.

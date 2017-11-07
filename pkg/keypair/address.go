@@ -5,21 +5,20 @@ package keypair
 
 import (
 	"encoding/base32"
-
-	"strings"
-
-	"regexp"
-
 	"errors"
+	"regexp"
+	"strings"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 )
 
 const (
-	// AddressBytes stores the address length
+	// AddressBytes stores the address length in bytes
 	AddressBytes = 25
-	// AddressLength stores the address string representation length
+	// AddressLength stores the address length as string representation
 	AddressLength = 40
+	// PrettyAddressLength stores the address length as pretty string representation
+	PrettyAddressLength = 46
 )
 
 // ParseAddress constructs an instance of `Address` from given base32 string representation
