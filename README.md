@@ -61,7 +61,8 @@ or chat with us in the [Gitter chat](https://gitter.im/nem-toolchain/Lobby).
 
 ## Donations
 
-Our NEM address: `NCSY3D-EVBGVX-MEPZWK-TIJWCA-OXL5NE-OLJPHX-LFLD`
+Our NEM address:
+[`NCSY3D-EVBGVX-MEPZWK-TIJWCA-OXL5NE-OLJPHX-LFLD`](http://chain.nem.ninja/#/account/NCSY3D-EVBGVX-MEPZWK-TIJWCA-OXL5NE-OLJPHX-LFLD)
  
 ## Thanks to
 

@@ -1,25 +1,26 @@
-// Copyright 2017 The nem-toolchain project authors. All rights reserved.
-// Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+/*
+ * // Copyright 2017 The nem-toolchain project authors. All rights reserved.
+ * // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
 
 package keypair
 
 import (
 	"encoding/base32"
-
-	"strings"
-
-	"regexp"
-
 	"errors"
+	"regexp"
+	"strings"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 )
 
 const (
-	// AddressBytes stores the address length
+	// AddressBytes stores the address length in bytes
 	AddressBytes = 25
-	// AddressLength stores the address string representation length
+	// AddressLength stores the address length as string representation
 	AddressLength = 40
+	// PrettyAddressLength stores the address length as pretty string representation
+	PrettyAddressLength = 46
 )
 
 // ParseAddress constructs an instance of `Address` from given base32 string representation
