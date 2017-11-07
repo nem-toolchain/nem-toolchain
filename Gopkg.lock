@@ -53,7 +53,7 @@
   branch = "issue/lack_of_keccak"
   name = "golang.org/x/crypto"
   packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3"]
-  revision = "968ae3e8ebc108e7f0356b884f7f79c441b57659"
+  revision = "598a76957d24e91450de188eb8393fa96882be5e"
   source = "https://github.com/nem-toolchain/crypto.git"
 
 [solve-meta]
