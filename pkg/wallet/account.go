@@ -16,30 +16,6 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Account used to encrypt private key
-type Account struct {
-	Algo      string
-	Label     string
-	Encrypted []byte
-	Iv        []byte
-	Child     []byte
-	Address   keypair.Address
-	Network   core.Chain
-	Brain     bool
-}
-
-// SerializableAccount json-serializable form for Account
-type SerializableAccount struct {
-	Brain     bool   `json:"brain"`
-	Algo      string `json:"algo"`
-	Encrypted string `json:"encrypted"`
-	Iv        string `json:"iv"`
-	Address   string `json:"address"`
-	Label     string `json:"label"`
-	Network   byte   `json:"network"`
-	Child     string `json:"child"`
-}
-
 // FromRaw tries to create Account from provided data
 func FromRaw(raw interface{}) (Account, error) {
 	var account Account
@@ -87,6 +63,30 @@ func FromRaw(raw interface{}) (Account, error) {
 	}
 
 	return account, nil
+}
+
+// Account used to encrypt private key
+type Account struct {
+	Algo      string
+	Label     string
+	Encrypted []byte
+	Iv        []byte
+	Child     []byte
+	Address   keypair.Address
+	Network   core.Chain
+	Brain     bool
+}
+
+// SerializableAccount json-serializable form for Account
+type SerializableAccount struct {
+	Brain     bool   `json:"brain"`
+	Algo      string `json:"algo"`
+	Encrypted string `json:"encrypted"`
+	Iv        string `json:"iv"`
+	Address   string `json:"address"`
+	Label     string `json:"label"`
+	Network   byte   `json:"network"`
+	Child     string `json:"child"`
 }
 
 // Serializable convert account into json-serializable form
