@@ -21,6 +21,12 @@ const (
 	PublicBytes = 32
 )
 
+// KeyPair is a private/public crypto key pair.
+type KeyPair struct {
+	Private []byte
+	Public  []byte
+}
+
 // Gen generates a new private/public key pair using entropy from crypto rand.
 func Gen() KeyPair {
 	return FromSeed(nil)
@@ -38,12 +44,6 @@ func FromSeed(seed []byte) KeyPair {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
 	return KeyPair{pr[:PrivateBytes], pub}
-}
-
-// KeyPair is a private/public crypto key pair.
-type KeyPair struct {
-	Private []byte
-	Public  []byte
 }
 
 // Address converts a key pair into corresponding address string representation.

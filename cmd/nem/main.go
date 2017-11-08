@@ -5,19 +5,14 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"time"
-
-	"runtime"
-
-	"strings"
-
-	"math"
-
-	"encoding/hex"
-
 	"bufio"
+	"encoding/hex"
+	"fmt"
+	"math"
+	"os"
+	"runtime"
+	"strings"
+	"time"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
@@ -60,6 +55,21 @@ func main() {
 			Usage: "Account related bundle of actions",
 			Subcommands: []cli.Command{
 				{
+					Name:   "info",
+					Usage:  "Show info for given account",
+					Action: infoAction,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "address",
+							Usage: "Show public address only for given private key",
+						},
+						cli.BoolFlag{
+							Name:  "public",
+							Usage: "Show public key only for given private key",
+						},
+					},
+				},
+				{
 					Name:   "generate",
 					Usage:  "Generate a new account",
 					Action: generateAction,
@@ -68,6 +78,10 @@ func main() {
 							Name:  "number, n",
 							Usage: "Number of generated accounts",
 							Value: 1,
+						},
+						cli.BoolFlag{
+							Name:  "strip, s",
+							Usage: "Strip output to private key only",
 						},
 					},
 				},
@@ -81,41 +95,30 @@ func main() {
 							Usage: "Number of generated accounts",
 							Value: 1,
 						},
+						cli.BoolFlag{
+							Name:  "strip, s",
+							Usage: "Strip output to private key only",
+						},
 						cli.UintFlag{
 							Name:  "workers, w",
 							Usage: "Number of workers for generation",
 							Value: uint(runtime.NumCPU()),
 						},
-						cli.StringFlag{
-							Name:  "exclude",
-							Usage: "Characters that must not be in the address",
-						},
 						cli.BoolFlag{
-							Name:  "no-digits",
-							Usage: "Digits in address are disallow",
+							Name:  "show-complexity",
+							Usage: "Show additionally the specified search complexity",
 						},
 						cli.BoolFlag{
 							Name:  "skip-estimate",
 							Usage: "Skip the step to calculate estimation times to search",
 						},
 						cli.BoolFlag{
-							Name:  "show-complexity",
-							Usage: "Show additionally the specified search complexity",
+							Name:  "no-digits",
+							Usage: "Digits in address are disallow",
 						},
-					},
-				},
-				{
-					Name:   "info",
-					Usage:  "extract info from account",
-					Action: info,
-					Flags: []cli.Flag{
-						cli.BoolFlag{
-							Name:  "address",
-							Usage: "Show address for supplied private key",
-						},
-						cli.BoolFlag{
-							Name:  "public",
-							Usage: "Show public key for supplied private key",
+						cli.StringFlag{
+							Name:  "exclude",
+							Usage: "Characters that must not be in the address",
 						},
 					},
 				},
@@ -126,6 +129,36 @@ func main() {
 	_ = app.Run(os.Args)
 }
 
+func infoAction(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	fmt.Print("Enter private key: ")
+	reader := bufio.NewReader(os.Stdin)
+	s, err := reader.ReadString('\n')
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pk, err := hex.DecodeString(strings.TrimSpace(s))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	pair := keypair.FromSeed(pk)
+	if c.Bool("address") {
+		printlnAddress(ch, pair, true)
+	} else if c.Bool("public") {
+		printlnPublicKey(pair, true)
+	} else {
+		printAccountDetails(ch, pair)
+	}
+
+	return nil
+}
+
 func generateAction(c *cli.Context) error {
 	ch, err := chainGlobalOption(c)
 	if err != nil {
@@ -134,8 +167,15 @@ func generateAction(c *cli.Context) error {
 
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
-		printAccountDetails(ch, keypair.Gen())
-		fmt.Println("----")
+		pair := keypair.Gen()
+		if i != 0 && !c.Bool("strip") {
+			fmt.Println("----")
+		}
+		if c.Bool("strip") {
+			printlnPrivateKey(pair, true)
+		} else {
+			printAccountDetails(ch, pair)
+		}
 	}
 
 	return nil
@@ -185,7 +225,7 @@ func vanityAction(c *cli.Context) error {
 		workers = m
 	}
 
-	if !c.Bool("skip-estimate") {
+	if !c.Bool("strip") && !c.Bool("skip-estimate") {
 		fmt.Print("Calculate accounts rate")
 		ticker := time.NewTicker(time.Second)
 		go func() {
@@ -207,45 +247,16 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	for i := uint(0); i < num; i++ {
-		if i != 0 {
+		pair := <-rs
+		if i != 0 && !c.Bool("strip") {
 			fmt.Println("----")
 		}
-		printAccountDetails(ch, <-rs)
+		if c.Bool("strip") {
+			printlnPrivateKey(pair, true)
+		} else {
+			printAccountDetails(ch, pair)
+		}
 		go vanity.StartSearch(ch, sel, rs)
-	}
-
-	return nil
-}
-
-func info(c *cli.Context) error {
-	ch, err := chainGlobalOption(c)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	fmt.Println("Enter private key: ")
-	reader := bufio.NewReader(os.Stdin)
-	privateKeyStr, err := reader.ReadString('\n')
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	pkBytes, err := hex.DecodeString(strings.TrimSpace(privateKeyStr))
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	pair := keypair.FromSeed(pkBytes)
-	if c.Bool("address") {
-		printAddress(ch, pair)
-	}
-
-	if c.Bool("public") {
-		printPublicKey(pair)
-	}
-
-	if !c.Bool("address") && !c.Bool("public") {
-		printAccountDetails(ch, pair)
 	}
 
 	return nil
@@ -316,19 +327,26 @@ func timeInSeconds(val float64) string {
 
 // printAccountDetails prints account details in pretty user-oriented multi-line format
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
-	printAddress(chain, pair)
-	printPublicKey(pair)
-	printPrivateKey(pair)
+	printlnAddress(chain, pair, false)
+	printlnPublicKey(pair, false)
+	printlnPrivateKey(pair, false)
 }
 
-func printAddress(chain core.Chain, pair keypair.KeyPair) {
-	fmt.Println("Address:", pair.Address(chain).PrettyString())
+func printlnPrivateKey(pair keypair.KeyPair, strip bool) {
+	printlnCustom("Private key:", hex.EncodeToString(pair.Private), strip)
 }
 
-func printPublicKey(pair keypair.KeyPair) {
-	fmt.Println("Public key:", hex.EncodeToString(pair.Public))
+func printlnPublicKey(pair keypair.KeyPair, strip bool) {
+	printlnCustom("Public key:", hex.EncodeToString(pair.Public), strip)
 }
 
-func printPrivateKey(pair keypair.KeyPair) {
-	fmt.Println("Private key:", hex.EncodeToString(pair.Private))
+func printlnAddress(chain core.Chain, pair keypair.KeyPair, strip bool) {
+	printlnCustom("Address:", pair.Address(chain).PrettyString(), strip)
+}
+
+func printlnCustom(title, value string, strip bool) {
+	if !strip {
+		fmt.Print(title)
+	}
+	fmt.Println(value)
 }

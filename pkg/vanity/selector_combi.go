@@ -9,24 +9,14 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-// AndSelector combines several selectors into a sequential multi selector chain (`AND` logic)
-func AndSelector(selectors ...Selector) Selector {
-	return seqSelector{selectors}
-}
-
-// OrSelector combines several selectors into a parallel multi selector chain (`OR` logic)
-func OrSelector(selectors ...Selector) Selector {
-	return parSelector{selectors}
-}
-
 // seqSelector allows nested selectors to be combined into a sequential multi selector chain (`AND` logic)
 type seqSelector struct {
 	items []Selector
 }
 
-// parSelector allows nested selectors to be combined into a parallel multi selector chain (`OR` logic)
-type parSelector struct {
-	items []Selector
+// AndSelector combines several selectors into a sequential multi selector chain (`AND` logic)
+func AndSelector(selectors ...Selector) Selector {
+	return seqSelector{selectors}
 }
 
 func (sel seqSelector) Pass(addr keypair.Address) bool {
@@ -41,7 +31,7 @@ func (sel seqSelector) Pass(addr keypair.Address) bool {
 func (sel seqSelector) rules() []searchRule {
 	res := []searchRule{{}}
 	for _, it := range sel.items {
-		n := []searchRule{}
+		var n []searchRule
 		for _, r1 := range res {
 			for _, r2 := range it.rules() {
 				n = append(n, r1.merge(r2))
@@ -50,6 +40,16 @@ func (sel seqSelector) rules() []searchRule {
 		res = n
 	}
 	return res
+}
+
+// parSelector allows nested selectors to be combined into a parallel multi selector chain (`OR` logic)
+type parSelector struct {
+	items []Selector
+}
+
+// OrSelector combines several selectors into a parallel multi selector chain (`OR` logic)
+func OrSelector(selectors ...Selector) Selector {
+	return parSelector{selectors}
 }
 
 func (sel parSelector) Pass(addr keypair.Address) bool {
@@ -65,7 +65,7 @@ func (sel parSelector) rules() []searchRule {
 	if len(sel.items) == 0 {
 		return []searchRule{{}}
 	}
-	res := []searchRule{}
+	var res []searchRule
 	for _, it := range sel.items {
 	OUTER_LOOP:
 		for _, r := range it.rules() {
