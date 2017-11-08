@@ -31,7 +31,7 @@ func (sel seqSelector) Pass(addr keypair.Address) bool {
 func (sel seqSelector) rules() []searchRule {
 	res := []searchRule{{}}
 	for _, it := range sel.items {
-		var n []searchRule
+		n := make([]searchRule, 0)
 		for _, r1 := range res {
 			for _, r2 := range it.rules() {
 				n = append(n, r1.merge(r2))
@@ -65,16 +65,16 @@ func (sel parSelector) rules() []searchRule {
 	if len(sel.items) == 0 {
 		return []searchRule{{}}
 	}
-	var res []searchRule
+	res := make([]searchRule, 0)
 	for _, it := range sel.items {
-	OUTER_LOOP:
+	OUTER:
 		for _, r := range it.rules() {
 			if r == (searchRule{}) {
 				return []searchRule{{}}
 			}
 			for _, o := range res {
 				if reflect.DeepEqual(r, o) {
-					continue OUTER_LOOP
+					continue OUTER
 				}
 			}
 			res = append(res, r)

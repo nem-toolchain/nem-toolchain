@@ -168,9 +168,6 @@ func generateAction(c *cli.Context) error {
 	num := c.Uint("number")
 	for i := uint(0); i < num; i++ {
 		pair := keypair.Gen()
-		if i != 0 && !c.Bool("strip") {
-			fmt.Println("----")
-		}
 		if c.Bool("strip") {
 			printlnPrivateKey(pair, true)
 		} else {
@@ -238,7 +235,6 @@ func vanityAction(c *cli.Context) error {
 		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
 		printEstimateDetails(
 			vanity.Probability(sel)/float64(num), rate, c.Bool("show-complexity"))
-		fmt.Println("----")
 	}
 
 	rs := make(chan keypair.KeyPair)
@@ -248,9 +244,6 @@ func vanityAction(c *cli.Context) error {
 
 	for i := uint(0); i < num; i++ {
 		pair := <-rs
-		if i != 0 && !c.Bool("strip") {
-			fmt.Println("----")
-		}
 		if c.Bool("strip") {
 			printlnPrivateKey(pair, true)
 		} else {
@@ -327,6 +320,7 @@ func timeInSeconds(val float64) string {
 
 // printAccountDetails prints account details in pretty user-oriented multi-line format
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
+	fmt.Println("----")
 	printlnAddress(chain, pair, false)
 	printlnPublicKey(pair, false)
 	printlnPrivateKey(pair, false)
