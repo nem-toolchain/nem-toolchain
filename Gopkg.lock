@@ -2,24 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/FactomProject/basen"
-  packages = ["."]
-  revision = "fe3947df716ebfda9847eb1b9a48f9592e06478c"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/FactomProject/btcutilecc"
-  packages = ["."]
-  revision = "d3a63a5752ecf3fbc06bd97365da752111c263df"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/btcsuite/btcd"
-  packages = ["btcjson"]
-  revision = "fb43a179cb37713cb19f93c9b62d436385edbc87"
-
-[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -38,12 +20,6 @@
   version = "v1.1.4"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/tyler-smith/go-bip32"
-  packages = ["."]
-  revision = "2c9cfd17756470a0b7c3e4b7954bae7d11035504"
-
-[[projects]]
   name = "github.com/urfave/cli"
   packages = ["."]
   revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
@@ -52,13 +28,19 @@
 [[projects]]
   branch = "issue/lack_of_keccak"
   name = "golang.org/x/crypto"
-  packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3"]
+  packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3","ssh/terminal"]
   revision = "598a76957d24e91450de188eb8393fa96882be5e"
   source = "https://github.com/nem-toolchain/crypto.git"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix","windows"]
+  revision = "4b45465282a4624cf39876842a017334f13b8aff"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "285f7fd0b16e0f4f236d057ff786f221a7803a00e743ef74b8927d395047e92c"
+  inputs-digest = "3a9651cb192a2f886e06d4e2510e1f61ac1ffe21d6c24dadbd7e98d525e68408"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -6,6 +6,8 @@ package keypair
 
 import (
 	"bytes"
+	"encoding/hex"
+	"fmt"
 	"io"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
@@ -40,6 +42,11 @@ func FromSeed(seed []byte) KeyPair {
 	return KeyPair{pr[:PrivateBytes], pub}
 }
 
+// HexToPrivBytes converts hex string into private key bytes
+func HexToPrivBytes(h string) ([]byte, error) {
+	return hexToKey(h, PrivateBytes)
+}
+
 // KeyPair is a private/public crypto key pair.
 type KeyPair struct {
 	Private []byte
@@ -64,4 +71,16 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	addr := Address{}
 	copy(addr[:], a[:])
 	return addr
+}
+
+// hexToKey converts hex encoded string into private/public sized bytes
+func hexToKey(h string, keySize int) ([]byte, error) {
+	keyBytes, err := hex.DecodeString(h)
+	if err != nil {
+		return keyBytes, err
+	} else if len(keyBytes) != keySize {
+		return keyBytes, fmt.Errorf("invalid key length (expected: %v, received: %v)", keySize, len(h))
+	}
+
+	return keyBytes, nil
 }

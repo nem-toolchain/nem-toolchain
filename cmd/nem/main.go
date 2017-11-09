@@ -19,12 +19,12 @@ import (
 
 	"bufio"
 
+	"github.com/howeyc/gopass"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/vanity"
 	"github.com/nem-toolchain/nem-toolchain/pkg/wallet"
 	"github.com/urfave/cli"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -173,8 +173,7 @@ func encodeAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Println("Enter private key:")
-	privKeyBytes, err := terminal.ReadPassword(0)
+	privKeyBytes, err := requestPrivateKey()
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -377,15 +376,30 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 	}
 }
 
-// printEstimateDetails request user to input password
+// requestPassword request input of password
 func requestPassword() (string, error) {
 	var passBytes []byte
-	fmt.Println("Enter password:")
-	passBytes, err := terminal.ReadPassword(0)
+	passBytes, err := gopass.GetPasswdPrompt("Enter password: ", true, os.Stdin, os.Stdout)
 	if err != nil {
 		return "", cli.NewExitError(err.Error(), 1)
 	}
 	return string(passBytes), nil
+}
+
+// requestPassword request input of private key hex-string
+func requestPrivateKey() ([]byte, error) {
+	var pkBytes []byte
+	val, err := gopass.GetPasswdPrompt("Enter private key: ", true, os.Stdin, os.Stdout)
+	if err != nil {
+		return pkBytes, cli.NewExitError(err.Error(), 1)
+	}
+
+	pkBytes, err = keypair.HexToPrivBytes(string(val))
+	if err != nil {
+		return pkBytes, err
+	}
+
+	return pkBytes, nil
 }
 
 // printEstimateDetails prints estimate search time details
