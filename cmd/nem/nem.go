@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
 // Command nem responses for command line user interface
-package main
+package nem
 
 import (
 	"fmt"
