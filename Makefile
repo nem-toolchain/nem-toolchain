@@ -47,7 +47,7 @@ lint: ## Run all the linters
 ci: lint test ## Run all the tests and code checks
 
 build: ## Build a local snapshot binary version
-	go build ${LDFLAGS} -o ${BINARY}/nem-snapshot ./cmd/nem/main.go
+	go build ${LDFLAGS} -o ${BINARY}/nem-snapshot ./cmd/nem/...
 
 clean: ## Remove a local snapshot binary version
 	if [ -d ${BINARY} ] ; then rm -rf ${BINARY} ; fi

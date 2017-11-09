@@ -84,7 +84,7 @@ func accountCommand() cli.Command {
 					},
 					cli.BoolFlag{
 						Name:  "no-digits",
-						Usage: "Digits in address are disallow",
+						Usage: "Digits in address are disallow ('234567')",
 					},
 					cli.StringFlag{
 						Name:  "exclude",
@@ -156,6 +156,11 @@ func vanityAction(c *cli.Context) error {
 		return nil
 	}
 
+	workers := c.Uint("workers")
+	if m := uint(runtime.NumCPU()); workers == 0 || workers > m {
+		workers = m
+	}
+
 	var excludeSel vanity.Selector = vanity.TrueSelector{}
 	if c.IsSet("exclude") {
 		excludeSel, err = vanity.NewExcludeSelector(c.String("exclude"))
@@ -169,39 +174,21 @@ func vanityAction(c *cli.Context) error {
 		noDigitsSel, _ = vanity.NewExcludeSelector("234567")
 	}
 
-	var prMultiSel vanity.Selector = vanity.TrueSelector{}
-	if len(c.Args()) != 0 {
-		prefixes := make([]vanity.Selector, len(c.Args()))
-		for i, pr := range c.Args() {
-			sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
-			if err != nil {
-				return cli.NewExitError(err.Error(), 1)
-			}
-			prefixes[i] = sel
+	prefixes := make([]vanity.Selector, len(c.Args()))
+	for i, pr := range c.Args() {
+		sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
 		}
-		prMultiSel = vanity.OrSelector(prefixes...)
+		prefixes[i] = sel
 	}
 
-	sel := vanity.AndSelector(excludeSel, noDigitsSel, prMultiSel)
-
-	workers := c.Uint("workers")
-	if m := uint(runtime.NumCPU()); workers == 0 || workers > m {
-		workers = m
-	}
+	sel := vanity.AndSelector(
+		excludeSel, noDigitsSel, vanity.OrSelector(prefixes...))
 
 	if !c.Bool("strip") && !c.Bool("skip-estimate") {
-		fmt.Print("Calculate accounts rate")
-		ticker := time.NewTicker(time.Second)
-		go func() {
-			for range ticker.C {
-				fmt.Print(".")
-			}
-		}()
-		rate := countActualRate(workers)
-		ticker.Stop()
-		fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
-		printEstimateDetails(
-			vanity.Probability(sel)/float64(num), rate, c.Bool("show-complexity"))
+		printEstimate(workers,
+			vanity.Probability(sel)/float64(num), c.Bool("show-complexity"))
 	}
 
 	rs := make(chan keypair.KeyPair)
@@ -220,6 +207,21 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	return nil
+}
+
+// printEstimate prints vanity account search time estimate
+func printEstimate(workers uint, pbty float64, cplx bool) {
+	fmt.Print("Calculate accounts rate")
+	ticker := time.NewTicker(time.Second)
+	go func() {
+		for range ticker.C {
+			fmt.Print(".")
+		}
+	}()
+	rate := countActualRate(workers)
+	ticker.Stop()
+	fmt.Printf(" %v accounts/sec\n", math.Trunc(rate))
+	printEstimateDetails(pbty, rate, cplx)
 }
 
 // countActualRate counts total number of generated keypairs per second
@@ -251,8 +253,8 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 }
 
 // printEstimateDetails prints estimate search time details
-func printEstimateDetails(pbty, rate float64, compl bool) {
-	if compl {
+func printEstimateDetails(pbty, rate float64, cplx bool) {
+	if cplx {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
 	}
 	fmt.Printf("Estimate search times: %v (50%%), %v (80%%), %v (99.9%%)\n",
