@@ -16,6 +16,17 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// NewAccount create new account for selected chain
+func NewAccount(ch core.Chain) Account {
+	acc := new(Account)
+	acc.Label = "Primary"
+	acc.Algo = "pass:enc"
+	acc.Brain = false
+	acc.Network = ch
+
+	return *acc
+}
+
 // FromRaw tries to create Account from provided data
 func FromRaw(raw interface{}) (Account, error) {
 	var account Account
@@ -116,14 +127,16 @@ func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
 		return err
 	}
 
-	ciphertext := make([]byte, len(key.Private))
+	ciphertext := make([]byte, len(key.Private)+aes.BlockSize)
+	padding := make([]byte, aes.BlockSize)
+	paddedData := append(padding, key.Private...)
 	iv := make([]byte, aes.BlockSize)
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return err
 	}
 
 	mode := cipher.NewCBCEncrypter(block, iv)
-	mode.CryptBlocks(ciphertext, key.Private)
+	mode.CryptBlocks(ciphertext, paddedData)
 
 	acc.Encrypted = ciphertext
 	acc.Iv = iv
@@ -145,10 +158,10 @@ func (acc *Account) Decrypt(password string) (keypair.KeyPair, error) {
 		return key, err
 	}
 
-	privKeyBytes := make([]byte, 32)
+	privKeyBytes := make([]byte, 48)
 	mode := cipher.NewCBCDecrypter(block, acc.Iv)
 	mode.CryptBlocks(privKeyBytes, acc.Encrypted)
-	key = keypair.FromSeed(privKeyBytes)
+	key = keypair.FromSeed(privKeyBytes[16:])
 
 	return key, nil
 }

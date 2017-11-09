@@ -41,10 +41,10 @@ func TestWalletDecode(t *testing.T) {
 		"c5NDJjNDVkNjYxZTA4MTE4NDI0NWRkZWJhZTRlOTc3ZjMzNmYifX19"
 	wlt, _ := Decode(exp)
 
-	assert.Equal(t, wlt.Chain, core.Mainnet)
+	assert.Equal(t, wlt.Name, "mainnet")
 	assert.Equal(t, wlt.PrivateKey, "")
 
-	account := wlt.Accounts["0"]
+	account := wlt.Accounts[0]
 	expAddress, _ := keypair.ParseAddress("NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM")
 	assert.Equal(t, account.Address, expAddress)
 	assert.Equal(t, account.Label, "Primary")

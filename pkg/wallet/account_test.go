@@ -19,7 +19,7 @@ func TestPrivateKey_EncryptDecrypt(t *testing.T) {
 	kp := keypair.FromSeed(privBytes)
 
 	assert.NoError(t, acc.Encrypt(kp, pass))
-	//assert.Equal(t, len(acc.Encrypted), 48)
+	assert.Equal(t, len(acc.Encrypted), 48)
 
 	decr, _ := acc.Decrypt(pass)
 	assert.Equal(t, kp.Private, decr.Private)

@@ -6,17 +6,18 @@ package wallet
 import (
 	"encoding/base64"
 	"encoding/json"
+	"strconv"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-// New creates new default wallet
-func New(chain core.Chain) Wallet {
+// NewWallet creates new default wallet
+func NewWallet() Wallet {
 	wlt := Wallet{}
-	wlt.Chain = chain
+	wlt.Name = ""
 	wlt.PrivateKey = ""
-	wlt.Accounts = make(map[string]Account)
+	wlt.Accounts = make(map[uint]Account)
 
 	return wlt
 }
@@ -50,20 +51,20 @@ func Decode(data string) (Wallet, error) {
 // Wallet represents wallet file
 type Wallet struct {
 	PrivateKey string
-	Chain      core.Chain
-	Accounts   map[string]Account
+	Name       string
+	Accounts   map[uint]Account
 }
 
 // AddAccount adds account into wallet
-func (wlt *Wallet) AddAccount(pair keypair.KeyPair, password string) error {
-	acc := Account{}
+func (wlt *Wallet) AddAccount(ch core.Chain, pair keypair.KeyPair, password string) error {
+	acc := NewAccount(ch)
 	err := acc.Encrypt(pair, password)
 	if err != nil {
 		return err
 	}
 
-	i := string(len(wlt.Accounts))
-	wlt.Accounts[i] = acc
+	i := len(wlt.Accounts)
+	wlt.Accounts[uint(i)] = acc
 
 	return nil
 }
@@ -77,21 +78,23 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	}
 
 	data := f.(map[string]interface{})
-	wlt.Chain, err = core.FromString(data["name"].(string))
-	if err != nil {
-		return err
-	}
+	wlt.Name = data["name"].(string)
 	wlt.PrivateKey = data["privateKey"].(string)
 
-	wlt.Accounts = make(map[string]Account)
-	val := data["accounts"].(map[string]interface{})
-	for i, v := range val {
-		account, err := FromRaw(v)
+	wlt.Accounts = make(map[uint]Account)
+	accountsData := data["accounts"].(map[string]interface{})
+	for i, values := range accountsData {
+		account, err := FromRaw(values)
 		if err != nil {
 			return err
 		}
 
-		wlt.Accounts[i] = account
+		index, err := strconv.ParseUint(i, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		wlt.Accounts[uint(index)] = account
 	}
 
 	return nil
@@ -99,18 +102,18 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON serialize Wallet into JSON
 func (wlt Wallet) MarshalJSON() ([]byte, error) {
-	auxAccounts := make(map[string]SerializableAccount)
+	auxAccounts := make(map[uint]SerializableAccount)
 	for i, acc := range wlt.Accounts {
 		auxAccounts[i] = acc.Serializable()
 	}
 
 	acc := struct {
-		PrivateKey string                         `json:"privateKey"`
-		Name       string                         `json:"name"`
-		Accounts   map[string]SerializableAccount `json:"accounts"`
+		PrivateKey string                       `json:"privateKey"`
+		Name       string                       `json:"name"`
+		Accounts   map[uint]SerializableAccount `json:"accounts"`
 	}{
 		PrivateKey: wlt.PrivateKey,
-		Name:       wlt.Chain.String(),
+		Name:       wlt.Name,
 		Accounts:   auxAccounts,
 	}
 

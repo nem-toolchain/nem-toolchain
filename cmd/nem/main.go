@@ -131,6 +131,12 @@ func main() {
 					Name:   "encode",
 					Usage:  "Encode account into wallet",
 					Action: encodeAction,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name",
+							Usage: "Name of wallet",
+						},
+					},
 				},
 				{
 					Name:   "decode",
@@ -145,28 +151,36 @@ func main() {
 }
 
 func encodeAction(c *cli.Context) error {
-	fmt.Println("Enter password:")
-	pass, err := terminal.ReadPassword(0)
+	ch, err := core.FromString(c.GlobalString("chain"))
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	wlt := wallet.NewWallet()
+	if c.IsSet("name") {
+		wlt.Name = c.String("name")
+	} else {
+		reader := bufio.NewReader(os.Stdin)
+		nameBytes, errName := reader.ReadBytes('\n')
+		if errName != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+		wlt.Name = string(nameBytes)
+	}
+
+	pass, err := requestPassword()
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
 	fmt.Println("Enter private key:")
-	reader := bufio.NewReader(os.Stdin)
-	privKeyBytes, err := reader.ReadBytes('\n')
+	privKeyBytes, err := terminal.ReadPassword(0)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
 	pair := keypair.FromSeed(privKeyBytes)
-
-	ch, err := chainGlobalOption(c)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	wlt := wallet.New(ch)
-	err = wlt.AddAccount(pair, string(pass))
+	err = wlt.AddAccount(ch, pair, pass)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -182,8 +196,7 @@ func encodeAction(c *cli.Context) error {
 }
 
 func decodeAction(c *cli.Context) error {
-	fmt.Println("Enter password:")
-	pass, err := terminal.ReadPassword(0)
+	pass, err := requestPassword()
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -200,7 +213,7 @@ func decodeAction(c *cli.Context) error {
 	}
 
 	for _, acc := range wlt.Accounts {
-		pair, errDec := acc.Decrypt(string(pass))
+		pair, errDec := acc.Decrypt(pass)
 		if errDec != nil {
 			return cli.NewExitError(errDec.Error(), 1)
 		}
@@ -211,7 +224,7 @@ func decodeAction(c *cli.Context) error {
 }
 
 func generateAction(c *cli.Context) error {
-	ch, err := chainGlobalOption(c)
+	ch, err := core.FromString(c.GlobalString("chain"))
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -227,7 +240,7 @@ func generateAction(c *cli.Context) error {
 }
 
 func vanityAction(c *cli.Context) error {
-	ch, err := chainGlobalOption(c)
+	ch, err := core.FromString(c.GlobalString("chain"))
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -303,7 +316,7 @@ func vanityAction(c *cli.Context) error {
 }
 
 func info(c *cli.Context) error {
-	ch, err := chainGlobalOption(c)
+	ch, err := core.FromString(c.GlobalString("chain"))
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -336,21 +349,6 @@ func info(c *cli.Context) error {
 	return nil
 }
 
-func chainGlobalOption(c *cli.Context) (core.Chain, error) {
-	var ch core.Chain
-	switch c.GlobalString("chain") {
-	case "mijin":
-		ch = core.Mijin
-	case "mainnet":
-		ch = core.Mainnet
-	case "testnet":
-		ch = core.Testnet
-	default:
-		return ch, fmt.Errorf("unknown chain '%v'", c.GlobalString("chain"))
-	}
-	return ch, nil
-}
-
 // countActualRate counts total number of generated keypairs per second
 func countActualRate(workers uint) float64 {
 	res := make(chan int, workers)
@@ -377,6 +375,17 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 			continue
 		}
 	}
+}
+
+// printEstimateDetails request user to input password
+func requestPassword() (string, error) {
+	var passBytes []byte
+	fmt.Println("Enter password:")
+	passBytes, err := terminal.ReadPassword(0)
+	if err != nil {
+		return "", cli.NewExitError(err.Error(), 1)
+	}
+	return string(passBytes), nil
 }
 
 // printEstimateDetails prints estimate search time details
