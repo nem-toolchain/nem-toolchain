@@ -36,7 +36,8 @@ func Gen() KeyPair {
 func FromSeed(seed []byte) KeyPair {
 	var r io.Reader
 	if seed != nil {
-		r = bytes.NewReader(seed)
+		r = bytes.NewReader(
+			append(make([]byte, PrivateBytes-len(seed)), seed...))
 	}
 
 	pub, pr, err := ed25519.GenerateKey(r)

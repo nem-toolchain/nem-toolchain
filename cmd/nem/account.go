@@ -102,9 +102,16 @@ func infoAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Print("Enter private key: ")
-	reader := bufio.NewReader(os.Stdin)
-	s, err := reader.ReadString('\n')
+	fi, err := os.Stdin.Stat()
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+	if (fi.Mode() & os.ModeNamedPipe) != 0 {
+		fmt.Print("Enter private key: ")
+	}
+
+	rd := bufio.NewReader(os.Stdin)
+	s, err := rd.ReadString('\n')
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -281,15 +288,15 @@ func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 }
 
 func printlnPrivateKey(pair keypair.KeyPair, strip bool) {
-	printlnCustom("Private key:", hex.EncodeToString(pair.Private), strip)
+	printlnCustom("Private key: ", hex.EncodeToString(pair.Private), strip)
 }
 
 func printlnPublicKey(pair keypair.KeyPair, strip bool) {
-	printlnCustom("Public key:", hex.EncodeToString(pair.Public), strip)
+	printlnCustom("Public key: ", hex.EncodeToString(pair.Public), strip)
 }
 
 func printlnAddress(chain core.Chain, pair keypair.KeyPair, strip bool) {
-	printlnCustom("Address:", pair.Address(chain).PrettyString(), strip)
+	printlnCustom("Address: ", pair.Address(chain).PrettyString(), strip)
 }
 
 func printlnCustom(title, value string, strip bool) {
