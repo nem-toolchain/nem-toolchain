@@ -394,12 +394,7 @@ func requestPrivateKey() ([]byte, error) {
 		return pkBytes, cli.NewExitError(err.Error(), 1)
 	}
 
-	pkBytes, err = keypair.HexToPrivBytes(string(val))
-	if err != nil {
-		return pkBytes, err
-	}
-
-	return pkBytes, nil
+	return keypair.HexToPrivBytes(string(val))
 }
 
 // printEstimateDetails prints estimate search time details
