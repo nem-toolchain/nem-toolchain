@@ -20,6 +20,7 @@ jobs:
             cd ..
             git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git
             cd nem-toolchain
+            go get github.com/apex/static/cmd/static-docs
             make static
             cd ../nem-toolchain.github.io
             git config user.name "$USER_NAME"
