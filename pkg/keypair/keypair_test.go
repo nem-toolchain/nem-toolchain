@@ -17,24 +17,17 @@ func TestGen(t *testing.T) {
 	assert.Equal(t, PublicBytes, len(pair.Public))
 }
 
-func TestFromSeed_complete(t *testing.T) {
+func TestFromSeed(t *testing.T) {
 	pr, _ := hex.DecodeString("2c52aee96f0e30f21c86b3fab7a18e927f579618818e8148e7ded1e01875ef0b")
 	pub, _ := hex.DecodeString("9d1e9d01ab916dbdde0e76ba43df2246575d637db0bca090f46c1abce19a43e3")
 	assert.Equal(t, KeyPair{pr, pub}, FromSeed(pr))
 }
 
-func TestFromSeed_incomplete(t *testing.T) {
-	pr, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000123")
-	pub, _ := hex.DecodeString("266cbc916b959e3eb4f35a8d629fe483d22112c42a6644c514a6f460d9d22cfc")
-	assert.Equal(t, KeyPair{pr, pub}, FromSeed([]byte{0x01, 0x23}))
-}
-
-func TestFromSeed_longerSeed(t *testing.T) {
-	seed, _ := hex.DecodeString("1111111111111111100000000000000000000" +
-		"00000000000000000000000000000000000000000000000123")
-	pair := FromSeed(seed)
-	assert.Equal(t, PrivateBytes, len(pair.Private))
-	assert.Equal(t, PublicBytes, len(pair.Public))
+func TestFromSeed_panic(t *testing.T) {
+	assert.Panics(t,
+		func() {
+			FromSeed([]byte{})
+		})
 }
 
 func TestKeyPair_Address_mainnet(t *testing.T) {

@@ -6,6 +6,8 @@ package keypair
 
 import (
 	"bytes"
+	"crypto/rand"
+	"fmt"
 	"io"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
@@ -29,22 +31,21 @@ type KeyPair struct {
 
 // Gen generates a new private/public key pair using entropy from crypto rand.
 func Gen() KeyPair {
-	return FromSeed(nil)
+	seed := make([]byte, PrivateBytes)
+	_, err := io.ReadFull(rand.Reader, seed[:])
+	if err != nil {
+		panic("assert: cryptographically strong pseudo-random generator internal error")
+	}
+	return FromSeed(seed)
 }
 
-// FromSeed generates a new private/public key pair using specified seed data
+// FromSeed generates a new private/public key pair using specified private key
 func FromSeed(seed []byte) KeyPair {
-	var r io.Reader
-	if seed != nil {
-		switch {
-		case len(seed) < 32:
-			r = bytes.NewReader(append(make([]byte, PrivateBytes-len(seed)), seed...))
-		default:
-			r = bytes.NewReader(seed)
-		}
+	if len(seed) != PrivateBytes {
+		panic(fmt.Sprint(
+			"insufficient seed length, should be ", PrivateBytes, ", but got ", len(seed)))
 	}
-
-	pub, pr, err := ed25519.GenerateKey(r)
+	pub, pr, err := ed25519.GenerateKey(bytes.NewReader(seed))
 	if err != nil {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
