@@ -20,6 +20,7 @@ jobs:
             cd .. &&
             git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git &&
             cd ../nem-toolchain &&
+            ls -la &&
             make static &&
             cd ../nem-toolchain.github.io &&
             git config user.name "$USER_NAME" &&
