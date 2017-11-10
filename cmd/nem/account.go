@@ -122,7 +122,11 @@ func infoAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	pair := keypair.FromSeed(pk)
+	pair, err := keypair.FromSeed(pk)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
 	if c.Bool("address") {
 		printlnAddress(ch, pair, true)
 	} else if c.Bool("public") {

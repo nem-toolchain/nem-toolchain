@@ -36,20 +36,21 @@ func Gen() KeyPair {
 	if err != nil {
 		panic("assert: cryptographically strong pseudo-random generator internal error")
 	}
-	return FromSeed(seed)
+	pair, _ := FromSeed(seed)
+	return pair
 }
 
 // FromSeed generates a new private/public key pair using specified private key
-func FromSeed(seed []byte) KeyPair {
+func FromSeed(seed []byte) (KeyPair, error) {
 	if len(seed) != PrivateBytes {
-		panic(fmt.Sprint(
-			"insufficient seed length, should be ", PrivateBytes, ", but got ", len(seed)))
+		return KeyPair{},
+			fmt.Errorf("insufficient seed length, should be %d, but got %d", PrivateBytes, len(seed))
 	}
 	pub, pr, err := ed25519.GenerateKey(bytes.NewReader(seed))
 	if err != nil {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
-	return KeyPair{pr[:PrivateBytes], pub}
+	return KeyPair{pr[:PrivateBytes], pub}, nil
 }
 
 // Address converts a key pair into corresponding address string representation.
