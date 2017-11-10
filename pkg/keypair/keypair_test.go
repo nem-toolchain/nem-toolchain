@@ -29,6 +29,14 @@ func TestFromSeed_incomplete(t *testing.T) {
 	assert.Equal(t, KeyPair{pr, pub}, FromSeed([]byte{0x01, 0x23}))
 }
 
+func TestFromSeed_longerSeed(t *testing.T) {
+	seed, _ := hex.DecodeString("1111111111111111100000000000000000000" +
+		"00000000000000000000000000000000000000000000000123")
+	pair := FromSeed(seed)
+	assert.Equal(t, PrivateBytes, len(pair.Private))
+	assert.Equal(t, PublicBytes, len(pair.Public))
+}
+
 func TestKeyPair_Address_mainnet(t *testing.T) {
 	pub, _ := hex.DecodeString("9d1e9d01ab916dbdde0e76ba43df2246575d637db0bca090f46c1abce19a43e3")
 	addr, _ := ParseAddress("NAKTWAOYSE5F3J2FJWOXR56UTQLIOUXRJLBJ7CBF")
