@@ -177,8 +177,6 @@ func infoAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Println(">> DEBUG mode: ", (fi.Mode()&os.ModeDevice) != 0)
-
 	if (fi.Mode() & os.ModeDevice) != 0 {
 		fmt.Print("Enter private key: ")
 	}
