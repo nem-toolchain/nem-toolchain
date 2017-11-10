@@ -107,7 +107,7 @@ func infoAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	if fi.Mode()&os.ModeNamedPipe == 0 {
+	if (fi.Mode()&os.ModeCharDevice) != 0 && fi.Size() != 0 {
 		fmt.Print("Enter private key: ")
 	}
 
