@@ -66,8 +66,7 @@ Our NEM address:
  
 ## Thanks to
 
-* [JetBrains](https://www.jetbrains.com) for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea)
-free open-source license.
+* [JetBrains](https://www.jetbrains.com) for free open-source license for [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea) and [GoLand](https://www.jetbrains.com/go/)
 
 ## Licence
 
