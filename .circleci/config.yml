@@ -16,7 +16,6 @@ jobs:
               curl -sL https://git.io/goreleaser |
                 bash -s -- --debug --release-notes <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep -v '^[^ ]* \(Fix\|Merge\|Update\)')
             fi
-          name: deploy_website
           command: |
             if [[ -n ${CIRCLE_TAG} ]]; then
               cd ..
