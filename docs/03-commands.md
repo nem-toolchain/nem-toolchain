@@ -36,6 +36,7 @@ USAGE:
    nem account command [command options] [arguments...]
 
 COMMANDS:
+     info      Show info for given account
      generate  Generate a new account
      vanity    Find vanity address by a given list of prefixes
 
