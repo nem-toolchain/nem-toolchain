@@ -20,11 +20,12 @@ jobs:
               cd nem-toolchain
               go get github.com/apex/static/cmd/static-docs
               make static
+              export GIT_LOG="$(git log `git describe --tags --abbrev=0`..HEAD --oneline) [circle_ci]"
               cd ../nem-toolchain.github.io
               git config user.name "$USER_NAME"
               git config user.email "$USER_EMAIL"
               git add -fA
-              git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci deploy]"
+              git commit --allow-empty -m "$(echo $GIT_LOG)"
               git push
             fi
 
