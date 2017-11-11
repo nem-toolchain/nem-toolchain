@@ -15,17 +15,13 @@ jobs:
             if [[ -n ${CIRCLE_TAG} ]]; then
               curl -sL https://git.io/goreleaser |
                 bash -s -- --debug --release-notes <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep -v '^[^ ]* \(Fix\|Merge\|Update\)')
-              cd ..
-              git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git
-              cd nem-toolchain
-              go get github.com/apex/static/cmd/static-docs
-              make static
-              export GIT_LOG="$(git log `git describe --tags --abbrev=0`..HEAD --oneline) [circle_ci]"
-              cd ../nem-toolchain.github.io
-              git config user.name "$USER_NAME"
-              git config user.email "$USER_EMAIL"
+              git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git ../nem-toolchain.github.io
+              go get github.com/apex/static/cmd/static-docs && make static && cd ../nem-toolchain.github.io
+              git status --verbose
               git add -fA
-              git commit --allow-empty -m "$(echo $GIT_LOG)"
+              git config user.name "${USER_NAME}"
+              git config user.email "${USER_EMAIL}"
+              git commit --allow-empty -m "Updated by circleci for ${CIRCLE_TAG}"
               git push
             fi
 
