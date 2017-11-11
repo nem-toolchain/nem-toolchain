@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"runtime"
@@ -126,32 +127,42 @@ func infoAction(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	var privKeys []string
 	if (fi.Mode()&os.ModeCharDevice) != 0 && fi.Size() == 0 {
 		fmt.Print("Enter private key: ")
-	}
-
-	rd := bufio.NewReader(os.Stdin)
-	s, err := rd.ReadString('\n')
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	pk, err := hex.DecodeString(strings.TrimSpace(s))
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	pair, err := keypair.FromSeed(pk)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	if c.Bool("address") {
-		printlnAddress(ch, pair, true)
-	} else if c.Bool("public") {
-		printlnPublicKey(pair, true)
+		rd := bufio.NewReader(os.Stdin)
+		val, err := rd.ReadString('\n')
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+		privKeys = []string{val}
 	} else {
-		printAccountDetails(ch, pair)
+		data, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+		privKeys = strings.Split(string(data), "\n")
+		privKeys = privKeys[:len(privKeys)-1]
+	}
+
+	for _, s := range privKeys {
+		pk, err := hex.DecodeString(strings.TrimSpace(s))
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+		pair, err := keypair.FromSeed(pk)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+		if c.Bool("address") {
+			printlnAddress(ch, pair, true)
+		} else if c.Bool("public") {
+			printlnPublicKey(pair, true)
+		} else {
+			printAccountDetails(ch, pair)
+		}
 	}
 
 	return nil
