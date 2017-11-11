@@ -22,7 +22,7 @@ jobs:
               git config user.name "${USER_NAME}"
               git config user.email "${USER_EMAIL}"
               git commit --allow-empty -m "Updated by circleci for ${CIRCLE_TAG}"
-              git push
+              git push origin master
             fi
 
 deployment:
