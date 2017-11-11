@@ -16,18 +16,21 @@ jobs:
               curl -sL https://git.io/goreleaser |
                 bash -s -- --debug --release-notes <(git log --pretty=oneline --abbrev-commit $(git describe --tags --abbrev=0)^.. | grep -v '^[^ ]* \(Fix\|Merge\|Update\)')
             fi
+          name: deploy_website
           command: |
-            cd ..
-            git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git
-            cd nem-toolchain
-            go get github.com/apex/static/cmd/static-docs
-            make static
-            cd ../nem-toolchain.github.io
-            git config user.name "$USER_NAME"
-            git config user.email "$USER_EMAIL"
-            git add -fA
-            git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci deploy]"
-            git push
+            if [[ -n ${CIRCLE_TAG} ]]; then
+              cd ..
+              git clone git@github.com:nem-toolchain/nem-toolchain.github.io.git
+              cd nem-toolchain
+              go get github.com/apex/static/cmd/static-docs
+              make static
+              cd ../nem-toolchain.github.io
+              git config user.name "$USER_NAME"
+              git config user.email "$USER_EMAIL"
+              git add -fA
+              git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci deploy]"
+              git push
+           fi
 
 deployment:
   trigger_tag:
