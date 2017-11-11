@@ -25,21 +25,6 @@ func accountCommand() cli.Command {
 		Usage: "Account related bundle of actions",
 		Subcommands: []cli.Command{
 			{
-				Name:   "info",
-				Usage:  "Show info for given account",
-				Action: infoAction,
-				Flags: []cli.Flag{
-					cli.BoolFlag{
-						Name:  "address",
-						Usage: "Show public address only for given private key",
-					},
-					cli.BoolFlag{
-						Name:  "public",
-						Usage: "Show public key only for given private key",
-					},
-				},
-			},
-			{
 				Name:   "generate",
 				Usage:  "Generate a new account",
 				Action: generateAction,
@@ -52,6 +37,21 @@ func accountCommand() cli.Command {
 					cli.BoolFlag{
 						Name:  "strip, s",
 						Usage: "Strip output to private key only",
+					},
+				},
+			},
+			{
+				Name:   "info",
+				Usage:  "Show info for given account",
+				Action: infoAction,
+				Flags: []cli.Flag{
+					cli.BoolFlag{
+						Name:  "address",
+						Usage: "Show public address only for given private key",
+					},
+					cli.BoolFlag{
+						Name:  "public",
+						Usage: "Show public key only for given private key",
 					},
 				},
 			},
@@ -96,6 +96,25 @@ func accountCommand() cli.Command {
 	}
 }
 
+func generateAction(c *cli.Context) error {
+	ch, err := chainGlobalOption(c)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	num := c.Uint("number")
+	for i := uint(0); i < num; i++ {
+		pair := keypair.Gen()
+		if c.Bool("strip") {
+			printlnPrivateKey(pair, true)
+		} else {
+			printAccountDetails(ch, pair)
+		}
+	}
+
+	return nil
+}
+
 func infoAction(c *cli.Context) error {
 	ch, err := chainGlobalOption(c)
 	if err != nil {
@@ -133,25 +152,6 @@ func infoAction(c *cli.Context) error {
 		printlnPublicKey(pair, true)
 	} else {
 		printAccountDetails(ch, pair)
-	}
-
-	return nil
-}
-
-func generateAction(c *cli.Context) error {
-	ch, err := chainGlobalOption(c)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	num := c.Uint("number")
-	for i := uint(0); i < num; i++ {
-		pair := keypair.Gen()
-		if c.Bool("strip") {
-			printlnPrivateKey(pair, true)
-		} else {
-			printAccountDetails(ch, pair)
-		}
 	}
 
 	return nil
