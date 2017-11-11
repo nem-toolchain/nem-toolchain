@@ -33,7 +33,8 @@ $ nem --chain testnet account generate -n 2 --strip
 How to show account details by given zero private key for `testnet`:
 
 ```console
-$ echo "0000000000000000000000000000000000000000000000000000000000000000" | nem --chain testnet account info
+$ echo "0000000000000000000000000000000000000000000000000000000000000000" |\
+    nem --chain testnet account info
 ----
 Address: TBONKW-COWBZY-ZB2I5J-D3LSDB-QVBYHB-757VN3-SKPP
 Public key: 462ee976890916e54fa825d26bdd0235f5eb5b6a143c199ab0ae5ee9328e08ce
