@@ -4,7 +4,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
@@ -126,26 +125,16 @@ func infoAction(c *cli.Context) error {
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
-
-	var privKeys []string
-	if (fi.Mode()&os.ModeCharDevice) != 0 && fi.Size() == 0 {
-		fmt.Print("Enter private key: ")
-		rd := bufio.NewReader(os.Stdin)
-		val, err := rd.ReadString('\n')
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
-		privKeys = []string{val}
-	} else {
-		data, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
-		privKeys = strings.Split(string(data), "\n")
-		privKeys = privKeys[:len(privKeys)-1]
+	if fi.Mode()&os.ModeCharDevice != 0 {
+		return cli.NewExitError("interactive input mode isn't supported", 1)
 	}
 
-	for _, s := range privKeys {
+	data, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+	s := strings.Split(string(data), "\n")
+	for _, s := range s[:len(s)-1] {
 		pk, err := hex.DecodeString(strings.TrimSpace(s))
 		if err != nil {
 			return cli.NewExitError(err.Error(), 1)
