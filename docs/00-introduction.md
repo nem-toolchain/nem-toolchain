@@ -12,4 +12,4 @@ Main features:
 
 Quick demo:
 
-<script type="text/javascript" src="https://asciinema.org/a/147103.js" id="asciicast-147103" async></script>
+<script type="text/javascript" src="https://asciinema.org/a/147146.js" id="asciicast-147146" async></script>
