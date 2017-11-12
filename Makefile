@@ -29,25 +29,22 @@ fmt: ## gofmt and goimports all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
 
 lint: ## Run all the linters
-	gometalinter --vendor --tests \
-		--disable-all
-		--enable=deadcode \
-		--enable=ineffassign \
-		--enable=gocyclo \
+	gometalinter \
+		--tests \
+		--vendor \
+		--vendored-linters \
+		--disable=interfacer \
+		--disable=maligned \
 		--enable=gosimple \
 		--enable=staticcheck \
 		--enable=gofmt \
 		--enable=goimports \
-		--enable=dupl \
 		--enable=lll \
 		--enable=misspell \
-		--enable=errcheck \
-		--enable=vet \
-		--enable=vetshadow \
 		--cyclo-over=15 \
 		--dupl-threshold=100 \
 		--line-length=120 \
-		--deadline=120s \
+		--deadline=360s \
 		./...
 
 ci: lint test ## Run all the tests and code checks
