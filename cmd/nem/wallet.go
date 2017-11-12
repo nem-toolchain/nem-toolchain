@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/howeyc/gopass"
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/nem-toolchain/nem-toolchain/pkg/wallet"
@@ -21,6 +20,12 @@ func walletCommand() cli.Command {
 				Name:   "generate",
 				Usage:  "Generate a new wallet",
 				Action: encodeAction,
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:  "name",
+						Usage: "Name of wallet",
+					},
+				},
 			},
 			{
 				Name:   "read",
@@ -41,6 +46,7 @@ func encodeAction(c *cli.Context) error {
 	if c.IsSet("name") {
 		wlt.Name = c.String("name")
 	} else {
+		fmt.Print("Enter name: ")
 		reader := bufio.NewReader(os.Stdin)
 		nameBytes, errName := reader.ReadBytes('\n')
 		if errName != nil {
@@ -49,11 +55,7 @@ func encodeAction(c *cli.Context) error {
 		wlt.Name = string(nameBytes)
 	}
 
-	pass, err := requestPassword()
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
+	pass := requestPassword()
 	privKeyBytes, err := requestPrivateKey()
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
@@ -80,11 +82,7 @@ func encodeAction(c *cli.Context) error {
 }
 
 func decodeAction(c *cli.Context) error {
-	pass, err := requestPassword()
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
+	pass := requestPassword()
 	reader := bufio.NewReader(os.Stdin)
 	raw, err := reader.ReadString('\n')
 	if err != nil {
@@ -107,23 +105,24 @@ func decodeAction(c *cli.Context) error {
 	return nil
 }
 
-// requestPassword request input of password
-func requestPassword() (string, error) {
-	var passBytes []byte
-	passBytes, err := gopass.GetPasswdPrompt("Enter password: ", true, os.Stdin, os.Stdout)
-	if err != nil {
-		return "", cli.NewExitError(err.Error(), 1)
-	}
-	return string(passBytes), nil
+// requestPrivateKey request input of private key
+func requestPrivateKey() ([]byte, error) {
+	pk := requestHiddenString("Enter private key: ")
+	return keypair.HexToPrivBytes(pk)
 }
 
-// requestPassword request input of private key hex-string
-func requestPrivateKey() ([]byte, error) {
-	var pkBytes []byte
-	val, err := gopass.GetPasswdPrompt("Enter private key: ", true, os.Stdin, os.Stdout)
-	if err != nil {
-		return pkBytes, cli.NewExitError(err.Error(), 1)
-	}
+// requestPassword request input of password
+func requestPassword() string {
+	return requestHiddenString("Enter password: ")
+}
 
-	return keypair.HexToPrivBytes(string(val))
+// requestHiddenString hides requested input
+func requestHiddenString(prompt string) string {
+	var password string
+	fmt.Print(prompt)
+	fmt.Print("\033[8m") // Hide input
+	fmt.Scan(&password)
+	fmt.Print("\033[28m") // Show input
+
+	return password
 }
