@@ -91,7 +91,7 @@ type prefixSelector struct {
 // NewPrefixSelector creates a new prefix selector from given string
 func NewPrefixSelector(ch core.Chain, prefix string) (Selector, error) {
 	prefix = strings.Replace(prefix, string(PrefixSeparator), "", -1)
-	str := fmt.Sprintf(`^[_%v]?([_A-D][_A-Z2-7]*)?$`, ch.ChainPrefix())
+	str := fmt.Sprintf(`^[_%v]?([_A-D][_A-Z2-7]*)?$`, ch.Prefix())
 	if !regexp.MustCompile(str).MatchString(prefix) {
 		return prefixSelector{}, fmt.Errorf("incorrect prefix '%v'", prefix)
 	}

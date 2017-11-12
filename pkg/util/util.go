@@ -6,7 +6,7 @@ package util
 
 // DistinctStrings skip all duplicates in a ordered slice of strings
 func DistinctStrings(a []string) []string {
-	res := []string{}
+	res := make([]string, 0)
 	var s string
 	for i := 0; i < len(a); i++ {
 		if s != a[i] {
@@ -19,7 +19,7 @@ func DistinctStrings(a []string) []string {
 
 // IntersectStrings intersects two sets of string slices
 func IntersectStrings(a []string, b []string) []string {
-	res := []string{}
+	res := make([]string, 0)
 	for _, c := range a {
 		for _, d := range b {
 			if c == d {
