@@ -48,7 +48,7 @@ func TestFromString_fail(t *testing.T) {
 		"123",
 		"_AINnet",
 	} {
-		t.Run(string(s), func(t *testing.T) {
+		t.Run(s, func(t *testing.T) {
 			_, err := FromString(s)
 			assert.Error(t, err)
 		})
@@ -62,7 +62,7 @@ func TestChain_String(t *testing.T) {
 }
 
 func TestChain_String_panic(t *testing.T) {
-	assert.Panics(t, func() { Chain{0x12}.String() })
+	assert.Panics(t, func() { _ = Chain{0x12}.String() })
 }
 
 func TestChain_ChainPrefix(t *testing.T) {

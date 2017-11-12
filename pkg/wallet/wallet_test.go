@@ -49,10 +49,14 @@ func TestWalletDecode(t *testing.T) {
 	assert.Equal(t, account.Address, expAddress)
 	assert.Equal(t, account.Label, "Primary")
 
-	expChild, _ := hex.DecodeString("613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f")
+	expChild, _ :=
+		hex.DecodeString("613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f")
 	assert.Equal(t, account.Child, expChild)
 
-	expEncrypted, _ := hex.DecodeString("e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
+	expEncrypted, _ :=
+		hex.DecodeString(
+			"e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc1" +
+				"16c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d")
 	assert.Equal(t, account.Encrypted, expEncrypted)
 
 	expIv, _ := hex.DecodeString("190c85ff1e4a15262ff917b82d5e9d8c")
