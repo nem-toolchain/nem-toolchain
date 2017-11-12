@@ -21,6 +21,9 @@ const (
 	PrettyAddressLength = 46
 )
 
+// Address is a readable string representation for a public key.
+type Address [AddressBytes]byte
+
 // ParseAddress constructs an instance of `Address` from given base32 string representation
 func ParseAddress(str string) (Address, error) {
 	var addr Address
@@ -35,9 +38,6 @@ func ParseAddress(str string) (Address, error) {
 	copy(addr[:], b)
 	return addr, nil
 }
-
-// Address is a readable string representation for a public key.
-type Address [AddressBytes]byte
 
 // PrettyString returns pretty formatted address with separators ('-').
 func (addr Address) PrettyString() string {

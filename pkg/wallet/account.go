@@ -161,9 +161,8 @@ func (acc *Account) Decrypt(password string) (keypair.KeyPair, error) {
 	privKeyBytes := make([]byte, 48)
 	mode := cipher.NewCBCDecrypter(block, acc.Iv)
 	mode.CryptBlocks(privKeyBytes, acc.Encrypted)
-	key = keypair.FromSeed(privKeyBytes[16:])
 
-	return key, nil
+	return keypair.FromSeed(privKeyBytes[16:])
 }
 
 func derive(password string) ([]byte, error) {

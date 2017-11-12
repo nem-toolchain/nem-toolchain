@@ -5,6 +5,7 @@ package keypair
 
 import (
 	"encoding/hex"
+	"strconv"
 	"testing"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
@@ -20,7 +21,21 @@ func TestGen(t *testing.T) {
 func TestFromSeed(t *testing.T) {
 	pr, _ := hex.DecodeString("2c52aee96f0e30f21c86b3fab7a18e927f579618818e8148e7ded1e01875ef0b")
 	pub, _ := hex.DecodeString("9d1e9d01ab916dbdde0e76ba43df2246575d637db0bca090f46c1abce19a43e3")
-	assert.Equal(t, KeyPair{pr, pub}, FromSeed(pr))
+	pair, err := FromSeed(pr)
+	assert.NoError(t, err)
+	assert.Equal(t, KeyPair{pr, pub}, pair)
+}
+
+func TestFromSeed_fail(t *testing.T) {
+	for i, s := range [][]byte{
+		{},
+		{0x01, 0x23},
+	} {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			_, err := FromSeed(s)
+			assert.Error(t, err)
+		})
+	}
 }
 
 func TestKeyPair_Address_mainnet(t *testing.T) {

@@ -16,7 +16,7 @@ func TestPrivateKey_EncryptDecrypt(t *testing.T) {
 	pass := "12345"
 
 	acc := Account{}
-	kp := keypair.FromSeed(privBytes)
+	kp, _ := keypair.FromSeed(privBytes)
 
 	assert.NoError(t, acc.Encrypt(kp, pass))
 	assert.Equal(t, len(acc.Encrypted), 48)

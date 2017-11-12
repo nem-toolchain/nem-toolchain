@@ -37,6 +37,7 @@ USAGE:
 
 COMMANDS:
      generate  Generate a new account
+     info      Show info for given account
      vanity    Find vanity address by a given list of prefixes
 
 OPTIONS:

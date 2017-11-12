@@ -6,6 +6,7 @@ package keypair
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -23,34 +24,40 @@ const (
 	PublicBytes = 32
 )
 
-// Gen generates a new private/public key pair using entropy from crypto rand.
-func Gen() KeyPair {
-	return FromSeed(nil)
+// KeyPair is a private/public crypto key pair.
+type KeyPair struct {
+	Private []byte
+	Public  []byte
 }
 
-// FromSeed generates a new private/public key pair using specified seed data
-func FromSeed(seed []byte) KeyPair {
-	var r io.Reader
-	if seed != nil {
-		r = bytes.NewReader(seed)
+// Gen generates a new private/public key pair using entropy from crypto rand.
+func Gen() KeyPair {
+	seed := make([]byte, PrivateBytes)
+	_, err := io.ReadFull(rand.Reader, seed[:])
+	if err != nil {
+		panic("assert: cryptographically strong pseudo-random generator internal error")
 	}
+	pair, _ := FromSeed(seed)
+	return pair
+}
 
-	pub, pr, err := ed25519.GenerateKey(r)
+// FromSeed generates a new private/public key pair using specified private key
+func FromSeed(seed []byte) (KeyPair, error) {
+	if len(seed) != PrivateBytes {
+		return KeyPair{},
+			fmt.Errorf("insufficient seed length, should be %d, but got %d", PrivateBytes, len(seed))
+	}
+	pub, pr, err := ed25519.GenerateKey(bytes.NewReader(seed))
 	if err != nil {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
-	return KeyPair{pr[:PrivateBytes], pub}
+
+	return KeyPair{pr[:PrivateBytes], pub}, nil
 }
 
 // HexToPrivBytes converts hex string into private key bytes
 func HexToPrivBytes(h string) ([]byte, error) {
 	return hexToKey(h, PrivateBytes)
-}
-
-// KeyPair is a private/public crypto key pair.
-type KeyPair struct {
-	Private []byte
-	Public  []byte
 }
 
 // Address converts a key pair into corresponding address string representation.

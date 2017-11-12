@@ -20,18 +20,29 @@ $ NEM_CHAIN=testnet nem account generate
 ...
 ```
 
-How to create multiple accounts:
+How to create multiple accounts and strip the output to private keys only:
 
 ```console
-$ nem --chain testnet account generate -n 2
-Address: TCH3WQ-DRDTOH-SAJK3C-ZJ6FT4-JT6INP-PAOUV2-K5LA
-Public key: 208773e61dc7c53cc055af6ec1d5daad84912da80218db1fe2a26ad30ec459cc
-Private key: 0ab24e580e14f0ac9a79c27f00c1ab6081ddc72adedd305476b4e695a4d3e3d7
-----
-Address: TDQJOD-DIBV7Q-6DATIR-IRLPNV-TK5XUT-2XD3Z6-HBEP
-Public key: 9cb76dbcdeac1e2cc4ab8ae56ea8545cacac781dc333f334b0604cee70d59153
-Private key: 3caf6c68dbda89f3c760261d76f83d75bf440509f8615395071f11721e498f3e
+$ nem --chain testnet account generate -n 2 --strip
+0ab24e580e14f0ac9a79c27f00c1ab6081ddc72adedd305476b4e695a4d3e3d7
+3caf6c68dbda89f3c760261d76f83d75bf440509f8615395071f11721e498f3e
 ```
+
+## Accounts info
+
+How to show account details by given zero private key for `testnet`:
+
+```console
+$ echo "0000000000000000000000000000000000000000000000000000000000000000" |\
+    nem --chain testnet account info
+----
+Address: TBONKW-COWBZY-ZB2I5J-D3LSDB-QVBYHB-757VN3-SKPP
+Public key: 462ee976890916e54fa825d26bdd0235f5eb5b6a143c199ab0ae5ee9328e08ce
+Private key: 0000000000000000000000000000000000000000000000000000000000000000
+```
+
+You can also constraint the command output to show only public key (`--public`)
+or public address (`--address`).
 
 ## Vanity address
 
@@ -54,12 +65,12 @@ Public key: bb326c920bb5b42d5d99df602bb82fdcdd922911ef3b46e73af654babba43698
 Private key: 2d9a61cee0a3b210c2cde438b7f620931049320fd8dffbda04e28e9dd0fbfdef
 ```
 
-Or you can go further and customize excluded characters:
+Or you can go further and customize excluded characters and define prefixes
+with the help of brace expansion mechanism:
 
 ```console
-> nem-snapshot --chain testnet account vanity --show-complexity --exclude 246 TABC TACB TBAC TBCA TCAB TCBA
+> nem --chain testnet account vanity --exclude 246 _{ABC,ACB,BAC,BCA,CAB,CBA}
 Calculate accounts rate... 18475 accounts/sec
-Specified search complexity: 23620
 Estimate search times: 0s (50%), 2s (80%), 5s (99.9%)
 ----
 Address: TACBF3-5NBHOJ-75H3EL-QUJ3VZ-W3X73L-3BGENR-7YE5
@@ -73,5 +84,7 @@ and calculates estimate times for three predefined accuracies: `50%`, `80%` and 
 Important notes:
 
 1. Mainnet addresses start with `N`, Mijin - with `M`, Testnet - with `T`.
-1. Second symbols are `A`, `B`, `C`, or `D` only, so for mainnet you won't find addresses that start with `NE` or `N4`.
-1. The digits `0`, `1`, `8` and `9` are not part of [Base32 encoding](https://en.wikipedia.org/wiki/Base32) and therefore will not appear in any address. 
+1. Second symbols are `A`, `B`, `C`, or `D` only, so for mainnet you won't find addresses
+that start with `NE` or `N4`.
+1. The digits `0`, `1`, `8` and `9` are not part of
+[Base32 encoding](https://en.wikipedia.org/wiki/Base32) and will not appear in any address. 

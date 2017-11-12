@@ -6,7 +6,8 @@ title: Quick Start
 [tarball releases](https://github.com/nem-toolchain/nem-toolchain/releases/latest)
 or one of the options below.
 
-The quickest way to get `nem` is to run the following command, which installs to the local `bin` by default.
+The quickest way to get `nem` is to run the following command, which installs to the
+local `bin` by default.
 
 ```console
 $ curl -sL https://git.io/getnem | bash

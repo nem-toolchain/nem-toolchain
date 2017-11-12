@@ -4,14 +4,21 @@
 package vanity
 
 import (
-	"testing"
-
 	"regexp"
+	"testing"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestFalseSelector_Pass(t *testing.T) {
+	assert.False(t, FalseSelector{}.Pass(keypair.Address{}))
+}
+
+func TestTrueSelector_Pass(t *testing.T) {
+	assert.True(t, TrueSelector{}.Pass(keypair.Address{}))
+}
 
 func TestNewExcludeSelector(t *testing.T) {
 	for _, a := range [][2]string{
@@ -38,6 +45,31 @@ func TestNewExcludeSelector_fail(t *testing.T) {
 		t.Run(s, func(t *testing.T) {
 			_, err := NewExcludeSelector(s)
 			assert.Error(t, err)
+		})
+	}
+}
+
+func TestExcludeSelector_Pass_true(t *testing.T) {
+	for k, v := range map[string]string{
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.True(t, excludeSelector{v}.Pass(addr))
+		})
+	}
+}
+
+func TestExcludeSelector_Pass_false(t *testing.T) {
+	for k, v := range map[string]string{
+		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA": "BCD234",
+		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA": "BCD234",
+	} {
+		t.Run(k, func(t *testing.T) {
+			addr, _ := keypair.ParseAddress(k)
+			assert.False(t, excludeSelector{v}.Pass(addr))
 		})
 	}
 }
@@ -85,39 +117,6 @@ func TestNewPrefixSelector_fail(t *testing.T) {
 		t.Run(k, func(t *testing.T) {
 			_, err := NewPrefixSelector(v, k)
 			assert.Error(t, err)
-		})
-	}
-}
-
-func TestFalseSelector_Pass(t *testing.T) {
-	assert.False(t, FalseSelector{}.Pass(keypair.Address{}))
-}
-
-func TestTrueSelector_Pass(t *testing.T) {
-	assert.True(t, TrueSelector{}.Pass(keypair.Address{}))
-}
-
-func TestExcludeSelector_Pass_true(t *testing.T) {
-	for k, v := range map[string]string{
-		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
-	} {
-		t.Run(k, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(k)
-			assert.True(t, excludeSelector{v}.Pass(addr))
-		})
-	}
-}
-
-func TestExcludeSelector_Pass_false(t *testing.T) {
-	for k, v := range map[string]string{
-		"TBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "BCD234",
-		"TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2": "BCD234",
-		"TAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA": "BCD234",
-		"TAAAAAAAAAAAAAAAAAAA234AAAAAAAAAAAAAAAAA": "BCD234",
-	} {
-		t.Run(k, func(t *testing.T) {
-			addr, _ := keypair.ParseAddress(k)
-			assert.False(t, excludeSelector{v}.Pass(addr))
 		})
 	}
 }
