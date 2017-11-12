@@ -28,13 +28,19 @@
 [[projects]]
   branch = "issue/lack_of_keccak"
   name = "golang.org/x/crypto"
-  packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3"]
+  packages = ["ed25519","ed25519/internal/edwards25519","ripemd160","sha3","ssh/terminal"]
   revision = "598a76957d24e91450de188eb8393fa96882be5e"
   source = "https://github.com/nem-toolchain/crypto.git"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix","windows"]
+  revision = "4b45465282a4624cf39876842a017334f13b8aff"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c8f4315b96713cfa271d58f994c8d2b3dce5797dec767c4689d90e7bbb631669"
+  inputs-digest = "3a9651cb192a2f886e06d4e2510e1f61ac1ffe21d6c24dadbd7e98d525e68408"
   solver-name = "gps-cdcl"
   solver-version = 1

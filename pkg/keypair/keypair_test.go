@@ -49,3 +49,18 @@ func TestKeyPair_Address_testnet(t *testing.T) {
 	addr, _ := ParseAddress("TA6XFSJYZYAIYP7FL7X2RL63647FRMB65YC6CO3G")
 	assert.Equal(t, addr, KeyPair{Public: pub}.Address(core.Testnet))
 }
+
+func TestHexToPrivBytes(t *testing.T) {
+	bytes, _ := HexToPrivBytes("4fe5efd97360bc8a32ec105d419222eeb714e6d06fd8b895a5eedda2b0edf931")
+	assert.Equal(t, len(bytes), PrivateBytes)
+	assert.Equal(t, bytes[0], byte(79))
+
+	_, err := HexToPrivBytes("0x4fe5efd97360bc8a32ec105d419222eeb714e6d06fd8b895a5eedda2b0edf931")
+	assert.Error(t, err)
+
+	_, err = HexToPrivBytes("0x4fe5efd97360bc8a32ec105")
+	assert.Error(t, err)
+
+	_, err = HexToPrivBytes("4fe5efd97360bc8a32ec105d_________14e6d06fd8b895a5eedda2b0edf93_&")
+	assert.Error(t, err)
+}

@@ -7,6 +7,7 @@ package keypair
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 
@@ -50,7 +51,13 @@ func FromSeed(seed []byte) (KeyPair, error) {
 	if err != nil {
 		panic("assert: ed25519 GenerateKey function internal error")
 	}
+
 	return KeyPair{pr[:PrivateBytes], pub}, nil
+}
+
+// HexToPrivBytes converts hex string into private key bytes
+func HexToPrivBytes(h string) ([]byte, error) {
+	return hexToKey(h, PrivateBytes)
 }
 
 // Address converts a key pair into corresponding address string representation.
@@ -63,7 +70,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 		panic("assert: Ripemd160 hash function internal error")
 	}
 
-	b := append([]byte{chain.Id}, r.Sum(nil)...)
+	b := append([]byte{chain.ID}, r.Sum(nil)...)
 
 	h = sha3.SumKeccak256(b)
 	a := append(b, h[:4]...)
@@ -71,4 +78,16 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	addr := Address{}
 	copy(addr[:], a[:])
 	return addr
+}
+
+// hexToKey converts hex encoded string into private/public sized bytes
+func hexToKey(h string, keySize int) ([]byte, error) {
+	keyBytes, err := hex.DecodeString(h)
+	if err != nil {
+		return keyBytes, err
+	} else if len(keyBytes) != keySize {
+		return keyBytes, fmt.Errorf("invalid key length (expected: %v, received: %v)", keySize, len(h))
+	}
+
+	return keyBytes, nil
 }

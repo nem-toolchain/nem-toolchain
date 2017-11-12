@@ -1,0 +1,40 @@
+Address: NDLXS2-XIAVOP-OVHSUZ-I3N5VU-4HJ6EN-T24QVI-GAPM
+Public key: 929ebb2fe57ad0008f63baec26e89a4a939fa335939c5cfadf55eab4b076606a
+Private key: e3da763bde538be99e748733e24540379569d878d5678d0ff647dc4edf72cf0b
+{
+  "privateKey": "",
+  "name": "mainnet",
+  "accounts": {
+    "0": {
+      "brain": false,
+      "algo": "pass:enc",
+      "encrypted": "e73e5edaac8393381aa1e5a27b71bbcd5836df93ccd60dc116c8ec0b53f44d0e4bd8472baa227297261f738c6563e43d",
+      "iv": "190c85ff1e4a15262ff917b82d5e9d8c",
+      "address": "NDLXS2XIAVOPOVHSUZI3N5VU4HJ6ENT24QVIGAPM",
+      "label": "Primary",
+      "network": 104,
+      "child": "613d01ce62e43cc5bea9395e0d97942c45d661e081184245ddebae4e977f336f"
+    }
+  }
+}
+
+
+Address: TBJB5U-DXJ3S3-ZZB6OB-WPLIQA-WG63CT-UOPD5L-RT27
+Public key: a015e8fc3ee7458362683f6a36d716514abb05a8ac9643aa25af1a5b01a4d7c9
+Private key: 6945c1c5db2aba903a18d12d9c5401fdbdb6eec8d3807455856a1f98f83b5880
+{
+  "privateKey": "",
+  "name": "testnet",
+  "accounts": {
+    "0": {
+      "brain": false,
+      "algo": "pass:enc",
+      "encrypted": "14e980dcd411d27aed5431c7a4f9afbf036df2bfc3d9fdaeb23281c6d08902017c71c34cd5653defc38bc889be1b473a",
+      "iv": "846e971d8deb3d02f80876119cc30f43",
+      "address": "TBJB5UDXJ3S3ZZB6OBWPLIQAWG63CTUOPD5LRT27",
+      "label": "Primary",
+      "network": -104,
+      "child": "27db77cadb0b3afd780f64beb4c2349c5c748557bad431e2c2addc4e6fec2e3e"
+    }
+  }
+}

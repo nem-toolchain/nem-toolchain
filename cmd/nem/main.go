@@ -43,6 +43,7 @@ func main() {
 
 	app.Commands = []cli.Command{
 		accountCommand(),
+		walletCommand(),
 	}
 
 	_ = app.Run(os.Args)

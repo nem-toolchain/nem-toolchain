@@ -4,7 +4,11 @@
 // Package core contains core domain model.
 package core
 
-import "regexp"
+import (
+	"errors"
+	"regexp"
+	"strings"
+)
 
 // Supported predefined chains.
 var (
@@ -13,6 +17,44 @@ var (
 	Testnet = Chain{byte(0x98)}
 )
 
+// NewChain parse byte value into Chain
+func NewChain(val byte) (Chain, error) {
+	var ch Chain
+	var err error
+
+	switch val {
+	case byte(0x68):
+		ch = Mainnet
+	case byte(0x98):
+		ch = Testnet
+	case byte(0x60):
+		ch = Mijin
+	default:
+		err = errors.New("invalid chain id")
+	}
+
+	return ch, err
+}
+
+// FromString create Chain from chain name
+func FromString(name string) (Chain, error) {
+	var ch Chain
+	var err error
+
+	switch strings.ToLower(name) {
+	case "mainnet":
+		ch = Mainnet
+	case "testnet":
+		ch = Testnet
+	case "mijin":
+		ch = Mijin
+	default:
+		err = errors.New("invalid chain name")
+	}
+
+	return ch, err
+}
+
 // IsChainPrefix checks for existing chain prefixes
 func IsChainPrefix(str string) bool {
 	return regexp.MustCompile(`^[MNT]`).MatchString(str)
@@ -20,7 +62,7 @@ func IsChainPrefix(str string) bool {
 
 // Chain is the type of NEM chain.
 type Chain struct {
-	Id byte
+	ID byte
 }
 
 // ChainPrefix returns unique chain prefix
@@ -32,6 +74,18 @@ func (ch Chain) ChainPrefix() string {
 		return "N"
 	case Testnet:
 		return "T"
+	}
+	panic("unknown chain")
+}
+
+func (ch Chain) String() string {
+	switch ch {
+	case Mijin:
+		return "mijin"
+	case Mainnet:
+		return "mainnet"
+	case Testnet:
+		return "testnet"
 	}
 	panic("unknown chain")
 }
