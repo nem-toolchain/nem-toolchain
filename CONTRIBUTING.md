@@ -11,7 +11,7 @@ By participating, you are expected to uphold this code.
 Prerequisites are:
 
 * `make`
-* [`Go 1.8+`](http://golang.org/doc/install)
+* [`Go 1.9+`](http://golang.org/doc/install)
 
 Install the build and lint dependencies:
 
