@@ -5,7 +5,6 @@ package vanity
 
 import (
 	"math"
-
 	"strings"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
@@ -55,7 +54,7 @@ func (rule searchRule) probability() float64 {
 
 func (sel excludeSelector) probability(lo, hi uint) float64 {
 	if lo >= hi || hi > keypair.AddressLength {
-		panic("vanity selector probability incorrect arguments")
+		panic("vanity exclude selector probability incorrect arguments")
 	}
 	res := 1.
 	if lo == 0 {

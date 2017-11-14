@@ -32,7 +32,7 @@ func NewChain(v byte) (ch Chain, err error) {
 	case byte(0x60):
 		ch = Mijin
 	default:
-		err = errors.New("invalid chain id")
+		err = errors.New("core: invalid chain id")
 	}
 	return
 }
@@ -47,7 +47,7 @@ func FromString(s string) (ch Chain, err error) {
 	case "testnet":
 		ch = Testnet
 	default:
-		err = errors.New("invalid chain name")
+		err = errors.New("core: invalid chain name")
 	}
 	return
 }
@@ -61,7 +61,7 @@ func (ch Chain) String() string {
 	case Testnet:
 		return "testnet"
 	}
-	panic("assert: unknown chain")
+	panic("unknown chain")
 }
 
 // Prefix returns unique chain prefix
@@ -74,7 +74,7 @@ func (ch Chain) Prefix() string {
 	case Testnet:
 		return "T"
 	}
-	panic("assert: unknown chain")
+	panic("unknown chain")
 }
 
 // IsChainPrefix checks for existing chain prefixes
