@@ -29,11 +29,11 @@ func ParseAddress(str string) (Address, error) {
 	var addr Address
 	str = strings.Replace(str, "-", "", -1)
 	if !core.IsChainPrefix(str) {
-		return addr, errors.New("unknown chain")
+		return addr, errors.New("keypair: unknown chain")
 	}
 	b, err := base32.StdEncoding.DecodeString(str)
 	if err != nil {
-		return addr, errors.New("can't decode address string")
+		return addr, errors.New("keypair: can't decode address string")
 	}
 	copy(addr[:], b)
 	return addr, nil

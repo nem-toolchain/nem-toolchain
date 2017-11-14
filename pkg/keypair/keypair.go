@@ -35,7 +35,7 @@ func Gen() KeyPair {
 	seed := make([]byte, PrivateBytes)
 	_, err := io.ReadFull(rand.Reader, seed[:])
 	if err != nil {
-		panic("assert: cryptographically strong pseudo-random generator internal error")
+		panic(err)
 	}
 	pair, _ := FromSeed(seed)
 	return pair
@@ -49,15 +49,9 @@ func FromSeed(seed []byte) (KeyPair, error) {
 	}
 	pub, pr, err := ed25519.GenerateKey(bytes.NewReader(seed))
 	if err != nil {
-		panic("assert: ed25519 GenerateKey function internal error")
+		panic(err)
 	}
-
 	return KeyPair{pr[:PrivateBytes], pub}, nil
-}
-
-// HexToPrivBytes converts hex string into private key bytes
-func HexToPrivBytes(h string) ([]byte, error) {
-	return hexToKey(h, PrivateBytes)
 }
 
 // Address converts a key pair into corresponding address string representation.
@@ -67,7 +61,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
 	if err != nil {
-		panic("assert: Ripemd160 hash function internal error")
+		panic(err)
 	}
 
 	b := append([]byte{chain.ID}, r.Sum(nil)...)
@@ -78,6 +72,11 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	addr := Address{}
 	copy(addr[:], a[:])
 	return addr
+}
+
+// HexToPrivBytes converts hex string into private key bytes
+func HexToPrivBytes(h string) ([]byte, error) {
+	return hexToKey(h, PrivateBytes)
 }
 
 // hexToKey converts hex encoded string into private/public sized bytes
