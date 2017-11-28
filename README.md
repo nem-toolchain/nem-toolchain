@@ -18,7 +18,7 @@
 
 ## Prerequisites
 
-* [Go 1.9+](http://golang.org/doc/install)
+* [Go 1.8+](http://golang.org/doc/install)
 
 ## How to install
 
