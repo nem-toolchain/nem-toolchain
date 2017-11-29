@@ -1,6 +1,8 @@
 // Copyright 2017 The nem-toolchain project authors. All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
+// Package wallet implements NanoWallet's format (`*.wlt`)
+// https://github.com/nem-toolchain/nem-toolchain/wiki/WalletFormat
 package wallet
 
 import (
@@ -12,7 +14,7 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/wallet/account"
 )
 
-// NewWallet creates new default wallet
+// NewWallet creates new default wallet.
 func NewWallet() *Wallet {
 	wlt := new(Wallet)
 	wlt.Name = ""
@@ -22,7 +24,7 @@ func NewWallet() *Wallet {
 	return wlt
 }
 
-// Encode encodes wallet into base64 string
+// Encode encodes wallet into base64 string.
 func Encode(w *Wallet) (string, error) {
 	var encoded string
 
@@ -35,7 +37,7 @@ func Encode(w *Wallet) (string, error) {
 	return encoded, nil
 }
 
-// Decode decodes wallet form a base64 string
+// Decode decodes wallet form a base64 string.
 func Decode(data string) (*Wallet, error) {
 	wlt := NewWallet()
 
@@ -47,14 +49,14 @@ func Decode(data string) (*Wallet, error) {
 	return wlt, err
 }
 
-// Wallet represents wallet file
+// Wallet represents wallet file.
 type Wallet struct {
 	PrivateKey string
 	Name       string
 	Accounts   map[uint]*account.Account
 }
 
-// AddAccount adds account into wallet
+// AddAccount adds account into wallet.
 func (wlt *Wallet) AddAccount(ch core.Chain, pair keypair.KeyPair, password string) error {
 	acc := account.NewAccount(ch)
 	err := acc.Encrypt(pair, password)

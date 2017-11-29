@@ -5,7 +5,6 @@ package wallet
 
 import (
 	"encoding/hex"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -104,70 +103,104 @@ func TestPadUnpadData(t *testing.T) {
 	}
 }
 
-func TestUnpadData_insufficient(t *testing.T) {
-	f := "wallet: insufficient slice length for unpadding, " +
-		"should be minimal %v, but got %v"
-
+func TestUnpadData_dataLengthError(t *testing.T) {
 	for i, s := range []struct {
-		l   int
-		out []byte
-		err string
+		l int
+		s []byte
+		e *dataLengthError
 	}{
 		{
 			8,
 			[]byte{},
-			fmt.Sprintf(f, 8, 0),
+			&dataLengthError{0, 8},
 		},
 		{
 			8,
 			[]byte{1},
-			fmt.Sprintf(f, 8, 1),
+			&dataLengthError{1, 8},
 		},
 		{
 			8,
 			[]byte{1, 2, 3, 4, 5, 6, 7},
-			fmt.Sprintf(f, 8, 7),
+			&dataLengthError{7, 8},
+		},
+		{
+			8,
+			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+			&dataLengthError{12, 8},
 		},
 		{
 			16,
 			[]byte{1, 2, 3, 4, 5, 6, 7, 8},
-			fmt.Sprintf(f, 16, 8),
+			&dataLengthError{8, 16},
 		},
 		{
 			16,
 			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
-			fmt.Sprintf(f, 16, 12),
+			&dataLengthError{12, 16},
+		},
+		{
+			16,
+			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
+			&dataLengthError{18, 16},
 		},
 	} {
 		t.Run(string(i), func(t *testing.T) {
-			_, err := unpadData(s.out, s.l)
-			assert.EqualError(t, err, s.err)
+			_, err := unpadData(s.s, s.l)
+			assert.Equal(t, err, s.e)
 		})
 	}
 }
 
-func TestUnpadData_invalid(t *testing.T) {
-	f := "wallet: invalid padding size, should be maximum %v, but got %v"
-
+func TestUnpadData_paddingLengthError(t *testing.T) {
 	for i, s := range []struct {
-		l   int
-		out []byte
-		err string
+		l int
+		s []byte
+		e *paddingLengthError
 	}{
 		{
 			8,
 			[]byte{1, 2, 3, 4, 5, 6, 7, 9},
-			fmt.Sprintf(f, 8, 9),
+			&paddingLengthError{9, 8},
+		},
+		{
+			8,
+			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
+			&paddingLengthError{16, 8},
 		},
 		{
 			16,
-			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17},
-			fmt.Sprintf(f, 16, 17),
+			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17},
+			&paddingLengthError{17, 16},
 		},
 	} {
 		t.Run(string(i), func(t *testing.T) {
-			_, err := unpadData(s.out, s.l)
-			assert.EqualError(t, err, s.err)
+			_, err := unpadData(s.s, s.l)
+			assert.Equal(t, err, s.e)
+		})
+	}
+}
+
+func TestUnpadData_invalidPaddingError(t *testing.T) {
+	for i, s := range []struct {
+		l int
+		s []byte
+		e *invalidPaddingError
+	}{
+		{
+			8,
+			[]byte{1, 8, 8, 8, 8, 8, 8, 8},
+			&invalidPaddingError{[]byte{1, 8, 8, 8, 8, 8, 8, 8}},
+		},
+		{
+			8,
+			[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4},
+			&invalidPaddingError{[]byte{1, 2, 3, 4}},
+		},
+	} {
+		t.Run(string(i), func(t *testing.T) {
+			_, err := unpadData(s.s, s.l)
+			assert.Equal(t, err, s.e)
 		})
 	}
 }

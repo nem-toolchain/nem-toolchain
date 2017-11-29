@@ -14,7 +14,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// NewAccount create new account for selected chain
+// NewAccount create new account for selected chain.
 func NewAccount(ch core.Chain) *Account {
 	acc := new(Account)
 	acc.Label = "Primary"
@@ -25,7 +25,7 @@ func NewAccount(ch core.Chain) *Account {
 	return acc
 }
 
-// Account used to encrypt private key
+// Account used to encrypt private key.
 type Account struct {
 	Algo      string
 	Label     string
@@ -37,7 +37,7 @@ type Account struct {
 	Brain     bool
 }
 
-// Encrypt KeyPair into account
+// Encrypt KeyPair into account.
 func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
 	pass, err := derive(password)
 	if err != nil {
@@ -67,7 +67,7 @@ func (acc *Account) Encrypt(key keypair.KeyPair, password string) error {
 	return nil
 }
 
-// Decrypt KeyPair from account
+// Decrypt KeyPair from account.
 func (acc *Account) Decrypt(password string) (keypair.KeyPair, error) {
 	var key keypair.KeyPair
 	pass, err := derive(password)

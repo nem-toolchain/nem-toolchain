@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	// PrivateBytes stores the private key length in bytes
+	// PrivateBytes stores the private key length in bytes.
 	PrivateBytes = 32
-	// PublicBytes stores the public key length in bytes
+	// PublicBytes stores the public key length in bytes.
 	PublicBytes = 32
 )
 
@@ -41,7 +41,7 @@ func Gen() KeyPair {
 	return pair
 }
 
-// FromSeed generates a new private/public key pair using specified private key
+// FromSeed generates a new private/public key pair using specified private key.
 func FromSeed(seed []byte) (KeyPair, error) {
 	if len(seed) != PrivateBytes {
 		return KeyPair{},
@@ -74,12 +74,12 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	return addr
 }
 
-// HexToPrivBytes converts hex string into private key bytes
+// HexToPrivBytes converts hex string into private key bytes.
 func HexToPrivBytes(h string) ([]byte, error) {
 	return hexToKey(h, PrivateBytes)
 }
 
-// hexToKey converts hex encoded string into private/public sized bytes
+// hexToKey converts hex encoded string into private/public sized bytes.
 func hexToKey(h string, keySize int) ([]byte, error) {
 	keyBytes, err := hex.DecodeString(h)
 	if err != nil {

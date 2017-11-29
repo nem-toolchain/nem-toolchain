@@ -221,7 +221,7 @@ func vanityAction(c *cli.Context) error {
 	return nil
 }
 
-// printEstimate prints vanity account search time estimate
+// printEstimate prints vanity account search time estimate.
 func printEstimate(workers uint, pbty float64, cplx bool) {
 	fmt.Print("Calculate accounts rate")
 	ticker := time.NewTicker(time.Second)
@@ -236,7 +236,7 @@ func printEstimate(workers uint, pbty float64, cplx bool) {
 	printEstimateDetails(pbty, rate, cplx)
 }
 
-// countActualRate counts total number of generated keypairs per second
+// countActualRate counts total number of generated keypairs per second.
 func countActualRate(workers uint) float64 {
 	res := make(chan int, workers)
 	for i := 0; i < cap(res); i++ {
@@ -249,7 +249,7 @@ func countActualRate(workers uint) float64 {
 	return rate
 }
 
-// countKeyPairs counts number of generated keypairs for specified interval
+// countKeyPairs counts number of generated keypairs for specified interval.
 func countKeyPairs(milliseconds time.Duration, res chan int) {
 	timeout := time.After(time.Millisecond * milliseconds)
 	for count := 0; ; count++ {
@@ -264,7 +264,7 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 	}
 }
 
-// printEstimateDetails prints estimate search time details
+// printEstimateDetails prints estimate search time details.
 func printEstimateDetails(pbty, rate float64, cplx bool) {
 	if cplx {
 		fmt.Printf("Specified search complexity: %v\n", math.Trunc(1.0/pbty))
@@ -284,7 +284,7 @@ func timeInSeconds(val float64) string {
 	return time.Duration(val).String()
 }
 
-// printAccountDetails prints account details in pretty user-oriented multi-line format
+// printAccountDetails prints account details in pretty user-oriented multi-line format.
 func printAccountDetails(chain core.Chain, pair keypair.KeyPair) {
 	fmt.Println("----")
 	printlnAddress(chain, pair, false)

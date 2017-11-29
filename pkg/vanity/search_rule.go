@@ -10,7 +10,7 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/util"
 )
 
-// searchRule is one row declarative search rule used for example to calculate probability
+// searchRule is one row declarative search rule used for example to calculate probability.
 type searchRule struct {
 	exclude *excludeSelector
 	prefix  *prefixSelector

@@ -9,12 +9,12 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-// seqSelector allows nested selectors to be combined into a sequential multi selector chain (`AND` logic)
+// seqSelector allows nested selectors to be combined into a sequential multi selector chain (`AND` logic).
 type seqSelector struct {
 	items []Selector
 }
 
-// AndSelector combines several selectors into a sequential multi selector chain (`AND` logic)
+// AndSelector combines several selectors into a sequential multi selector chain (`AND` logic).
 func AndSelector(selectors ...Selector) Selector {
 	return seqSelector{selectors}
 }
@@ -42,12 +42,12 @@ func (sel seqSelector) rules() []searchRule {
 	return res
 }
 
-// parSelector allows nested selectors to be combined into a parallel multi selector chain (`OR` logic)
+// parSelector allows nested selectors to be combined into a parallel multi selector chain (`OR` logic).
 type parSelector struct {
 	items []Selector
 }
 
-// OrSelector combines several selectors into a parallel multi selector chain (`OR` logic)
+// OrSelector combines several selectors into a parallel multi selector chain (`OR` logic).
 func OrSelector(selectors ...Selector) Selector {
 	return parSelector{selectors}
 }

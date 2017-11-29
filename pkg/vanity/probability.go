@@ -18,12 +18,12 @@ const (
 )
 
 // NumberOfAttempts calculates number of keypairs to be generated to find account
-// with pre-calculated probability `pbty` and with specified precision `prec`
+// with pre-calculated probability `pbty` and with specified precision `prec`.
 func NumberOfAttempts(pbty, prec float64) float64 {
 	return math.Log2(1.-prec) / math.Log2(1.-pbty)
 }
 
-// Probability determines a probability to find an address on random basis in one attempt
+// Probability determines a probability to find an address on random basis in one attempt.
 func Probability(sel Selector) float64 {
 	res := 0.
 	for _, rule := range sel.rules() {

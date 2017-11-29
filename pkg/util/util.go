@@ -4,7 +4,7 @@
 // Package util contains common util methods.
 package util
 
-// DistinctStrings skip all duplicates in an ordered slice of strings
+// DistinctStrings skip all duplicates in an ordered slice of strings.
 func DistinctStrings(a []string) []string {
 	res := make([]string, 0)
 	var s string
@@ -17,7 +17,7 @@ func DistinctStrings(a []string) []string {
 	return res
 }
 
-// IntersectStrings intersects two sets of string slices
+// IntersectStrings intersects two sets of string slices.
 func IntersectStrings(a []string, b []string) []string {
 	res := make([]string, 0)
 	for _, c := range a {

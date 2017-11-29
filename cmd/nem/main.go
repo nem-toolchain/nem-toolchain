@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	// date stores build timestamp
+	// date stores build timestamp.
 	date string
-	// commit stores actual commit hash
+	// commit stores actual commit hash.
 	commit string
-	// version indicates actual version
+	// version indicates actual version.
 	version string
 )
 
