@@ -4,6 +4,7 @@ os:
   - linux
   - osx
 go:
+  - 1.8
   - 1.9
   - tip
 before_install: make setup
