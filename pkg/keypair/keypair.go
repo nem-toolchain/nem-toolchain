@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	// PrivateBytes stores the private key length in bytes
+	// PrivateBytes stores the private key length in bytes.
 	PrivateBytes = 32
-	// PublicBytes stores the public key length in bytes
+	// PublicBytes stores the public key length in bytes.
 	PublicBytes = 32
 )
 
@@ -35,13 +35,13 @@ func Gen() KeyPair {
 	seed := make([]byte, PrivateBytes)
 	_, err := io.ReadFull(rand.Reader, seed[:])
 	if err != nil {
-		panic("assert: cryptographically strong pseudo-random generator internal error")
+		panic(err)
 	}
 	pair, _ := FromSeed(seed)
 	return pair
 }
 
-// FromSeed generates a new private/public key pair using specified private key
+// FromSeed generates a new private/public key pair using specified private key.
 func FromSeed(seed []byte) (KeyPair, error) {
 	if len(seed) != PrivateBytes {
 		return KeyPair{},
@@ -49,15 +49,9 @@ func FromSeed(seed []byte) (KeyPair, error) {
 	}
 	pub, pr, err := ed25519.GenerateKey(bytes.NewReader(seed))
 	if err != nil {
-		panic("assert: ed25519 GenerateKey function internal error")
+		panic(err)
 	}
-
 	return KeyPair{pr[:PrivateBytes], pub}, nil
-}
-
-// HexToPrivBytes converts hex string into private key bytes
-func HexToPrivBytes(h string) ([]byte, error) {
-	return hexToKey(h, PrivateBytes)
 }
 
 // Address converts a key pair into corresponding address string representation.
@@ -67,7 +61,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
 	if err != nil {
-		panic("assert: Ripemd160 hash function internal error")
+		panic(err)
 	}
 
 	b := append([]byte{chain.ID}, r.Sum(nil)...)
@@ -80,7 +74,12 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 	return addr
 }
 
-// hexToKey converts hex encoded string into private/public sized bytes
+// HexToPrivBytes converts hex string into private key bytes.
+func HexToPrivBytes(h string) ([]byte, error) {
+	return hexToKey(h, PrivateBytes)
+}
+
+// hexToKey converts hex encoded string into private/public sized bytes.
 func hexToKey(h string, keySize int) ([]byte, error) {
 	keyBytes, err := hex.DecodeString(h)
 	if err != nil {

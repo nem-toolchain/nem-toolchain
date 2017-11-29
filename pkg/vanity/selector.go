@@ -15,53 +15,53 @@ import (
 )
 
 const (
-	// PrefixPlaceholder declares a placeholder (skipped) rune for prefix selector
+	// PrefixPlaceholder declares a placeholder (skipped) rune for prefix selector.
 	PrefixPlaceholder = '_'
-	// PrefixSeparator declares a separator (ignored) rune for prefix selector
+	// PrefixSeparator declares a separator (ignored) rune for prefix selector.
 	PrefixSeparator = '-'
 )
 
-// Selector defines generic search strategy
+// Selector defines generic search strategy.
 type Selector interface {
-	// Pass checks address by a given search pattern
+	// Pass checks address by a given search pattern.
 	Pass(addr keypair.Address) bool
-	// rules converts current selector into a bundle of normalized rules
+	// rules converts current selector into a bundle of normalized rules.
 	rules() []searchRule
 }
 
-// FalseSelector rejects all addresses, can be used as a default placeholder
+// FalseSelector rejects all addresses, can be used as a default placeholder.
 type FalseSelector struct{}
 
-// Pass returns always false
+// Pass returns always false.
 func (FalseSelector) Pass(keypair.Address) bool {
 	return false
 }
 
 func (FalseSelector) rules() []searchRule {
-	// nothing, just skip it
+	// nothing, just skip it.
 	return []searchRule{}
 }
 
-// TrueSelector accepts all addresses, can be used as a default placeholder
+// TrueSelector accepts all addresses, can be used as a default placeholder.
 type TrueSelector struct{}
 
-// Pass returns always true
+// Pass returns always true.
 func (TrueSelector) Pass(keypair.Address) bool {
 	return true
 }
 
 func (TrueSelector) rules() []searchRule {
-	// empty searchRule - always true
+	// empty searchRule - always true.
 	return []searchRule{{}}
 }
 
-// exclude checks an address for absence of given characters
+// exclude checks an address for absence of given characters.
 type excludeSelector struct {
-	// chars determines a unique sorted list of excluded characters
+	// chars determines a unique sorted list of excluded characters.
 	chars string
 }
 
-// NewExcludeSelector creates a new exclude selector from given string
+// NewExcludeSelector creates a new exclude selector from given string.
 func NewExcludeSelector(chars string) (Selector, error) {
 	if !regexp.MustCompile(`^[A-Z2-7]*$`).MatchString(chars) {
 		return excludeSelector{}, fmt.Errorf("incorrect exclude characters '%v'", chars)
@@ -71,7 +71,7 @@ func NewExcludeSelector(chars string) (Selector, error) {
 	return excludeSelector{strings.Join(util.DistinctStrings(arr), "")}, nil
 }
 
-// Pass returns true only if address doesn't contain any digits
+// Pass returns true only if address doesn't contain any digits.
 func (sel excludeSelector) Pass(addr keypair.Address) bool {
 	return !strings.ContainsAny(addr.String(), sel.chars)
 }
@@ -80,15 +80,15 @@ func (sel excludeSelector) rules() []searchRule {
 	return []searchRule{{exclude: &sel}}
 }
 
-// prefix checks an address by given prefix
+// prefix checks an address by given prefix.
 type prefixSelector struct {
-	// prefix determines a required address prefix to search
+	// prefix determines a required address prefix to search.
 	prefix string
-	// re caches a regexp.Regexp object for given prefix
+	// re caches a regexp.Regexp object for given prefix.
 	re *regexp.Regexp
 }
 
-// NewPrefixSelector creates a new prefix selector from given string
+// NewPrefixSelector creates a new prefix selector from given string.
 func NewPrefixSelector(ch core.Chain, prefix string) (Selector, error) {
 	prefix = strings.Replace(prefix, string(PrefixSeparator), "", -1)
 	str := fmt.Sprintf(`^[_%v]?([_A-D][_A-Z2-7]*)?$`, ch.Prefix())
@@ -100,7 +100,7 @@ func NewPrefixSelector(ch core.Chain, prefix string) (Selector, error) {
 	return prefixSelector{prefix, regex}, nil
 }
 
-// Pass returns true only if address has a given prefix
+// Pass returns true only if address has a given prefix.
 func (sel prefixSelector) Pass(addr keypair.Address) bool {
 	return sel.re.MatchString(addr.String())
 }

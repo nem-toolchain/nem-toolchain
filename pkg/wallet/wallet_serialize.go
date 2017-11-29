@@ -7,7 +7,7 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/wallet/account"
 )
 
-// UnmarshalJSON deserialize json into Wallet
+// UnmarshalJSON deserialize json into Wallet.
 func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	var f interface{}
 	err := json.Unmarshal(b, &f)
@@ -38,7 +38,7 @@ func (wlt *Wallet) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// MarshalJSON serialize Wallet into JSON
+// MarshalJSON serialize Wallet into JSON.
 func (wlt Wallet) MarshalJSON() ([]byte, error) {
 	auxAccounts := make(map[uint]account.SerializableAccount)
 	for i, acc := range wlt.Accounts {

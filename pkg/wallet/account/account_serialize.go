@@ -7,7 +7,7 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-// FromRaw tries to create Account from provided data
+// FromRaw tries to create Account from provided data.
 func FromRaw(raw interface{}) (*Account, error) {
 	var account = new(Account)
 	data := raw.(map[string]interface{})
@@ -56,7 +56,7 @@ func FromRaw(raw interface{}) (*Account, error) {
 	return account, nil
 }
 
-// SerializableAccount json-serializable form for Account
+// SerializableAccount json-serializable form for Account.
 type SerializableAccount struct {
 	Brain     bool   `json:"brain"`
 	Algo      string `json:"algo"`
@@ -68,7 +68,7 @@ type SerializableAccount struct {
 	Child     string `json:"child"`
 }
 
-// Serializable convert account into json-serializable form
+// Serializable convert account into json-serializable form.
 func (acc Account) Serializable() SerializableAccount {
 	var ser SerializableAccount
 	ser.Brain = acc.Brain

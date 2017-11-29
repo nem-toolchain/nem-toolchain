@@ -9,7 +9,7 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 )
 
-// StartSearch starts search process for vanity account address that satisfies a given selector
+// StartSearch starts search process for vanity account address that satisfies a given selector.
 func StartSearch(chain core.Chain, selector Selector, ch chan<- keypair.KeyPair) {
 	for {
 		pr := keypair.Gen()

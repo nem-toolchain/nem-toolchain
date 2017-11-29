@@ -5,7 +5,6 @@ package vanity
 
 import (
 	"math"
-
 	"strings"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
@@ -19,12 +18,12 @@ const (
 )
 
 // NumberOfAttempts calculates number of keypairs to be generated to find account
-// with pre-calculated probability `pbty` and with specified precision `prec`
+// with pre-calculated probability `pbty` and with specified precision `prec`.
 func NumberOfAttempts(pbty, prec float64) float64 {
 	return math.Log2(1.-prec) / math.Log2(1.-pbty)
 }
 
-// Probability determines a probability to find an address on random basis in one attempt
+// Probability determines a probability to find an address on random basis in one attempt.
 func Probability(sel Selector) float64 {
 	res := 0.
 	for _, rule := range sel.rules() {
@@ -55,7 +54,7 @@ func (rule searchRule) probability() float64 {
 
 func (sel excludeSelector) probability(lo, hi uint) float64 {
 	if lo >= hi || hi > keypair.AddressLength {
-		panic("vanity selector probability incorrect arguments")
+		panic("vanity exclude selector probability incorrect arguments")
 	}
 	res := 1.
 	if lo == 0 {

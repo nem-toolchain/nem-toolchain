@@ -1,3 +1,6 @@
+// Copyright 2017 The nem-toolchain project authors. All rights reserved.
+// Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+
 package main
 
 import (
@@ -105,24 +108,23 @@ func decodeAction(c *cli.Context) error {
 	return nil
 }
 
-// requestPrivateKey request input of private key
+// requestPrivateKey request input of private key.
 func requestPrivateKey() ([]byte, error) {
 	pk := requestHiddenString("Enter private key: ")
 	return keypair.HexToPrivBytes(pk)
 }
 
-// requestPassword request input of password
+// requestPassword request input of password.
 func requestPassword() string {
 	return requestHiddenString("Enter password: ")
 }
 
-// requestHiddenString hides requested input
+// requestHiddenString hides requested input.
 func requestHiddenString(prompt string) string {
 	var password string
 	fmt.Print(prompt)
 	fmt.Print("\033[8m") // Hide input
 	fmt.Scan(&password)
 	fmt.Print("\033[28m") // Show input
-
 	return password
 }

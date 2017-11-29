@@ -4,9 +4,8 @@
 package vanity
 
 import (
-	"testing"
-
 	"math"
+	"testing"
 
 	"github.com/nem-toolchain/nem-toolchain/pkg/keypair"
 	"github.com/stretchr/testify/assert"
@@ -68,7 +67,7 @@ func TestSearchRule_probability(t *testing.T) {
 		prefix:  &prefixSelector{prefix: "T_A__B___C"}}.probability(), 1e-8)
 }
 
-func TestExcludePrefix_probability(t *testing.T) {
+func TestExcludeSelector_probability(t *testing.T) {
 	assert.Equal(t, 1., excludeSelector{}.probability(0, keypair.AddressLength))
 	assert.Equal(t, 1., excludeSelector{}.probability(1, keypair.AddressLength))
 	assert.Equal(t, 1., excludeSelector{}.probability(2, keypair.AddressLength))
@@ -109,14 +108,14 @@ func TestExcludePrefix_probability(t *testing.T) {
 		excludeSelector{"246"}.probability(39, keypair.AddressLength), 1e-5)
 }
 
-func TestExcludePrefix_probability_panic(t *testing.T) {
+func TestExcludeSelector_probability_panic(t *testing.T) {
 	assert.Panics(t, func() { excludeSelector{}.probability(0, keypair.AddressLength+1) })
 	assert.Panics(t, func() { excludeSelector{}.probability(keypair.AddressLength, 0) })
 
 	assert.Panics(t, func() { excludeSelector{}.probability(1000, 123) })
 }
 
-func TestPrefixPrefix_probability(t *testing.T) {
+func TestPrefixSelector_probability(t *testing.T) {
 	assert.Equal(t, 1., prefixSelector{}.probability())
 	assert.Equal(t, 1., prefixSelector{prefix: "T"}.probability())
 	assert.Equal(t, .25, prefixSelector{prefix: "TA"}.probability())
