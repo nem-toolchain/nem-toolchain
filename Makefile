@@ -19,14 +19,10 @@ setup: ## Install all the build and lint dependencies
 	dep ensure
 	gometalinter --install
 
-test: ## Run all the tests
-	gotestcover $(TEST_OPTIONS) -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
-
-cover: test ## Run all the tests and opens the coverage report
-	go tool cover -html=coverage.txt
-
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
+
+ci: lint test ## Run all code checks and tests
 
 lint: ## Run all the linters
 	gometalinter \
@@ -47,7 +43,11 @@ lint: ## Run all the linters
 		--deadline=360s \
 		./...
 
-ci: lint test ## Run all the tests and code checks
+test: ## Run all the tests
+	gotestcover $(TEST_OPTIONS) -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
+
+cover: test ## Run all the tests and opens the coverage report
+	go tool cover -html=coverage.txt
 
 build: ## Build a local snapshot binary version
 	go build ${LDFLAGS} -o ${BINARY}/nem ./cmd/nem/...

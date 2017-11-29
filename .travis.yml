@@ -8,7 +8,9 @@ go:
   - 1.9
   - tip
 before_install: make setup
-script: make test
+script:
+  - make build
+  - make test
 notifications:
   email:
     on_success: never
