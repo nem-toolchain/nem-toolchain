@@ -7,7 +7,11 @@ go:
   - 1.8
   - 1.9
   - tip
-before_install: make setup
+matrix:
+  allow_failures:
+    - go: tip
+before_install:
+  - make setup
 script:
   - make build
   - make test

@@ -1,0 +1,33 @@
+version: "{build}"
+
+platform: x64
+
+branches:
+  only:
+    - master
+
+clone_folder: c:\gopath\src\github.com\nem-toolchain\nem-toolchain
+
+environment:
+  GOPATH: c:\gopath
+  LDFLAGS: '-ldflags "-X main.date=%APPVEYOR_REPO_COMMIT_TIMESTAMP% -X main.commit=%APPVEYOR_REPO_COMMIT% -X main.version=snapshot"'
+
+install:
+  - echo %PATH%
+  - echo %GOPATH%
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go version
+  - go env
+  - go get -u github.com/golang/dep/...
+  - dep ensure
+
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - go build %LDFLAGS% -o buildOutput/nem.exe -i ./cmd/nem/...
+
+test_script:
+  - ps: go test -v ./...
+
+artifacts:
+  path: buildOutput/nem.exe
+  name: binary
