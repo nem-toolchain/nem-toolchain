@@ -1,7 +1,7 @@
 // Copyright 2017 The nem-toolchain project authors. All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
-package wallet
+package account
 
 import (
 	"encoding/hex"
@@ -18,7 +18,7 @@ func TestDeriveKey(t *testing.T) {
 	} {
 		t.Run(k, func(t *testing.T) {
 			d, _ := hex.DecodeString(v)
-			assert.Equal(t, d, deriveKey(k))
+			assert.Equal(t, d, derive(k))
 		})
 	}
 }
