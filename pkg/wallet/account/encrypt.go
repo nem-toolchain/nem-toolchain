@@ -1,7 +1,7 @@
 // Copyright 2017 The nem-toolchain project authors. All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 
-package wallet
+package account
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 
 // deriveKey performs pseudo-HMAC procedure to derive 32-byte key
 // from arbitrary password in string representation.
-func deriveKey(pass string) []byte {
+func derive(pass string) []byte {
 	k := []byte(pass)
 	for i := 0; i < 20; i++ {
 		h := sha3.SumKeccak256(k)
