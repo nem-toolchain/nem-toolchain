@@ -6,7 +6,6 @@ package main
 import (
 	"bufio"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -207,7 +206,7 @@ func vanityAction(c *cli.Context) error {
 // specified by flags.
 func createSelector(c *cli.Context, ch core.Chain) (vanity.Selector, error) {
 	var excludeSel vanity.Selector = vanity.TrueSelector{}
-	var err = errors.New("")
+	var err error
 	if c.IsSet("exclude") {
 		excludeSel, err = vanity.NewExcludeSelector(c.String("exclude"))
 		if err != nil {
