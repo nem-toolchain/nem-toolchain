@@ -21,8 +21,8 @@
 
 Run docker  container with interactive mode (will be deletaed after shutdown):
 
-```bash
-docker run --rm -it nem-toolchain/latest /bin/sh
+```console
+$ docker run --rm -it nem-toolchain/latest /bin/sh
 ```
 
 ## How to install
