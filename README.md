@@ -17,11 +17,17 @@
 
 ---
 
-## Prerequisites
+## How to try 
 
-* [Go 1.8+](http://golang.org/doc/install)
+Run docker  container with interactive mode (will be deletaed after shutdown):
+
+```bash
+docker run --rm -it nem-toolchain/latest /bin/sh
+```
 
 ## How to install
+
+Prerequisites:  [Go 1.8+](http://golang.org/doc/install)
 
 To install, simply run:
 
