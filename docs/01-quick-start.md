@@ -30,3 +30,10 @@ You can include the `bin` directory in your `PATH` to simplify further usage:
 ```console
 export PATH=$PATH:./bin
 ```
+
+If you wish to simply try `nem-toolchain` without installation,
+run `docker` image in interactive mode:
+
+```console
+$ docker run --rm -it nem-toolchain/latest /bin/sh
+```
