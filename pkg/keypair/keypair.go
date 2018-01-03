@@ -14,7 +14,6 @@ import (
 	"github.com/nem-toolchain/nem-toolchain/pkg/core"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
-	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -28,6 +27,12 @@ const (
 type KeyPair struct {
 	Private []byte
 	Public  []byte
+}
+
+func sumKeccak256(data []byte) []byte {
+	h := new256()
+	h.Write(data)
+	return h.Sum(nil)
 }
 
 // Gen generates a new private/public key pair using entropy from crypto rand.
@@ -56,7 +61,7 @@ func FromSeed(seed []byte) (KeyPair, error) {
 
 // Address converts a key pair into corresponding address string representation.
 func (pair KeyPair) Address(chain core.Chain) Address {
-	h := sha3.SumKeccak256(pair.Public)
+	h := sumKeccak256(pair.Public)
 
 	r := ripemd160.New()
 	_, err := r.Write(h[:])
@@ -66,7 +71,7 @@ func (pair KeyPair) Address(chain core.Chain) Address {
 
 	b := append([]byte{chain.ID}, r.Sum(nil)...)
 
-	h = sha3.SumKeccak256(b)
+	h = sumKeccak256(b)
 	a := append(b, h[:4]...)
 
 	addr := Address{}
