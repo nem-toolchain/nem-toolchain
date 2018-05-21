@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
@@ -173,30 +174,10 @@ func vanityAction(c *cli.Context) error {
 		workers = m
 	}
 
-	var excludeSel vanity.Selector = vanity.TrueSelector{}
-	if c.IsSet("exclude") {
-		excludeSel, err = vanity.NewExcludeSelector(c.String("exclude"))
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
+	sel, err := createSelector(c, ch)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
 	}
-
-	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
-	if c.Bool("no-digits") {
-		noDigitsSel, _ = vanity.NewExcludeSelector("234567")
-	}
-
-	prefixes := make([]vanity.Selector, len(c.Args()))
-	for i, pr := range c.Args() {
-		sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
-		prefixes[i] = sel
-	}
-
-	sel := vanity.AndSelector(
-		excludeSel, noDigitsSel, vanity.OrSelector(prefixes...))
 
 	if !c.Bool("strip") && !c.Bool("skip-estimate") {
 		printEstimate(workers,
@@ -219,6 +200,42 @@ func vanityAction(c *cli.Context) error {
 	}
 
 	return nil
+}
+
+// createSelector create selector for vanity search,
+// specified by flags.
+func createSelector(c *cli.Context, ch core.Chain) (vanity.Selector, error) {
+	var excludeSel vanity.Selector = vanity.TrueSelector{}
+	var err error
+	if c.IsSet("exclude") {
+		excludeSel, err = vanity.NewExcludeSelector(c.String("exclude"))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var noDigitsSel vanity.Selector = vanity.TrueSelector{}
+	if c.Bool("no-digits") {
+		noDigitsSel, _ = vanity.NewExcludeSelector("234567")
+	}
+
+	args, err := readArgs(c)
+	if err != nil {
+		return nil, err
+	}
+	prefixes := make([]vanity.Selector, len(args))
+	for i, pr := range args {
+		sel, err := vanity.NewPrefixSelector(ch, strings.ToUpper(pr))
+		if err != nil {
+			return nil, err
+		}
+		prefixes[i] = sel
+	}
+
+	sel := vanity.AndSelector(
+		excludeSel, noDigitsSel, vanity.OrSelector(prefixes...))
+
+	return sel, nil
 }
 
 // printEstimate prints vanity account search time estimate.
@@ -262,6 +279,22 @@ func countKeyPairs(milliseconds time.Duration, res chan int) {
 			continue
 		}
 	}
+}
+
+// readArgs either reads positional arguments or from stdin.
+func readArgs(c *cli.Context) (cli.Args, error) {
+	args := c.Args()
+	if args[0] == "-" {
+		reader := bufio.NewReader(os.Stdin)
+		raw, err := reader.ReadString('\n')
+		if err != nil {
+			return args, err
+		}
+		raw = strings.TrimSpace(raw)
+		args = cli.Args(strings.Split(raw, " "))
+	}
+
+	return args, nil
 }
 
 // printEstimateDetails prints estimate search time details.
